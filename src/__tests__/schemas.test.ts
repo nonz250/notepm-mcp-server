@@ -9,6 +9,7 @@ import {
   CreatePageInputSchema,
   DeletePageInputSchema,
   GetPageInputSchema,
+  ListNotesInputSchema,
   SearchPagesInputSchema,
   UpdatePageInputSchema,
 } from "../tools/schemas.js";
@@ -301,6 +302,26 @@ describe("DeletePageInputSchema", () => {
 
   it("should reject empty page_code", () => {
     const result = DeletePageInputSchema.safeParse({ page_code: "" });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("ListNotesInputSchema", () => {
+  it("should accept empty input with defaults", () => {
+    const result = ListNotesInputSchema.safeParse({});
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.per_page).toBe(20);
+    }
+  });
+
+  it("should accept include_archived flag", () => {
+    const result = ListNotesInputSchema.safeParse({ include_archived: true });
+    expect(result.success).toBe(true);
+  });
+
+  it("should reject per_page out of range", () => {
+    const result = ListNotesInputSchema.safeParse({ per_page: 200 });
     expect(result.success).toBe(false);
   });
 });

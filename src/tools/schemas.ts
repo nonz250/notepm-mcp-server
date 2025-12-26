@@ -47,6 +47,17 @@ export const DeletePageInputSchema = z.object({
   page_code: z.string().min(1).describe("Page code to delete"),
 });
 
+export const ListNotesInputSchema = z.object({
+  include_archived: z.boolean().optional().describe("Include archived notes"),
+  per_page: z
+    .number()
+    .min(1)
+    .max(100)
+    .optional()
+    .default(20)
+    .describe("Number of results (1-100, default: 20)"),
+});
+
 // ============================================================
 // Inferred Types
 // ============================================================
@@ -65,3 +76,6 @@ export type UpdatePageInput = z.infer<typeof UpdatePageInputSchema>;
 
 /** Inferred type for delete page input */
 export type DeletePageInput = z.infer<typeof DeletePageInputSchema>;
+
+/** Inferred type for list notes input */
+export type ListNotesInput = z.infer<typeof ListNotesInputSchema>;
