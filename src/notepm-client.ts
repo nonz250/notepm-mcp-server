@@ -277,4 +277,12 @@ export class NotePMClient {
     const response = await this.request<NoteResponse>("PATCH", `/notes/${noteCode}`, params);
     return response.note;
   }
+
+  /**
+   * Delete note
+   * DELETE /api/v1/notes/:note_code
+   */
+  async deleteNote(noteCode: string): Promise<void> {
+    await this.request<undefined>("DELETE", `/notes/${noteCode}`);
+  }
 }

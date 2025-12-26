@@ -44,6 +44,7 @@ const createMockClient = () => ({
   listNotes: vi.fn(),
   createNote: vi.fn(),
   updateNote: vi.fn(),
+  deleteNote: vi.fn(),
 });
 
 type MockClient = ReturnType<typeof createMockClient>;
@@ -633,6 +634,33 @@ describe("handleToolCall", () => {
       expect(getTextContent(result)).toContain("Note code: note123");
       expect(getTextContent(result)).toContain("Scope: All members");
       expect(getTextContent(result)).toContain("Test description");
+    });
+  });
+
+  // ============================================================
+  // delete_note Tests
+  // ============================================================
+
+  describe("delete_note", () => {
+    it("should return success message with note_code", async () => {
+      mockClient.deleteNote.mockResolvedValue(undefined);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "delete_note", {
+        note_code: "note123",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("Note deleted: note123");
+    });
+
+    it("should call client with correct note_code", async () => {
+      mockClient.deleteNote.mockResolvedValue(undefined);
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "delete_note", {
+        note_code: "delete_me",
+      });
+
+      expect(mockClient.deleteNote).toHaveBeenCalledWith("delete_me");
     });
   });
 });

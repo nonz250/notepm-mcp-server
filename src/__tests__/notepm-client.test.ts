@@ -399,6 +399,43 @@ describe("NotePMClient", () => {
   });
 
   // ============================================================
+  // deleteNote Tests
+  // ============================================================
+
+  describe("deleteNote", () => {
+    it("should call DELETE /notes/:note_code", async () => {
+      mockFetch.mockReturnValue(
+        Promise.resolve({
+          ok: true,
+          status: 204,
+          statusText: "No Content",
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(""),
+        })
+      );
+
+      await client.deleteNote("note123");
+
+      expectFetchCalledWith("DELETE", "/notes/note123");
+    });
+
+    it("should handle 204 No Content response", async () => {
+      mockFetch.mockReturnValue(
+        Promise.resolve({
+          ok: true,
+          status: 204,
+          statusText: "No Content",
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(""),
+        })
+      );
+
+      // Should not throw
+      await expect(client.deleteNote("note123")).resolves.toBeUndefined();
+    });
+  });
+
+  // ============================================================
   // Error Handling Tests
   // ============================================================
 
