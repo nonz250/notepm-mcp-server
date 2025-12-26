@@ -92,6 +92,43 @@ export const TOOLS = [
 // Tool Handlers
 // ============================================================
 
+type ToolResult = { content: Array<{ type: "text"; text: string }>; isError?: boolean };
+
+/**
+ * Create a successful tool result
+ */
+function success(text: string): ToolResult {
+  return { content: [{ type: "text", text }] };
+}
+
+/**
+ * Create an error tool result
+ */
+function error(text: string): ToolResult {
+  return { content: [{ type: "text", text }], isError: true };
+}
+
+/**
+ * Input validation error
+ */
+class InputError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InputError";
+  }
+}
+
+/**
+ * Parse and validate input, throw InputError on failure
+ */
+function parseInput<T extends z.ZodType>(schema: T, args: unknown): z.infer<T> {
+  const result = schema.safeParse(args);
+  if (!result.success) {
+    throw new InputError(result.error.message);
+  }
+  return result.data;
+}
+
 /**
  * Format page information
  */
@@ -118,30 +155,15 @@ export async function handleToolCall(
   client: NotePMClient,
   name: string,
   args: unknown
-): Promise<{ content: Array<{ type: "text"; text: string }>; isError?: boolean }> {
+): Promise<ToolResult> {
   try {
     switch (name) {
       case "search_pages": {
-        const parsed = SearchPagesInputSchema.safeParse(args);
-        if (!parsed.success) {
-          return {
-            content: [{ type: "text", text: `Input error: ${parsed.error.message}` }],
-            isError: true,
-          };
-        }
-
-        const { query, note_code, tag_name, per_page } = parsed.data;
-        const result = await client.searchPages({
-          q: query,
-          note_code,
-          tag_name,
-          per_page,
-        });
+        const { query, note_code, tag_name, per_page } = parseInput(SearchPagesInputSchema, args);
+        const result = await client.searchPages({ q: query, note_code, tag_name, per_page });
 
         if (result.pages.length === 0) {
-          return {
-            content: [{ type: "text", text: "Search results: 0 pages" }],
-          };
+          return success("Search results: 0 pages");
         }
 
         const pageList = result.pages
@@ -151,120 +173,43 @@ export async function handleToolCall(
           )
           .join("\n");
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Search results: showing ${result.pages.length} of ${result.meta.total} pages\n\n${pageList}`,
-            },
-          ],
-        };
+        return success(`Search results: showing ${result.pages.length} of ${result.meta.total} pages\n\n${pageList}`);
       }
 
       case "get_page": {
-        const parsed = GetPageInputSchema.safeParse(args);
-        if (!parsed.success) {
-          return {
-            content: [{ type: "text", text: `Input error: ${parsed.error.message}` }],
-            isError: true,
-          };
-        }
-
-        const page = await client.getPage(parsed.data.page_code);
-        return {
-          content: [{ type: "text", text: formatPage(page) }],
-        };
+        const { page_code } = parseInput(GetPageInputSchema, args);
+        const page = await client.getPage(page_code);
+        return success(formatPage(page));
       }
 
       case "create_page": {
-        const parsed = CreatePageInputSchema.safeParse(args);
-        if (!parsed.success) {
-          return {
-            content: [{ type: "text", text: `Input error: ${parsed.error.message}` }],
-            isError: true,
-          };
-        }
-
-        const { note_code, title, body, memo, tags } = parsed.data;
-        const page = await client.createPage({
-          note_code,
-          title,
-          body,
-          memo,
-          tags,
-        });
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Page created.\n\n${formatPage(page)}`,
-            },
-          ],
-        };
+        const { note_code, title, body, memo, tags } = parseInput(CreatePageInputSchema, args);
+        const page = await client.createPage({ note_code, title, body, memo, tags });
+        return success(`Page created.\n\n${formatPage(page)}`);
       }
 
       case "update_page": {
-        const parsed = UpdatePageInputSchema.safeParse(args);
-        if (!parsed.success) {
-          return {
-            content: [{ type: "text", text: `Input error: ${parsed.error.message}` }],
-            isError: true,
-          };
-        }
-
-        const { page_code, title, body, memo, tags } = parsed.data;
-        const page = await client.updatePage(page_code, {
-          title,
-          body,
-          memo,
-          tags,
-        });
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Page updated.\n\n${formatPage(page)}`,
-            },
-          ],
-        };
+        const { page_code, title, body, memo, tags } = parseInput(UpdatePageInputSchema, args);
+        const page = await client.updatePage(page_code, { title, body, memo, tags });
+        return success(`Page updated.\n\n${formatPage(page)}`);
       }
 
       case "delete_page": {
-        const parsed = DeletePageInputSchema.safeParse(args);
-        if (!parsed.success) {
-          return {
-            content: [{ type: "text", text: `Input error: ${parsed.error.message}` }],
-            isError: true,
-          };
-        }
-
-        await client.deletePage(parsed.data.page_code);
-
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Page deleted: ${parsed.data.page_code}`,
-            },
-          ],
-        };
+        const { page_code } = parseInput(DeletePageInputSchema, args);
+        await client.deletePage(page_code);
+        return success(`Page deleted: ${page_code}`);
       }
 
       default:
-        return {
-          content: [{ type: "text", text: `Unknown tool: ${name}` }],
-          isError: true,
-        };
+        return error(`Unknown tool: ${name}`);
     }
-  } catch (error) {
-    if (error instanceof NotePMAPIError) {
-      return {
-        content: [{ type: "text", text: error.message }],
-        isError: true,
-      };
+  } catch (err) {
+    if (err instanceof InputError) {
+      return error(`Input error: ${err.message}`);
     }
-    throw error;
+    if (err instanceof NotePMAPIError) {
+      return error(err.message);
+    }
+    throw err;
   }
 }
