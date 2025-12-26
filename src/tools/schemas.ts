@@ -10,6 +10,18 @@ import { z } from "zod";
 // Zod Schemas
 // ============================================================
 
+export const SearchNotesInputSchema = z.object({
+  query: z.string().optional().describe("Search keyword for note name"),
+  page: z.number().min(1).optional().describe("Page number (default: 1)"),
+  per_page: z
+    .number()
+    .min(1)
+    .max(100)
+    .optional()
+    .default(20)
+    .describe("Number of results (1-100, default: 20)"),
+});
+
 export const SearchPagesInputSchema = z.object({
   query: z.string().optional().describe("Search keyword"),
   note_code: z.string().optional().describe("Note code (search within specific note)"),
@@ -89,6 +101,9 @@ export const DeleteNoteInputSchema = z.object({
 // ============================================================
 // Inferred Types
 // ============================================================
+
+/** Inferred type for search notes input */
+export type SearchNotesInput = z.infer<typeof SearchNotesInputSchema>;
 
 /** Inferred type for search pages input */
 export type SearchPagesInput = z.infer<typeof SearchPagesInputSchema>;

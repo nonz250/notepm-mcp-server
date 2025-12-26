@@ -36,6 +36,7 @@ function getTextContent(result: CallToolResult): string {
 // ============================================================
 
 const createMockClient = () => ({
+  searchNotes: vi.fn(),
   searchPages: vi.fn(),
   getPage: vi.fn(),
   createPage: vi.fn(),
@@ -105,6 +106,71 @@ describe("handleToolCall", () => {
           page_code: "test",
         })
       ).rejects.toThrow("Unexpected error");
+    });
+  });
+
+  // ============================================================
+  // search_notes Tests
+  // ============================================================
+
+  describe("search_notes", () => {
+    it("should return '0 notes' for empty results", async () => {
+      mockClient.searchNotes.mockResolvedValue(createMockNotesResponse([]));
+
+      const result = await handleToolCall(
+        mockClient as unknown as NotePMClient,
+        "search_notes",
+        {}
+      );
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("Search results: 0 notes");
+    });
+
+    it("should format search results correctly", async () => {
+      const notes = [
+        createMockNote({ note_code: "n1", name: "First Note" }),
+        createMockNote({ note_code: "n2", name: "Second Note" }),
+      ];
+      mockClient.searchNotes.mockResolvedValue(createMockNotesResponse(notes, 2));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "search_notes", {
+        query: "test",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("showing 2 of 2 notes");
+      expect(getTextContent(result)).toContain("## First Note");
+      expect(getTextContent(result)).toContain("## Second Note");
+      expect(getTextContent(result)).toContain("Note code: n1");
+      expect(getTextContent(result)).toContain("Note code: n2");
+    });
+
+    it("should show correct count when more notes exist", async () => {
+      const notes = [createMockNote()];
+      mockClient.searchNotes.mockResolvedValue(createMockNotesResponse(notes, 100));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "search_notes", {
+        per_page: 1,
+      });
+
+      expect(getTextContent(result)).toContain("showing 1 of 100 notes");
+    });
+
+    it("should pass all search parameters to client", async () => {
+      mockClient.searchNotes.mockResolvedValue(createMockNotesResponse([]));
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "search_notes", {
+        query: "test query",
+        page: 2,
+        per_page: 50,
+      });
+
+      expect(mockClient.searchNotes).toHaveBeenCalledWith({
+        q: "test query",
+        page: 2,
+        per_page: 50,
+      });
     });
   });
 

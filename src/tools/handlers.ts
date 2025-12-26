@@ -13,6 +13,7 @@ import {
   DeletePageInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
+  SearchNotesInputSchema,
   SearchPagesInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
@@ -115,6 +116,21 @@ export async function handleToolCall(
 ): Promise<CallToolResult> {
   try {
     switch (name as ToolName) {
+      case TOOL_NAMES.SEARCH_NOTES: {
+        const { query, page, per_page } = parseInput(SearchNotesInputSchema, args);
+        const result = await client.searchNotes({ q: query, page, per_page });
+
+        if (result.notes.length === 0) {
+          return success("Search results: 0 notes");
+        }
+
+        const noteList = result.notes.map((n) => formatNote(n)).join("\n");
+
+        return success(
+          `Search results: showing ${String(result.notes.length)} of ${String(result.meta.total)} notes\n\n${noteList}`
+        );
+      }
+
       case TOOL_NAMES.SEARCH_PAGES: {
         const { query, note_code, tag_name, page, per_page } = parseInput(
           SearchPagesInputSchema,

@@ -12,6 +12,7 @@ import {
   DeletePageInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
+  SearchNotesInputSchema,
   SearchPagesInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
@@ -25,6 +26,11 @@ function toInputSchema(schema: z.ZodType): Tool["inputSchema"] {
 }
 
 export const TOOLS: Tool[] = [
+  {
+    name: TOOL_NAMES.SEARCH_NOTES,
+    description: "Search NotePM notes. Returns a list of notes matching the search criteria.",
+    inputSchema: toInputSchema(SearchNotesInputSchema),
+  },
   {
     name: TOOL_NAMES.SEARCH_PAGES,
     description: "Search NotePM pages. Can filter by keyword, note, or tag.",

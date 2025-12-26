@@ -115,6 +115,7 @@ If you installed globally, replace `npx` with the direct command:
 
 | Tool | Description |
 |------|-------------|
+| `search_notes` | Search notes by keyword |
 | `list_notes` | List all notes in your workspace |
 | `create_note` | Create a new note with name, description, and access settings |
 | `update_note` | Update an existing note's name, description, or access settings |

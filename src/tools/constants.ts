@@ -9,6 +9,7 @@
  * Tool names used throughout the MCP server
  */
 export const TOOL_NAMES = {
+  SEARCH_NOTES: "search_notes",
   SEARCH_PAGES: "search_pages",
   GET_PAGE: "get_page",
   CREATE_PAGE: "create_page",

@@ -104,6 +104,13 @@ export interface ListNotesParams {
   per_page?: number;
 }
 
+/** Search notes parameters */
+export interface SearchNotesParams {
+  q?: string;
+  page?: number;
+  per_page?: number;
+}
+
 /** Search pages parameters */
 export interface SearchPagesParams {
   q?: string;
@@ -192,6 +199,23 @@ export class NotePMClient {
     const searchParams = new URLSearchParams();
 
     if (params.include_archived) searchParams.set("include_archived", "1");
+    if (params.page) searchParams.set("page", params.page.toString());
+    if (params.per_page) searchParams.set("per_page", params.per_page.toString());
+
+    const query = searchParams.toString();
+    const path = `/notes${query ? `?${query}` : ""}`;
+
+    return this.request<NotesResponse>("GET", path);
+  }
+
+  /**
+   * Search notes
+   * GET /api/v1/notes
+   */
+  async searchNotes(params: SearchNotesParams = {}): Promise<NotesResponse> {
+    const searchParams = new URLSearchParams();
+
+    if (params.q) searchParams.set("q", params.q);
     if (params.page) searchParams.set("page", params.page.toString());
     if (params.per_page) searchParams.set("per_page", params.per_page.toString());
 

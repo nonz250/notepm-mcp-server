@@ -12,10 +12,64 @@ import {
   DeletePageInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
+  SearchNotesInputSchema,
   SearchPagesInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
 } from "../tools/schemas.js";
+
+describe("SearchNotesInputSchema", () => {
+  it("should accept empty input with defaults", () => {
+    const result = SearchNotesInputSchema.safeParse({});
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.per_page).toBe(20);
+    }
+  });
+
+  it("should accept valid search params", () => {
+    const result = SearchNotesInputSchema.safeParse({
+      query: "test",
+      per_page: 50,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("should accept page parameter", () => {
+    const result = SearchNotesInputSchema.safeParse({
+      page: 3,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page).toBe(3);
+    }
+  });
+
+  it("should accept per_page at minimum boundary (1)", () => {
+    const result = SearchNotesInputSchema.safeParse({ per_page: 1 });
+    expect(result.success).toBe(true);
+  });
+
+  it("should accept per_page at maximum boundary (100)", () => {
+    const result = SearchNotesInputSchema.safeParse({ per_page: 100 });
+    expect(result.success).toBe(true);
+  });
+
+  it("should reject per_page below minimum (0)", () => {
+    const result = SearchNotesInputSchema.safeParse({ per_page: 0 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject per_page above maximum (101)", () => {
+    const result = SearchNotesInputSchema.safeParse({ per_page: 101 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject page below minimum (0)", () => {
+    const result = SearchNotesInputSchema.safeParse({ page: 0 });
+    expect(result.success).toBe(false);
+  });
+});
 
 describe("SearchPagesInputSchema", () => {
   it("should accept empty input with defaults", () => {

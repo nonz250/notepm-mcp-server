@@ -156,6 +156,46 @@ describe("NotePMClient", () => {
   });
 
   // ============================================================
+  // searchNotes Tests
+  // ============================================================
+
+  describe("searchNotes", () => {
+    it("should call GET /notes without params", async () => {
+      mockFetch.mockReturnValue(mockResponse(createMockNotesResponse([])));
+
+      await client.searchNotes();
+
+      expectFetchCalledWith("GET", "/notes");
+    });
+
+    it("should call GET /notes with query params", async () => {
+      mockFetch.mockReturnValue(mockResponse(createMockNotesResponse([])));
+
+      await client.searchNotes({
+        q: "search term",
+        per_page: 50,
+        page: 2,
+      });
+
+      const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
+      expect(url).toContain("/notes?");
+      expect(url).toContain("q=search+term");
+      expect(url).toContain("per_page=50");
+      expect(url).toContain("page=2");
+    });
+
+    it("should return notes response", async () => {
+      const notes = [createMockNote(), createMockNote({ note_code: "note2" })];
+      mockFetch.mockReturnValue(mockResponse(createMockNotesResponse(notes, 100)));
+
+      const result = await client.searchNotes({ q: "test" });
+
+      expect(result.notes).toHaveLength(2);
+      expect(result.meta.total).toBe(100);
+    });
+  });
+
+  // ============================================================
   // searchPages Tests
   // ============================================================
 
