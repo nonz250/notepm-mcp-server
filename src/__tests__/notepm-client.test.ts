@@ -5,10 +5,11 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { NotePMAPIError, NotePMClient, Page, PagesResponse } from "../notepm-client.js";
+import { NotePMAPIError, NotePMClient } from "../notepm-client.js";
+import { createMockPage, createMockPagesResponse } from "./fixtures.js";
 
 // ============================================================
-// Test Fixtures
+// Test Configuration
 // ============================================================
 
 const TEST_CONFIG = {
@@ -16,32 +17,6 @@ const TEST_CONFIG = {
   accessToken: "test-token-123",
   baseUrl: "https://testteam.notepm.jp/api/v1",
 };
-
-const createMockPage = (overrides: Partial<Page> = {}): Page => ({
-  page_code: "page123",
-  note_code: "note456",
-  folder_id: null,
-  title: "Test Page",
-  body: "Test body content",
-  memo: "Test memo",
-  created_at: "2024-01-01T00:00:00Z",
-  updated_at: "2024-01-02T00:00:00Z",
-  created_by: { user_code: "user1", name: "Test User" },
-  updated_by: { user_code: "user1", name: "Test User" },
-  tags: [{ name: "tag1" }],
-  ...overrides,
-});
-
-const createMockPagesResponse = (pages: Page[], total?: number): PagesResponse => ({
-  pages,
-  meta: {
-    previous_page: null,
-    next_page: null,
-    page: 1,
-    per_page: 20,
-    total: total ?? pages.length,
-  },
-});
 
 // ============================================================
 // Mock Setup

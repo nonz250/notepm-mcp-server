@@ -6,8 +6,9 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { NotePMAPIError, NotePMClient, Page, PagesResponse } from "../notepm-client.js";
+import { NotePMAPIError, NotePMClient } from "../notepm-client.js";
 import { handleToolCall } from "../tools/handlers.js";
+import { createMockPage, createMockPagesResponse } from "./fixtures.js";
 
 // ============================================================
 // Helper Functions
@@ -24,36 +25,6 @@ function getTextContent(result: CallToolResult): string {
   }
   return content.text;
 }
-
-// ============================================================
-// Test Fixtures
-// ============================================================
-
-const createMockPage = (overrides: Partial<Page> = {}): Page => ({
-  page_code: "page123",
-  note_code: "note456",
-  folder_id: null,
-  title: "Test Page",
-  body: "Test body content",
-  memo: "Test memo",
-  created_at: "2024-01-01T00:00:00Z",
-  updated_at: "2024-01-02T00:00:00Z",
-  created_by: { user_code: "user1", name: "Test User" },
-  updated_by: { user_code: "user1", name: "Test User" },
-  tags: [{ name: "tag1" }, { name: "tag2" }],
-  ...overrides,
-});
-
-const createMockPagesResponse = (pages: Page[], total?: number): PagesResponse => ({
-  pages,
-  meta: {
-    previous_page: null,
-    next_page: null,
-    page: 1,
-    per_page: 20,
-    total: total ?? pages.length,
-  },
-});
 
 // ============================================================
 // Mock Setup

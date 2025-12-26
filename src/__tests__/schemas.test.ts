@@ -88,10 +88,9 @@ describe("GetPageInputSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("should accept empty string page_code", () => {
-    // Empty string is technically valid as a string
+  it("should reject empty string page_code", () => {
     const result = GetPageInputSchema.safeParse({ page_code: "" });
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
   });
 });
 
@@ -146,6 +145,22 @@ describe("CreatePageInputSchema", () => {
     const result = CreatePageInputSchema.safeParse({
       note_code: "abc123",
       title: "a".repeat(101),
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject empty title", () => {
+    const result = CreatePageInputSchema.safeParse({
+      note_code: "abc123",
+      title: "",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject empty note_code", () => {
+    const result = CreatePageInputSchema.safeParse({
+      note_code: "",
+      title: "Test",
     });
     expect(result.success).toBe(false);
   });
@@ -253,6 +268,14 @@ describe("UpdatePageInputSchema", () => {
       expect(result.data.tags).toHaveLength(3);
     }
   });
+
+  it("should reject empty page_code", () => {
+    const result = UpdatePageInputSchema.safeParse({
+      page_code: "",
+      title: "Updated Title",
+    });
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("DeletePageInputSchema", () => {
@@ -273,6 +296,11 @@ describe("DeletePageInputSchema", () => {
 
   it("should reject null page_code", () => {
     const result = DeletePageInputSchema.safeParse({ page_code: null });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject empty page_code", () => {
+    const result = DeletePageInputSchema.safeParse({ page_code: "" });
     expect(result.success).toBe(false);
   });
 });

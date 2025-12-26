@@ -1,8 +1,8 @@
 /**
  * MCP Tool Definitions
  */
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import type { JsonSchema7Type } from "zod-to-json-schema";
 
 import { TOOL_NAMES } from "./constants.js";
 import {
@@ -14,22 +14,13 @@ import {
 } from "./schemas.js";
 
 /**
- * MCP Tool definition interface
- */
-interface ToolDefinition {
-  name: string;
-  description: string;
-  inputSchema: JsonSchema7Type;
-}
-
-/**
  * Convert Zod schema to MCP-compatible JSON Schema
  */
-function toInputSchema(schema: z.ZodType): JsonSchema7Type {
-  return z.toJSONSchema(schema, { target: "draft-07" }) as JsonSchema7Type;
+function toInputSchema(schema: z.ZodType): Tool["inputSchema"] {
+  return z.toJSONSchema(schema, { target: "draft-07" }) as Tool["inputSchema"];
 }
 
-export const TOOLS: ToolDefinition[] = [
+export const TOOLS: Tool[] = [
   {
     name: TOOL_NAMES.SEARCH_PAGES,
     description: "Search NotePM pages. Can filter by keyword, note, or tag.",
