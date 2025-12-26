@@ -1,7 +1,6 @@
 /**
  * Input Schema Definitions (Zod)
  */
-
 import { z } from "zod";
 
 export const SearchPagesInputSchema = z.object({

@@ -3,10 +3,10 @@
  *
  * Tests for tool handlers using mocked NotePMClient
  */
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { NotePMAPIError, NotePMClient, Page, PagesResponse } from "../notepm-client.js";
 import { handleToolCall } from "../tools/handlers.js";
-import { NotePMClient, NotePMAPIError, Page, PagesResponse } from "../notepm-client.js";
 
 // ============================================================
 // Test Fixtures

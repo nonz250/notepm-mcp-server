@@ -1,14 +1,14 @@
 /**
  * MCP Tool Definitions
  */
-
 import { z } from "zod";
+
 import {
-  SearchPagesInputSchema,
-  GetPageInputSchema,
   CreatePageInputSchema,
-  UpdatePageInputSchema,
   DeletePageInputSchema,
+  GetPageInputSchema,
+  SearchPagesInputSchema,
+  UpdatePageInputSchema,
 } from "./schemas.js";
 
 /**

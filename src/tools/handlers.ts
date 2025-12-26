@@ -1,22 +1,25 @@
 /**
  * Tool Handlers
  */
-
 import { z } from "zod";
-import { NotePMClient, NotePMAPIError, Page } from "../notepm-client.js";
+
+import { NotePMAPIError, NotePMClient, Page } from "../notepm-client.js";
 import {
-  SearchPagesInputSchema,
-  GetPageInputSchema,
   CreatePageInputSchema,
-  UpdatePageInputSchema,
   DeletePageInputSchema,
+  GetPageInputSchema,
+  SearchPagesInputSchema,
+  UpdatePageInputSchema,
 } from "./schemas.js";
 
 // ============================================================
 // Types and Helpers
 // ============================================================
 
-type ToolResult = { content: Array<{ type: "text"; text: string }>; isError?: boolean };
+interface ToolResult {
+  content: { type: "text"; text: string }[];
+  isError?: boolean;
+}
 
 /**
  * Create a successful tool result
@@ -97,12 +100,12 @@ export async function handleToolCall(
         const pageList = result.pages
           .map(
             (p, i) =>
-              `${i + 1}. **${p.title}** (code: ${p.page_code})\n   - Note: ${p.note_code} | Updated: ${p.updated_at}`
+              `${String(i + 1)}. **${p.title}** (code: ${p.page_code})\n   - Note: ${p.note_code} | Updated: ${p.updated_at}`
           )
           .join("\n");
 
         return success(
-          `Search results: showing ${result.pages.length} of ${result.meta.total} pages\n\n${pageList}`
+          `Search results: showing ${String(result.pages.length)} of ${String(result.meta.total)} pages\n\n${pageList}`
         );
       }
 

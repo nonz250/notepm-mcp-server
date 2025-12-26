@@ -3,14 +3,14 @@
  *
  * Tests for Zod input schemas with boundary conditions
  */
+import { describe, expect, it } from "vitest";
 
-import { describe, it, expect } from "vitest";
 import {
-  SearchPagesInputSchema,
-  GetPageInputSchema,
   CreatePageInputSchema,
-  UpdatePageInputSchema,
   DeletePageInputSchema,
+  GetPageInputSchema,
+  SearchPagesInputSchema,
+  UpdatePageInputSchema,
 } from "../tools/schemas.js";
 
 describe("SearchPagesInputSchema", () => {

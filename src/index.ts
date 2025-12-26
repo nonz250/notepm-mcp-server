@@ -10,7 +10,6 @@
  * - NOTEPM_TEAM_DOMAIN: Team domain (e.g., "demo")
  * - NOTEPM_ACCESS_TOKEN: API access token
  */
-
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
@@ -30,6 +29,9 @@ const client = new NotePMClient(config);
 // Create server instance
 // ============================================================
 
+// TODO: Consider migrating to McpServer high-level API
+// Currently using Server for setRequestHandler which requires low-level API
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 const server = new Server(
   {
     name: "notepm-mcp-server",
@@ -49,7 +51,7 @@ const server = new Server(
 /**
  * Handler for tools/list request
  */
-server.setRequestHandler(ListToolsRequestSchema, async () => {
+server.setRequestHandler(ListToolsRequestSchema, () => {
   return { tools: TOOLS };
 });
 
@@ -71,7 +73,7 @@ async function main() {
   console.error(`NotePM MCP Server started (${config.teamDomain}.notepm.jp)`);
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
   console.error("Server startup error:", error);
   process.exit(1);
 });
