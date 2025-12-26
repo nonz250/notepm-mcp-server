@@ -49,130 +49,42 @@ export const DeletePageInputSchema = z.object({
 });
 
 // ============================================================
+// Helper: Convert Zod schema to MCP-compatible JSON Schema
+// ============================================================
+
+function toInputSchema(schema: z.ZodType) {
+  return z.toJSONSchema(schema, { target: "draft-07" });
+}
+
+// ============================================================
 // Tool Definitions (MCP format)
 // ============================================================
 
 export const TOOLS = [
   {
     name: "search_pages",
-    description:
-      "Search NotePM pages. Can filter by keyword, note, or tag.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        query: {
-          type: "string",
-          description: "Search keyword",
-        },
-        note_code: {
-          type: "string",
-          description: "Note code (search within specific note)",
-        },
-        tag_name: {
-          type: "string",
-          description: "Filter by tag name",
-        },
-        per_page: {
-          type: "number",
-          description: "Number of results (1-100, default: 20)",
-          default: 20,
-        },
-      },
-    },
+    description: "Search NotePM pages. Can filter by keyword, note, or tag.",
+    inputSchema: toInputSchema(SearchPagesInputSchema),
   },
   {
     name: "get_page",
-    description:
-      "Get a NotePM page. Retrieve title, body, tags and other details by page code.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        page_code: {
-          type: "string",
-          description: "Page code",
-        },
-      },
-      required: ["page_code"],
-    },
+    description: "Get a NotePM page. Retrieve title, body, tags and other details by page code.",
+    inputSchema: toInputSchema(GetPageInputSchema),
   },
   {
     name: "create_page",
-    description:
-      "Create a new page in NotePM. Note code and title are required.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        note_code: {
-          type: "string",
-          description: "Note code to create page in",
-        },
-        title: {
-          type: "string",
-          description: "Page title (max 100 characters)",
-        },
-        body: {
-          type: "string",
-          description: "Page body (Markdown format)",
-        },
-        memo: {
-          type: "string",
-          description: "Memo (max 255 characters)",
-        },
-        tags: {
-          type: "array",
-          items: { type: "string" },
-          description: "Array of tags",
-        },
-      },
-      required: ["note_code", "title"],
-    },
+    description: "Create a new page in NotePM. Note code and title are required.",
+    inputSchema: toInputSchema(CreatePageInputSchema),
   },
   {
     name: "update_page",
-    description:
-      "Update an existing NotePM page. Page code is required.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        page_code: {
-          type: "string",
-          description: "Page code to update",
-        },
-        title: {
-          type: "string",
-          description: "Page title (max 100 characters)",
-        },
-        body: {
-          type: "string",
-          description: "Page body (Markdown format)",
-        },
-        memo: {
-          type: "string",
-          description: "Memo (max 255 characters)",
-        },
-        tags: {
-          type: "array",
-          items: { type: "string" },
-          description: "Array of tags",
-        },
-      },
-      required: ["page_code"],
-    },
+    description: "Update an existing NotePM page. Page code is required.",
+    inputSchema: toInputSchema(UpdatePageInputSchema),
   },
   {
     name: "delete_page",
-    description:
-      "Delete a NotePM page. This action cannot be undone.",
-    inputSchema: {
-      type: "object" as const,
-      properties: {
-        page_code: {
-          type: "string",
-          description: "Page code to delete",
-        },
-      },
-      required: ["page_code"],
-    },
+    description: "Delete a NotePM page. This action cannot be undone.",
+    inputSchema: toInputSchema(DeletePageInputSchema),
   },
 ];
 
