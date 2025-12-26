@@ -6,6 +6,10 @@ An unofficial [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) s
 
 This server enables AI assistants like Claude to search, read, create, update, and delete pages in your NotePM workspace.
 
+## Requirements
+
+- Node.js >= 22
+
 ## Installation
 
 ### Using npx (Recommended)
