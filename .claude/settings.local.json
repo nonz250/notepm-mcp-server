@@ -21,7 +21,8 @@
       "Bash(npm uninstall:*)",
       "Bash(npm run lint)",
       "Bash(npm run format:check:*)",
-      "Bash(npm run format:*)"
+      "Bash(npm run format:*)",
+      "Bash(npm test)"
     ]
   }
 }
