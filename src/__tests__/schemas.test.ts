@@ -9,6 +9,7 @@ import {
   CreatePageInputSchema,
   DeletePageInputSchema,
   GetPageInputSchema,
+  GetTagsInputSchema,
   SearchPagesInputSchema,
   UpdatePageInputSchema,
 } from "../tools/schemas.js";
@@ -301,6 +302,67 @@ describe("DeletePageInputSchema", () => {
 
   it("should reject empty page_code", () => {
     const result = DeletePageInputSchema.safeParse({ page_code: "" });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("GetTagsInputSchema", () => {
+  it("should accept empty input with defaults", () => {
+    const result = GetTagsInputSchema.safeParse({});
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.per_page).toBe(20);
+    }
+  });
+
+  it("should accept per_page parameter", () => {
+    const result = GetTagsInputSchema.safeParse({ per_page: 50 });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.per_page).toBe(50);
+    }
+  });
+
+  it("should accept page parameter", () => {
+    const result = GetTagsInputSchema.safeParse({ page: 2 });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page).toBe(2);
+    }
+  });
+
+  it("should accept per_page at minimum boundary (1)", () => {
+    const result = GetTagsInputSchema.safeParse({ per_page: 1 });
+    expect(result.success).toBe(true);
+  });
+
+  it("should accept per_page at maximum boundary (100)", () => {
+    const result = GetTagsInputSchema.safeParse({ per_page: 100 });
+    expect(result.success).toBe(true);
+  });
+
+  it("should reject per_page below minimum (0)", () => {
+    const result = GetTagsInputSchema.safeParse({ per_page: 0 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject per_page above maximum (101)", () => {
+    const result = GetTagsInputSchema.safeParse({ per_page: 101 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject page below minimum (0)", () => {
+    const result = GetTagsInputSchema.safeParse({ page: 0 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject non-number per_page", () => {
+    const result = GetTagsInputSchema.safeParse({ per_page: "50" });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject non-number page", () => {
+    const result = GetTagsInputSchema.safeParse({ page: "2" });
     expect(result.success).toBe(false);
   });
 });

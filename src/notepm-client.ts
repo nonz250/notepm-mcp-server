@@ -56,6 +56,18 @@ export interface PageResponse {
   page: Page;
 }
 
+/** Tags list response */
+export interface TagsResponse {
+  tags: Tag[];
+  meta: PaginationMeta;
+}
+
+/** Get tags parameters */
+export interface GetTagsParams {
+  page?: number;
+  per_page?: number;
+}
+
 /** Search pages parameters */
 export interface SearchPagesParams {
   q?: string;
@@ -193,5 +205,21 @@ export class NotePMClient {
    */
   async deletePage(pageCode: string): Promise<void> {
     await this.request<undefined>("DELETE", `/pages/${pageCode}`);
+  }
+
+  /**
+   * Get tags
+   * GET /api/v1/tags
+   */
+  async getTags(params: GetTagsParams = {}): Promise<TagsResponse> {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.set("page", params.page.toString());
+    if (params.per_page) searchParams.set("per_page", params.per_page.toString());
+
+    const query = searchParams.toString();
+    const path = `/tags${query ? `?${query}` : ""}`;
+
+    return this.request<TagsResponse>("GET", path);
   }
 }

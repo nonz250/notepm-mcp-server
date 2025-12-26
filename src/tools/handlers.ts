@@ -10,6 +10,7 @@ import {
   CreatePageInputSchema,
   DeletePageInputSchema,
   GetPageInputSchema,
+  GetTagsInputSchema,
   SearchPagesInputSchema,
   UpdatePageInputSchema,
 } from "./schemas.js";
@@ -128,6 +129,21 @@ export async function handleToolCall(
         const { page_code } = parseInput(DeletePageInputSchema, args);
         await client.deletePage(page_code);
         return success(`Page deleted: ${page_code}`);
+      }
+
+      case TOOL_NAMES.GET_TAGS: {
+        const { per_page, page } = parseInput(GetTagsInputSchema, args);
+        const result = await client.getTags({ per_page, page });
+
+        if (result.tags.length === 0) {
+          return success("No tags found.");
+        }
+
+        const tagList = result.tags.map((t, i) => `${String(i + 1)}. ${t.name}`).join("\n");
+
+        return success(
+          `Tags: showing ${String(result.tags.length)} of ${String(result.meta.total)} tags\n\n${tagList}`
+        );
       }
 
       default:

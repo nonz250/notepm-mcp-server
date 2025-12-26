@@ -8,7 +8,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { NotePMAPIError, NotePMClient } from "../notepm-client.js";
 import { handleToolCall } from "../tools/handlers.js";
-import { createMockPage, createMockPagesResponse } from "./fixtures.js";
+import {
+  createMockPage,
+  createMockPagesResponse,
+  createMockTag,
+  createMockTagsResponse,
+} from "./fixtures.js";
 
 // ============================================================
 // Helper Functions
@@ -36,6 +41,7 @@ const createMockClient = () => ({
   createPage: vi.fn(),
   updatePage: vi.fn(),
   deletePage: vi.fn(),
+  getTags: vi.fn(),
 });
 
 type MockClient = ReturnType<typeof createMockClient>;
@@ -357,6 +363,69 @@ describe("handleToolCall", () => {
       });
 
       expect(mockClient.deletePage).toHaveBeenCalledWith("delete_me");
+    });
+  });
+
+  // ============================================================
+  // get_tags Tests
+  // ============================================================
+
+  describe("get_tags", () => {
+    it("should return 'No tags found' for empty results", async () => {
+      mockClient.getTags.mockResolvedValue(createMockTagsResponse([]));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_tags", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("No tags found.");
+    });
+
+    it("should format tags correctly", async () => {
+      const tags = [createMockTag({ name: "tag1" }), createMockTag({ name: "tag2" })];
+      mockClient.getTags.mockResolvedValue(createMockTagsResponse(tags, 2));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_tags", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("showing 2 of 2 tags");
+      expect(getTextContent(result)).toContain("1. tag1");
+      expect(getTextContent(result)).toContain("2. tag2");
+    });
+
+    it("should show correct count when more tags exist", async () => {
+      const tags = [createMockTag({ name: "tag1" })];
+      mockClient.getTags.mockResolvedValue(createMockTagsResponse(tags, 100));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_tags", {
+        per_page: 1,
+      });
+
+      expect(getTextContent(result)).toContain("showing 1 of 100 tags");
+    });
+
+    it("should pass pagination parameters to client", async () => {
+      mockClient.getTags.mockResolvedValue(createMockTagsResponse([]));
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "get_tags", {
+        per_page: 50,
+        page: 2,
+      });
+
+      expect(mockClient.getTags).toHaveBeenCalledWith({
+        per_page: 50,
+        page: 2,
+      });
+    });
+
+    it("should use default per_page value", async () => {
+      mockClient.getTags.mockResolvedValue(createMockTagsResponse([]));
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "get_tags", {});
+
+      expect(mockClient.getTags).toHaveBeenCalledWith({
+        per_page: 20,
+        page: undefined,
+      });
     });
   });
 });

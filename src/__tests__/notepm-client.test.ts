@@ -6,7 +6,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { NotePMAPIError, NotePMClient } from "../notepm-client.js";
-import { createMockPage, createMockPagesResponse } from "./fixtures.js";
+import {
+  createMockPage,
+  createMockPagesResponse,
+  createMockTag,
+  createMockTagsResponse,
+} from "./fixtures.js";
 
 // ============================================================
 // Test Configuration
@@ -323,6 +328,46 @@ describe("NotePMClient", () => {
 
       // Should not throw
       await expect(client.deletePage("page123")).resolves.toBeUndefined();
+    });
+  });
+
+  // ============================================================
+  // getTags Tests
+  // ============================================================
+
+  describe("getTags", () => {
+    it("should call GET /tags without params", async () => {
+      mockFetch.mockReturnValue(mockResponse(createMockTagsResponse([])));
+
+      await client.getTags();
+
+      expectFetchCalledWith("GET", "/tags");
+    });
+
+    it("should call GET /tags with pagination params", async () => {
+      mockFetch.mockReturnValue(mockResponse(createMockTagsResponse([])));
+
+      await client.getTags({
+        per_page: 50,
+        page: 2,
+      });
+
+      const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
+      expect(url).toContain("/tags?");
+      expect(url).toContain("per_page=50");
+      expect(url).toContain("page=2");
+    });
+
+    it("should return tags response", async () => {
+      const tags = [createMockTag({ name: "tag1" }), createMockTag({ name: "tag2" })];
+      mockFetch.mockReturnValue(mockResponse(createMockTagsResponse(tags, 100)));
+
+      const result = await client.getTags();
+
+      expect(result.tags).toHaveLength(2);
+      expect(result.tags[0].name).toBe("tag1");
+      expect(result.tags[1].name).toBe("tag2");
+      expect(result.meta.total).toBe(100);
     });
   });
 

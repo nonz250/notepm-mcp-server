@@ -47,6 +47,17 @@ export const DeletePageInputSchema = z.object({
   page_code: z.string().min(1).describe("Page code to delete"),
 });
 
+export const GetTagsInputSchema = z.object({
+  per_page: z
+    .number()
+    .min(1)
+    .max(100)
+    .optional()
+    .default(20)
+    .describe("Number of results (1-100, default: 20)"),
+  page: z.number().min(1).optional().describe("Page number for pagination"),
+});
+
 // ============================================================
 // Inferred Types
 // ============================================================
@@ -65,3 +76,6 @@ export type UpdatePageInput = z.infer<typeof UpdatePageInputSchema>;
 
 /** Inferred type for delete page input */
 export type DeletePageInput = z.infer<typeof DeletePageInputSchema>;
+
+/** Inferred type for get tags input */
+export type GetTagsInput = z.infer<typeof GetTagsInputSchema>;
