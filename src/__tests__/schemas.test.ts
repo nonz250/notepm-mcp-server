@@ -16,6 +16,7 @@ import {
   SearchPagesInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
+  UpdateTagInputSchema,
 } from "../tools/schemas.js";
 
 describe("SearchPagesInputSchema", () => {
@@ -535,6 +536,67 @@ describe("CreateTagInputSchema", () => {
 
   it("should reject name over 100 characters", () => {
     const result = CreateTagInputSchema.safeParse({ name: "a".repeat(101) });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("UpdateTagInputSchema", () => {
+  it("should require both tag_name and new_tag_name", () => {
+    const result = UpdateTagInputSchema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it("should fail with only tag_name", () => {
+    const result = UpdateTagInputSchema.safeParse({ tag_name: "old-tag" });
+    expect(result.success).toBe(false);
+  });
+
+  it("should fail with only new_tag_name", () => {
+    const result = UpdateTagInputSchema.safeParse({ new_tag_name: "new-tag" });
+    expect(result.success).toBe(false);
+  });
+
+  it("should accept valid tag_name and new_tag_name", () => {
+    const result = UpdateTagInputSchema.safeParse({
+      tag_name: "old-tag",
+      new_tag_name: "new-tag",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.tag_name).toBe("old-tag");
+      expect(result.data.new_tag_name).toBe("new-tag");
+    }
+  });
+
+  it("should reject empty tag_name", () => {
+    const result = UpdateTagInputSchema.safeParse({
+      tag_name: "",
+      new_tag_name: "new-tag",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject empty new_tag_name", () => {
+    const result = UpdateTagInputSchema.safeParse({
+      tag_name: "old-tag",
+      new_tag_name: "",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject non-string tag_name", () => {
+    const result = UpdateTagInputSchema.safeParse({
+      tag_name: 123,
+      new_tag_name: "new-tag",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject non-string new_tag_name", () => {
+    const result = UpdateTagInputSchema.safeParse({
+      tag_name: "old-tag",
+      new_tag_name: 456,
+    });
     expect(result.success).toBe(false);
   });
 });

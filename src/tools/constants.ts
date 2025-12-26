@@ -20,6 +20,7 @@ export const TOOL_NAMES = {
   DELETE_NOTE: "delete_note",
   LIST_TAGS: "list_tags",
   CREATE_TAG: "create_tag",
+  UPDATE_TAG: "update_tag",
 } as const;
 
 /**

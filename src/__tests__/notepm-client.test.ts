@@ -601,6 +601,40 @@ describe("NotePMClient", () => {
   });
 
   // ============================================================
+  // updateTag Tests
+  // ============================================================
+
+  describe("updateTag", () => {
+    it("should call PATCH /tags/:tag_name", async () => {
+      const tag = createMockTag({ name: "new-tag" });
+      mockFetch.mockReturnValue(mockResponse({ tag }));
+
+      await client.updateTag("old-tag", "new-tag");
+
+      expectFetchCalledWith("PATCH", "/tags/old-tag", { name: "new-tag" });
+    });
+
+    it("should return updated tag", async () => {
+      const tag = createMockTag({ name: "renamed-tag" });
+      mockFetch.mockReturnValue(mockResponse({ tag }));
+
+      const result = await client.updateTag("original-tag", "renamed-tag");
+
+      expect(result.name).toBe("renamed-tag");
+    });
+
+    it("should encode special characters in tag_name", async () => {
+      const tag = createMockTag({ name: "new-tag" });
+      mockFetch.mockReturnValue(mockResponse({ tag }));
+
+      await client.updateTag("tag with spaces", "new-tag");
+
+      const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
+      expect(url).toContain("/tags/tag%20with%20spaces");
+    });
+  });
+
+  // ============================================================
   // Error Handling Tests
   // ============================================================
 

@@ -335,4 +335,15 @@ export class NotePMClient {
     const response = await this.request<TagResponse>("POST", "/tags", params);
     return response.tag;
   }
+
+  /**
+   * Update tag
+   * PATCH /api/v1/tags/:tag_name
+   */
+  async updateTag(tagName: string, newTagName: string): Promise<Tag> {
+    const response = await this.request<TagResponse>("PATCH", `/tags/${encodeURIComponent(tagName)}`, {
+      name: newTagName,
+    });
+    return response.tag;
+  }
 }

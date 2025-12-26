@@ -17,6 +17,7 @@ import {
   SearchPagesInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
+  UpdateTagInputSchema,
 } from "./schemas.js";
 
 /**
@@ -81,5 +82,10 @@ export const TOOLS: Tool[] = [
     name: TOOL_NAMES.CREATE_TAG,
     description: "Create a new tag in NotePM.",
     inputSchema: toInputSchema(CreateTagInputSchema),
+  },
+  {
+    name: TOOL_NAMES.UPDATE_TAG,
+    description: "Update (rename) a tag in NotePM. All pages with the tag will be updated.",
+    inputSchema: toInputSchema(UpdateTagInputSchema),
   },
 ];

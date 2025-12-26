@@ -49,6 +49,7 @@ const createMockClient = () => ({
   deleteNote: vi.fn(),
   listTags: vi.fn(),
   createTag: vi.fn(),
+  updateTag: vi.fn(),
 });
 
 type MockClient = ReturnType<typeof createMockClient>;
@@ -793,6 +794,55 @@ describe("handleToolCall", () => {
         "create_tag",
         {} // missing required name
       );
+
+      expect(result.isError).toBe(true);
+      expect(getTextContent(result)).toContain("Input error:");
+    });
+  });
+
+  // ============================================================
+  // update_tag Tests
+  // ============================================================
+
+  describe("update_tag", () => {
+    it("should return success message with old and new tag names", async () => {
+      const tag = createMockTag({ name: "new-tag" });
+      mockClient.updateTag.mockResolvedValue(tag);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "update_tag", {
+        tag_name: "old-tag",
+        new_tag_name: "new-tag",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe('Tag updated: "old-tag" → "new-tag"');
+    });
+
+    it("should call client with correct tag names", async () => {
+      const tag = createMockTag({ name: "renamed-tag" });
+      mockClient.updateTag.mockResolvedValue(tag);
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "update_tag", {
+        tag_name: "original-tag",
+        new_tag_name: "renamed-tag",
+      });
+
+      expect(mockClient.updateTag).toHaveBeenCalledWith("original-tag", "renamed-tag");
+    });
+
+    it("should return input error when tag_name is missing", async () => {
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "update_tag", {
+        new_tag_name: "new-tag",
+      });
+
+      expect(result.isError).toBe(true);
+      expect(getTextContent(result)).toContain("Input error:");
+    });
+
+    it("should return input error when new_tag_name is missing", async () => {
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "update_tag", {
+        tag_name: "old-tag",
+      });
 
       expect(result.isError).toBe(true);
       expect(getTextContent(result)).toContain("Input error:");

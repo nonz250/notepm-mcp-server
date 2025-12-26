@@ -18,6 +18,7 @@ import {
   SearchPagesInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
+  UpdateTagInputSchema,
 } from "./schemas.js";
 
 // ============================================================
@@ -222,6 +223,12 @@ export async function handleToolCall(
         const { name } = parseInput(CreateTagInputSchema, args);
         const tag = await client.createTag({ name });
         return success(`Tag created: ${tag.name}`);
+      }
+
+      case TOOL_NAMES.UPDATE_TAG: {
+        const { tag_name, new_tag_name } = parseInput(UpdateTagInputSchema, args);
+        const tag = await client.updateTag(tag_name, new_tag_name);
+        return success(`Tag updated: "${tag_name}" → "${tag.name}"`);
       }
 
       default:
