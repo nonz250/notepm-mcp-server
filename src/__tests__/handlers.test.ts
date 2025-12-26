@@ -1,0 +1,374 @@
+/**
+ * Handler Tests
+ *
+ * Tests for tool handlers using mocked NotePMClient
+ */
+
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { handleToolCall } from "../tools/handlers.js";
+import { NotePMClient, NotePMAPIError, Page, PagesResponse } from "../notepm-client.js";
+
+// ============================================================
+// Test Fixtures
+// ============================================================
+
+const createMockPage = (overrides: Partial<Page> = {}): Page => ({
+  page_code: "page123",
+  note_code: "note456",
+  folder_id: null,
+  title: "Test Page",
+  body: "Test body content",
+  memo: "Test memo",
+  created_at: "2024-01-01T00:00:00Z",
+  updated_at: "2024-01-02T00:00:00Z",
+  created_by: { user_code: "user1", name: "Test User" },
+  updated_by: { user_code: "user1", name: "Test User" },
+  tags: [{ name: "tag1" }, { name: "tag2" }],
+  ...overrides,
+});
+
+const createMockPagesResponse = (pages: Page[], total?: number): PagesResponse => ({
+  pages,
+  meta: {
+    previous_page: null,
+    next_page: null,
+    page: 1,
+    per_page: 20,
+    total: total ?? pages.length,
+  },
+});
+
+// ============================================================
+// Mock Setup
+// ============================================================
+
+const createMockClient = () => ({
+  searchPages: vi.fn(),
+  getPage: vi.fn(),
+  createPage: vi.fn(),
+  updatePage: vi.fn(),
+  deletePage: vi.fn(),
+});
+
+type MockClient = ReturnType<typeof createMockClient>;
+
+describe("handleToolCall", () => {
+  let mockClient: MockClient;
+
+  beforeEach(() => {
+    mockClient = createMockClient();
+    vi.clearAllMocks();
+  });
+
+  // ============================================================
+  // Error Handling Tests
+  // ============================================================
+
+  describe("error handling", () => {
+    it("should return error for unknown tool", async () => {
+      const result = await handleToolCall(
+        mockClient as unknown as NotePMClient,
+        "unknown_tool",
+        {}
+      );
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toBe("Unknown tool: unknown_tool");
+    });
+
+    it("should return input error for invalid arguments", async () => {
+      const result = await handleToolCall(
+        mockClient as unknown as NotePMClient,
+        "get_page",
+        {} // missing required page_code
+      );
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain("Input error:");
+    });
+
+    it("should return error for NotePMAPIError", async () => {
+      mockClient.getPage.mockRejectedValue(
+        new NotePMAPIError(404, "Not Found", "NotePM API Error: 404 Not Found")
+      );
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_page", {
+        page_code: "nonexistent",
+      });
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain("NotePM API Error");
+    });
+
+    it("should throw unexpected errors", async () => {
+      mockClient.getPage.mockRejectedValue(new Error("Unexpected error"));
+
+      await expect(
+        handleToolCall(mockClient as unknown as NotePMClient, "get_page", {
+          page_code: "test",
+        })
+      ).rejects.toThrow("Unexpected error");
+    });
+  });
+
+  // ============================================================
+  // search_pages Tests
+  // ============================================================
+
+  describe("search_pages", () => {
+    it("should return '0 pages' for empty results", async () => {
+      mockClient.searchPages.mockResolvedValue(createMockPagesResponse([]));
+
+      const result = await handleToolCall(
+        mockClient as unknown as NotePMClient,
+        "search_pages",
+        {}
+      );
+
+      expect(result.isError).toBeUndefined();
+      expect(result.content[0].text).toBe("Search results: 0 pages");
+    });
+
+    it("should format search results correctly", async () => {
+      const pages = [
+        createMockPage({ page_code: "p1", title: "First Page" }),
+        createMockPage({ page_code: "p2", title: "Second Page" }),
+      ];
+      mockClient.searchPages.mockResolvedValue(createMockPagesResponse(pages, 2));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "search_pages", {
+        query: "test",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(result.content[0].text).toContain("showing 2 of 2 pages");
+      expect(result.content[0].text).toContain("**First Page**");
+      expect(result.content[0].text).toContain("**Second Page**");
+      expect(result.content[0].text).toContain("code: p1");
+      expect(result.content[0].text).toContain("code: p2");
+    });
+
+    it("should show correct count when more pages exist", async () => {
+      const pages = [createMockPage()];
+      mockClient.searchPages.mockResolvedValue(createMockPagesResponse(pages, 100));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "search_pages", {
+        per_page: 1,
+      });
+
+      expect(result.content[0].text).toContain("showing 1 of 100 pages");
+    });
+
+    it("should pass all search parameters to client", async () => {
+      mockClient.searchPages.mockResolvedValue(createMockPagesResponse([]));
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "search_pages", {
+        query: "test query",
+        note_code: "note123",
+        tag_name: "important",
+        per_page: 50,
+      });
+
+      expect(mockClient.searchPages).toHaveBeenCalledWith({
+        q: "test query",
+        note_code: "note123",
+        tag_name: "important",
+        per_page: 50,
+      });
+    });
+  });
+
+  // ============================================================
+  // get_page Tests
+  // ============================================================
+
+  describe("get_page", () => {
+    it("should format page with all fields", async () => {
+      const page = createMockPage();
+      mockClient.getPage.mockResolvedValue(page);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_page", {
+        page_code: "page123",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(result.content[0].text).toContain("## Test Page");
+      expect(result.content[0].text).toContain("Page code: page123");
+      expect(result.content[0].text).toContain("Note code: note456");
+      expect(result.content[0].text).toContain("Created by: Test User");
+      expect(result.content[0].text).toContain("Tags: tag1, tag2");
+      expect(result.content[0].text).toContain("Test body content");
+    });
+
+    it("should show 'None' for empty tags", async () => {
+      const page = createMockPage({ tags: [] });
+      mockClient.getPage.mockResolvedValue(page);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_page", {
+        page_code: "page123",
+      });
+
+      expect(result.content[0].text).toContain("Tags: None");
+    });
+
+    it("should show '(No body)' for empty body", async () => {
+      const page = createMockPage({ body: "" });
+      mockClient.getPage.mockResolvedValue(page);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_page", {
+        page_code: "page123",
+      });
+
+      expect(result.content[0].text).toContain("(No body)");
+    });
+
+    it("should call client with correct page_code", async () => {
+      mockClient.getPage.mockResolvedValue(createMockPage());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "get_page", {
+        page_code: "specific_code",
+      });
+
+      expect(mockClient.getPage).toHaveBeenCalledWith("specific_code");
+    });
+  });
+
+  // ============================================================
+  // create_page Tests
+  // ============================================================
+
+  describe("create_page", () => {
+    it("should return success message with formatted page", async () => {
+      const page = createMockPage({ title: "New Page" });
+      mockClient.createPage.mockResolvedValue(page);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_page", {
+        note_code: "note123",
+        title: "New Page",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(result.content[0].text).toContain("Page created.");
+      expect(result.content[0].text).toContain("## New Page");
+    });
+
+    it("should pass all parameters to client", async () => {
+      mockClient.createPage.mockResolvedValue(createMockPage());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "create_page", {
+        note_code: "note123",
+        title: "Test",
+        body: "Body content",
+        memo: "Memo text",
+        tags: ["tag1", "tag2"],
+      });
+
+      expect(mockClient.createPage).toHaveBeenCalledWith({
+        note_code: "note123",
+        title: "Test",
+        body: "Body content",
+        memo: "Memo text",
+        tags: ["tag1", "tag2"],
+      });
+    });
+
+    it("should handle optional parameters", async () => {
+      mockClient.createPage.mockResolvedValue(createMockPage());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "create_page", {
+        note_code: "note123",
+        title: "Minimal Page",
+      });
+
+      expect(mockClient.createPage).toHaveBeenCalledWith({
+        note_code: "note123",
+        title: "Minimal Page",
+        body: undefined,
+        memo: undefined,
+        tags: undefined,
+      });
+    });
+  });
+
+  // ============================================================
+  // update_page Tests
+  // ============================================================
+
+  describe("update_page", () => {
+    it("should return success message with formatted page", async () => {
+      const page = createMockPage({ title: "Updated Page" });
+      mockClient.updatePage.mockResolvedValue(page);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "update_page", {
+        page_code: "page123",
+        title: "Updated Page",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(result.content[0].text).toContain("Page updated.");
+      expect(result.content[0].text).toContain("## Updated Page");
+    });
+
+    it("should pass page_code and update params to client", async () => {
+      mockClient.updatePage.mockResolvedValue(createMockPage());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "update_page", {
+        page_code: "page123",
+        title: "New Title",
+        body: "New Body",
+        memo: "New Memo",
+        tags: ["newtag"],
+      });
+
+      expect(mockClient.updatePage).toHaveBeenCalledWith("page123", {
+        title: "New Title",
+        body: "New Body",
+        memo: "New Memo",
+        tags: ["newtag"],
+      });
+    });
+
+    it("should allow partial updates", async () => {
+      mockClient.updatePage.mockResolvedValue(createMockPage());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "update_page", {
+        page_code: "page123",
+        title: "Only Title Changed",
+      });
+
+      expect(mockClient.updatePage).toHaveBeenCalledWith("page123", {
+        title: "Only Title Changed",
+        body: undefined,
+        memo: undefined,
+        tags: undefined,
+      });
+    });
+  });
+
+  // ============================================================
+  // delete_page Tests
+  // ============================================================
+
+  describe("delete_page", () => {
+    it("should return success message with page_code", async () => {
+      mockClient.deletePage.mockResolvedValue(undefined);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "delete_page", {
+        page_code: "page123",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(result.content[0].text).toBe("Page deleted: page123");
+    });
+
+    it("should call client with correct page_code", async () => {
+      mockClient.deletePage.mockResolvedValue(undefined);
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "delete_page", {
+        page_code: "delete_me",
+      });
+
+      expect(mockClient.deletePage).toHaveBeenCalledWith("delete_me");
+    });
+  });
+});
