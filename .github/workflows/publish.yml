@@ -86,7 +86,7 @@ jobs:
 
       - name: Check if version already published
         run: |
-          if npm view notepm-mcp-server@${{ steps.version.outputs.version }} > /dev/null 2>&1; then
+          if npm view @nonz250/notepm-mcp-server@${{ steps.version.outputs.version }} > /dev/null 2>&1; then
             echo "Version ${{ steps.version.outputs.version }} already exists on npm"
             exit 1
           fi

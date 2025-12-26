@@ -1,6 +1,6 @@
 # notepm-mcp-server
 
-[![npm version](https://badge.fury.io/js/notepm-mcp-server.svg)](https://www.npmjs.com/package/notepm-mcp-server)
+[![npm version](https://badge.fury.io/js/@nonz250/notepm-mcp-server.svg)](https://www.npmjs.com/package/@nonz250/notepm-mcp-server)
 
 An unofficial [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for [NotePM](https://notepm.jp/) - a knowledge management and documentation platform.
 
@@ -19,7 +19,7 @@ No installation required. Configure your MCP client to run the server directly w
 ### Global Installation
 
 ```bash
-npm install -g notepm-mcp-server
+npm install -g @nonz250/notepm-mcp-server
 ```
 
 ## Configuration
@@ -37,7 +37,7 @@ Add the following to your Claude Desktop configuration file:
   "mcpServers": {
     "notepm": {
       "command": "npx",
-      "args": ["-y", "notepm-mcp-server"],
+      "args": ["-y", "@nonz250/notepm-mcp-server"],
       "env": {
         "NOTEPM_TEAM_DOMAIN": "your-team-domain",
         "NOTEPM_ACCESS_TOKEN": "your-access-token"
@@ -56,7 +56,7 @@ Add the following to your Claude Code settings file (`.claude/settings.json` or 
   "mcpServers": {
     "notepm": {
       "command": "npx",
-      "args": ["-y", "notepm-mcp-server"],
+      "args": ["-y", "@nonz250/notepm-mcp-server"],
       "env": {
         "NOTEPM_TEAM_DOMAIN": "your-team-domain",
         "NOTEPM_ACCESS_TOKEN": "your-access-token"
