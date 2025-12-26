@@ -22,3 +22,6 @@ dist/
 # Logs
 *.log
 npm-debug.log*
+
+# Test coverage
+coverage/
