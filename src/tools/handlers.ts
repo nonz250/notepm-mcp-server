@@ -1,9 +1,11 @@
 /**
  * Tool Handlers
  */
+import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 
 import { NotePMAPIError, NotePMClient, Page } from "../notepm-client.js";
+import { TOOL_NAMES, ToolName } from "./constants.js";
 import {
   CreatePageInputSchema,
   DeletePageInputSchema,
@@ -16,22 +18,17 @@ import {
 // Types and Helpers
 // ============================================================
 
-interface ToolResult {
-  content: { type: "text"; text: string }[];
-  isError?: boolean;
-}
-
 /**
  * Create a successful tool result
  */
-function success(text: string): ToolResult {
+function success(text: string): CallToolResult {
   return { content: [{ type: "text", text }] };
 }
 
 /**
  * Create an error tool result
  */
-function error(text: string): ToolResult {
+function error(text: string): CallToolResult {
   return { content: [{ type: "text", text }], isError: true };
 }
 
@@ -86,10 +83,10 @@ export async function handleToolCall(
   client: NotePMClient,
   name: string,
   args: unknown
-): Promise<ToolResult> {
+): Promise<CallToolResult> {
   try {
-    switch (name) {
-      case "search_pages": {
+    switch (name as ToolName) {
+      case TOOL_NAMES.SEARCH_PAGES: {
         const { query, note_code, tag_name, per_page } = parseInput(SearchPagesInputSchema, args);
         const result = await client.searchPages({ q: query, note_code, tag_name, per_page });
 
@@ -109,25 +106,25 @@ export async function handleToolCall(
         );
       }
 
-      case "get_page": {
+      case TOOL_NAMES.GET_PAGE: {
         const { page_code } = parseInput(GetPageInputSchema, args);
         const page = await client.getPage(page_code);
         return success(formatPage(page));
       }
 
-      case "create_page": {
+      case TOOL_NAMES.CREATE_PAGE: {
         const { note_code, title, body, memo, tags } = parseInput(CreatePageInputSchema, args);
         const page = await client.createPage({ note_code, title, body, memo, tags });
         return success(`Page created.\n\n${formatPage(page)}`);
       }
 
-      case "update_page": {
+      case TOOL_NAMES.UPDATE_PAGE: {
         const { page_code, title, body, memo, tags } = parseInput(UpdatePageInputSchema, args);
         const page = await client.updatePage(page_code, { title, body, memo, tags });
         return success(`Page updated.\n\n${formatPage(page)}`);
       }
 
-      case "delete_page": {
+      case TOOL_NAMES.DELETE_PAGE: {
         const { page_code } = parseInput(DeletePageInputSchema, args);
         await client.deletePage(page_code);
         return success(`Page deleted: ${page_code}`);

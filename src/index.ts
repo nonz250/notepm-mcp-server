@@ -10,6 +10,8 @@
  * - NOTEPM_TEAM_DOMAIN: Team domain (e.g., "demo")
  * - NOTEPM_ACCESS_TOKEN: API access token
  */
+import { createRequire } from "node:module";
+
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
@@ -17,6 +19,13 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprot
 import { loadConfig } from "./config.js";
 import { NotePMClient } from "./notepm-client.js";
 import { TOOLS, handleToolCall } from "./tools/index.js";
+
+// ============================================================
+// Load package info
+// ============================================================
+
+const require = createRequire(import.meta.url);
+const packageJson = require("../package.json") as { name: string; version: string };
 
 // ============================================================
 // Load configuration and initialize client
@@ -34,8 +43,8 @@ const client = new NotePMClient(config);
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 const server = new Server(
   {
-    name: "notepm-mcp-server",
-    version: "1.0.0",
+    name: packageJson.name,
+    version: packageJson.version,
   },
   {
     capabilities: {

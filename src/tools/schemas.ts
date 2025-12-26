@@ -1,7 +1,14 @@
 /**
  * Input Schema Definitions (Zod)
+ *
+ * These schemas are the single source of truth for input validation.
+ * Types are inferred from schemas to avoid duplication.
  */
 import { z } from "zod";
+
+// ============================================================
+// Zod Schemas
+// ============================================================
 
 export const SearchPagesInputSchema = z.object({
   query: z.string().optional().describe("Search keyword"),
@@ -39,3 +46,22 @@ export const UpdatePageInputSchema = z.object({
 export const DeletePageInputSchema = z.object({
   page_code: z.string().describe("Page code to delete"),
 });
+
+// ============================================================
+// Inferred Types
+// ============================================================
+
+/** Inferred type for search pages input */
+export type SearchPagesInput = z.infer<typeof SearchPagesInputSchema>;
+
+/** Inferred type for get page input */
+export type GetPageInput = z.infer<typeof GetPageInputSchema>;
+
+/** Inferred type for create page input */
+export type CreatePageInput = z.infer<typeof CreatePageInputSchema>;
+
+/** Inferred type for update page input */
+export type UpdatePageInput = z.infer<typeof UpdatePageInputSchema>;
+
+/** Inferred type for delete page input */
+export type DeletePageInput = z.infer<typeof DeletePageInputSchema>;

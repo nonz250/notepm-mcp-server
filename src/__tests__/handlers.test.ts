@@ -3,10 +3,27 @@
  *
  * Tests for tool handlers using mocked NotePMClient
  */
+import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { NotePMAPIError, NotePMClient, Page, PagesResponse } from "../notepm-client.js";
 import { handleToolCall } from "../tools/handlers.js";
+
+// ============================================================
+// Helper Functions
+// ============================================================
+
+/**
+ * Extract text content from CallToolResult
+ * Throws if the first content item is not a text type
+ */
+function getTextContent(result: CallToolResult): string {
+  const content = result.content[0];
+  if (content.type !== "text") {
+    throw new Error(`Expected text content, got ${content.type}`);
+  }
+  return content.text;
+}
 
 // ============================================================
 // Test Fixtures
@@ -73,7 +90,7 @@ describe("handleToolCall", () => {
       );
 
       expect(result.isError).toBe(true);
-      expect(result.content[0].text).toBe("Unknown tool: unknown_tool");
+      expect(getTextContent(result)).toBe("Unknown tool: unknown_tool");
     });
 
     it("should return input error for invalid arguments", async () => {
@@ -84,7 +101,7 @@ describe("handleToolCall", () => {
       );
 
       expect(result.isError).toBe(true);
-      expect(result.content[0].text).toContain("Input error:");
+      expect(getTextContent(result)).toContain("Input error:");
     });
 
     it("should return error for NotePMAPIError", async () => {
@@ -97,7 +114,7 @@ describe("handleToolCall", () => {
       });
 
       expect(result.isError).toBe(true);
-      expect(result.content[0].text).toContain("NotePM API Error");
+      expect(getTextContent(result)).toContain("NotePM API Error");
     });
 
     it("should throw unexpected errors", async () => {
@@ -126,7 +143,7 @@ describe("handleToolCall", () => {
       );
 
       expect(result.isError).toBeUndefined();
-      expect(result.content[0].text).toBe("Search results: 0 pages");
+      expect(getTextContent(result)).toBe("Search results: 0 pages");
     });
 
     it("should format search results correctly", async () => {
@@ -141,11 +158,11 @@ describe("handleToolCall", () => {
       });
 
       expect(result.isError).toBeUndefined();
-      expect(result.content[0].text).toContain("showing 2 of 2 pages");
-      expect(result.content[0].text).toContain("**First Page**");
-      expect(result.content[0].text).toContain("**Second Page**");
-      expect(result.content[0].text).toContain("code: p1");
-      expect(result.content[0].text).toContain("code: p2");
+      expect(getTextContent(result)).toContain("showing 2 of 2 pages");
+      expect(getTextContent(result)).toContain("**First Page**");
+      expect(getTextContent(result)).toContain("**Second Page**");
+      expect(getTextContent(result)).toContain("code: p1");
+      expect(getTextContent(result)).toContain("code: p2");
     });
 
     it("should show correct count when more pages exist", async () => {
@@ -156,7 +173,7 @@ describe("handleToolCall", () => {
         per_page: 1,
       });
 
-      expect(result.content[0].text).toContain("showing 1 of 100 pages");
+      expect(getTextContent(result)).toContain("showing 1 of 100 pages");
     });
 
     it("should pass all search parameters to client", async () => {
@@ -192,12 +209,12 @@ describe("handleToolCall", () => {
       });
 
       expect(result.isError).toBeUndefined();
-      expect(result.content[0].text).toContain("## Test Page");
-      expect(result.content[0].text).toContain("Page code: page123");
-      expect(result.content[0].text).toContain("Note code: note456");
-      expect(result.content[0].text).toContain("Created by: Test User");
-      expect(result.content[0].text).toContain("Tags: tag1, tag2");
-      expect(result.content[0].text).toContain("Test body content");
+      expect(getTextContent(result)).toContain("## Test Page");
+      expect(getTextContent(result)).toContain("Page code: page123");
+      expect(getTextContent(result)).toContain("Note code: note456");
+      expect(getTextContent(result)).toContain("Created by: Test User");
+      expect(getTextContent(result)).toContain("Tags: tag1, tag2");
+      expect(getTextContent(result)).toContain("Test body content");
     });
 
     it("should show 'None' for empty tags", async () => {
@@ -208,7 +225,7 @@ describe("handleToolCall", () => {
         page_code: "page123",
       });
 
-      expect(result.content[0].text).toContain("Tags: None");
+      expect(getTextContent(result)).toContain("Tags: None");
     });
 
     it("should show '(No body)' for empty body", async () => {
@@ -219,7 +236,7 @@ describe("handleToolCall", () => {
         page_code: "page123",
       });
 
-      expect(result.content[0].text).toContain("(No body)");
+      expect(getTextContent(result)).toContain("(No body)");
     });
 
     it("should call client with correct page_code", async () => {
@@ -248,8 +265,8 @@ describe("handleToolCall", () => {
       });
 
       expect(result.isError).toBeUndefined();
-      expect(result.content[0].text).toContain("Page created.");
-      expect(result.content[0].text).toContain("## New Page");
+      expect(getTextContent(result)).toContain("Page created.");
+      expect(getTextContent(result)).toContain("## New Page");
     });
 
     it("should pass all parameters to client", async () => {
@@ -305,8 +322,8 @@ describe("handleToolCall", () => {
       });
 
       expect(result.isError).toBeUndefined();
-      expect(result.content[0].text).toContain("Page updated.");
-      expect(result.content[0].text).toContain("## Updated Page");
+      expect(getTextContent(result)).toContain("Page updated.");
+      expect(getTextContent(result)).toContain("## Updated Page");
     });
 
     it("should pass page_code and update params to client", async () => {
@@ -358,7 +375,7 @@ describe("handleToolCall", () => {
       });
 
       expect(result.isError).toBeUndefined();
-      expect(result.content[0].text).toBe("Page deleted: page123");
+      expect(getTextContent(result)).toBe("Page deleted: page123");
     });
 
     it("should call client with correct page_code", async () => {
