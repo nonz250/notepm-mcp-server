@@ -3,9 +3,9 @@
  *
  * Tests for NotePMClient using fetch mocking
  */
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { NotePMClient, NotePMAPIError, Page, PagesResponse } from "../notepm-client.js";
+import { NotePMAPIError, NotePMClient, Page, PagesResponse } from "../notepm-client.js";
 
 // ============================================================
 // Test Fixtures
@@ -90,15 +90,21 @@ describe("NotePMClient", () => {
   // Request Verification Helper
   // ============================================================
 
+  interface FetchOptions {
+    method: string;
+    headers: Record<string, string>;
+    body?: string;
+  }
+
   const expectFetchCalledWith = (method: string, path: string, body?: unknown) => {
     expect(mockFetch).toHaveBeenCalledTimes(1);
-    const [url, options] = mockFetch.mock.calls[0];
+    const [url, options] = mockFetch.mock.calls[0] as [string, FetchOptions];
     expect(url).toBe(`${TEST_CONFIG.baseUrl}${path}`);
     expect(options.method).toBe(method);
     expect(options.headers.Authorization).toBe(`Bearer ${TEST_CONFIG.accessToken}`);
     expect(options.headers["Content-Type"]).toBe("application/json");
     if (body) {
-      expect(JSON.parse(options.body)).toEqual(body);
+      expect(JSON.parse(options.body ?? "{}")).toEqual(body);
     }
   };
 
@@ -126,7 +132,7 @@ describe("NotePMClient", () => {
         page: 2,
       });
 
-      const [url] = mockFetch.mock.calls[0];
+      const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
       expect(url).toContain("/pages?");
       expect(url).toContain("q=search+term");
       expect(url).toContain("note_code=note123");
@@ -150,7 +156,7 @@ describe("NotePMClient", () => {
 
       await client.searchPages({ only_title: true });
 
-      const [url] = mockFetch.mock.calls[0];
+      const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
       expect(url).toContain("only_title=true");
     });
 
@@ -159,7 +165,7 @@ describe("NotePMClient", () => {
 
       await client.searchPages({ include_archived: true });
 
-      const [url] = mockFetch.mock.calls[0];
+      const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
       expect(url).toContain("include_archived=true");
     });
   });
@@ -407,7 +413,7 @@ describe("NotePMClient", () => {
 
       await client.searchPages();
 
-      const [, options] = mockFetch.mock.calls[0];
+      const [, options] = mockFetch.mock.calls[0] as [string, FetchOptions];
       expect(options.headers.Authorization).toBe("Bearer test-token-123");
     });
 
@@ -421,7 +427,7 @@ describe("NotePMClient", () => {
 
       await customClient.searchPages();
 
-      const [url] = mockFetch.mock.calls[0];
+      const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
       expect(url).toContain("https://custom.example.com/api/v1");
     });
   });
