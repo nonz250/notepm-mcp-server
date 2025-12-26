@@ -1,0 +1,28 @@
+{
+  "name": "notepm-mcp-server",
+  "version": "1.0.0",
+  "description": "NotePM 用の MCP サーバーです。",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "notepm-mcp-server": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["mcp", "notepm"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.1",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
