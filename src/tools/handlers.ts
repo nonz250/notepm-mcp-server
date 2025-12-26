@@ -1,95 +1,19 @@
 /**
- * MCP Tool Definitions
- *
- * Define MCP tools for NotePM API integration
+ * Tool Handlers
  */
 
 import { z } from "zod";
-import { NotePMClient, NotePMAPIError, Page } from "./notepm-client.js";
+import { NotePMClient, NotePMAPIError, Page } from "../notepm-client.js";
+import {
+  SearchPagesInputSchema,
+  GetPageInputSchema,
+  CreatePageInputSchema,
+  UpdatePageInputSchema,
+  DeletePageInputSchema,
+} from "./schemas.js";
 
 // ============================================================
-// Input Schema Definitions (Zod)
-// ============================================================
-
-export const SearchPagesInputSchema = z.object({
-  query: z.string().optional().describe("Search keyword"),
-  note_code: z.string().optional().describe("Note code (search within specific note)"),
-  tag_name: z.string().optional().describe("Filter by tag name"),
-  per_page: z
-    .number()
-    .min(1)
-    .max(100)
-    .optional()
-    .default(20)
-    .describe("Number of results (1-100, default: 20)"),
-});
-
-export const GetPageInputSchema = z.object({
-  page_code: z.string().describe("Page code"),
-});
-
-export const CreatePageInputSchema = z.object({
-  note_code: z.string().describe("Note code to create page in"),
-  title: z.string().max(100).describe("Page title (max 100 characters)"),
-  body: z.string().optional().describe("Page body (Markdown format)"),
-  memo: z.string().max(255).optional().describe("Memo (max 255 characters)"),
-  tags: z.array(z.string()).optional().describe("Array of tags"),
-});
-
-export const UpdatePageInputSchema = z.object({
-  page_code: z.string().describe("Page code to update"),
-  title: z.string().max(100).optional().describe("Page title (max 100 characters)"),
-  body: z.string().optional().describe("Page body (Markdown format)"),
-  memo: z.string().max(255).optional().describe("Memo (max 255 characters)"),
-  tags: z.array(z.string()).optional().describe("Array of tags"),
-});
-
-export const DeletePageInputSchema = z.object({
-  page_code: z.string().describe("Page code to delete"),
-});
-
-// ============================================================
-// Helper: Convert Zod schema to MCP-compatible JSON Schema
-// ============================================================
-
-function toInputSchema(schema: z.ZodType) {
-  return z.toJSONSchema(schema, { target: "draft-07" });
-}
-
-// ============================================================
-// Tool Definitions (MCP format)
-// ============================================================
-
-export const TOOLS = [
-  {
-    name: "search_pages",
-    description: "Search NotePM pages. Can filter by keyword, note, or tag.",
-    inputSchema: toInputSchema(SearchPagesInputSchema),
-  },
-  {
-    name: "get_page",
-    description: "Get a NotePM page. Retrieve title, body, tags and other details by page code.",
-    inputSchema: toInputSchema(GetPageInputSchema),
-  },
-  {
-    name: "create_page",
-    description: "Create a new page in NotePM. Note code and title are required.",
-    inputSchema: toInputSchema(CreatePageInputSchema),
-  },
-  {
-    name: "update_page",
-    description: "Update an existing NotePM page. Page code is required.",
-    inputSchema: toInputSchema(UpdatePageInputSchema),
-  },
-  {
-    name: "delete_page",
-    description: "Delete a NotePM page. This action cannot be undone.",
-    inputSchema: toInputSchema(DeletePageInputSchema),
-  },
-];
-
-// ============================================================
-// Tool Handlers
+// Types and Helpers
 // ============================================================
 
 type ToolResult = { content: Array<{ type: "text"; text: string }>; isError?: boolean };
@@ -147,6 +71,10 @@ function formatPage(page: Page): string {
     page.body || "(No body)",
   ].join("\n");
 }
+
+// ============================================================
+// Main Handler
+// ============================================================
 
 /**
  * Execute tool

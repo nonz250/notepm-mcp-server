@@ -20,7 +20,7 @@ import {
 
 import { loadConfig } from "./config.js";
 import { NotePMClient } from "./notepm-client.js";
-import { TOOLS, handleToolCall } from "./tools.js";
+import { TOOLS, handleToolCall } from "./tools/index.js";
 
 // ============================================================
 // Load configuration and initialize client
