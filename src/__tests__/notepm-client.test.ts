@@ -6,7 +6,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { NotePMAPIError, NotePMClient } from "../notepm-client.js";
-import { createMockPage, createMockPagesResponse } from "./fixtures.js";
+import {
+  createMockNote,
+  createMockNotesResponse,
+  createMockPage,
+  createMockPagesResponse,
+} from "./fixtures.js";
 
 // ============================================================
 // Test Configuration
@@ -84,6 +89,73 @@ describe("NotePMClient", () => {
   };
 
   // ============================================================
+  // listNotes Tests
+  // ============================================================
+
+  describe("listNotes", () => {
+    it("should call GET /notes without params", async () => {
+      mockFetch.mockReturnValue(mockResponse(createMockNotesResponse([])));
+
+      await client.listNotes();
+
+      expectFetchCalledWith("GET", "/notes");
+    });
+
+    it("should call GET /notes with query params", async () => {
+      mockFetch.mockReturnValue(mockResponse(createMockNotesResponse([])));
+
+      await client.listNotes({
+        include_archived: true,
+        per_page: 50,
+        page: 2,
+      });
+
+      const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
+      expect(url).toContain("/notes?");
+      expect(url).toContain("include_archived=1");
+      expect(url).toContain("per_page=50");
+      expect(url).toContain("page=2");
+    });
+
+    it("should return notes response", async () => {
+      const notes = [createMockNote(), createMockNote({ note_code: "note2" })];
+      mockFetch.mockReturnValue(mockResponse(createMockNotesResponse(notes, 100)));
+
+      const result = await client.listNotes();
+
+      expect(result.notes).toHaveLength(2);
+      expect(result.meta.total).toBe(100);
+    });
+
+    it("should not include include_archived when false", async () => {
+      mockFetch.mockReturnValue(mockResponse(createMockNotesResponse([])));
+
+      await client.listNotes({ include_archived: false });
+
+      const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
+      expect(url).not.toContain("include_archived");
+    });
+
+    it("should return notes with all fields", async () => {
+      const note = createMockNote({
+        note_code: "my-note",
+        name: "My Note",
+        description: "A test note",
+        archived: true,
+        scope: "private",
+      });
+      mockFetch.mockReturnValue(mockResponse(createMockNotesResponse([note])));
+
+      const result = await client.listNotes();
+
+      expect(result.notes[0].note_code).toBe("my-note");
+      expect(result.notes[0].name).toBe("My Note");
+      expect(result.notes[0].archived).toBe(true);
+      expect(result.notes[0].scope).toBe("private");
+    });
+  });
+
+  // ============================================================
   // searchPages Tests
   // ============================================================
 
@@ -132,7 +204,7 @@ describe("NotePMClient", () => {
       await client.searchPages({ only_title: true });
 
       const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
-      expect(url).toContain("only_title=true");
+      expect(url).toContain("only_title=1");
     });
 
     it("should include include_archived param when true", async () => {
@@ -141,7 +213,7 @@ describe("NotePMClient", () => {
       await client.searchPages({ include_archived: true });
 
       const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
-      expect(url).toContain("include_archived=true");
+      expect(url).toContain("include_archived=1");
     });
   });
 

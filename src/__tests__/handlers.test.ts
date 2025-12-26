@@ -8,7 +8,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { NotePMAPIError, NotePMClient } from "../notepm-client.js";
 import { handleToolCall } from "../tools/handlers.js";
-import { createMockPage, createMockPagesResponse } from "./fixtures.js";
+import {
+  createMockNote,
+  createMockNotesResponse,
+  createMockPage,
+  createMockPagesResponse,
+} from "./fixtures.js";
 
 // ============================================================
 // Helper Functions
@@ -36,6 +41,7 @@ const createMockClient = () => ({
   createPage: vi.fn(),
   updatePage: vi.fn(),
   deletePage: vi.fn(),
+  listNotes: vi.fn(),
 });
 
 type MockClient = ReturnType<typeof createMockClient>;
@@ -357,6 +363,90 @@ describe("handleToolCall", () => {
       });
 
       expect(mockClient.deletePage).toHaveBeenCalledWith("delete_me");
+    });
+  });
+
+  // ============================================================
+  // list_notes Tests
+  // ============================================================
+
+  describe("list_notes", () => {
+    it("should return 'No notes found.' for empty results", async () => {
+      mockClient.listNotes.mockResolvedValue(createMockNotesResponse([]));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "list_notes", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("No notes found.");
+    });
+
+    it("should format notes list correctly", async () => {
+      const notes = [
+        createMockNote({ note_code: "n1", name: "First Note", description: "Desc 1" }),
+        createMockNote({ note_code: "n2", name: "Second Note", description: "Desc 2" }),
+      ];
+      mockClient.listNotes.mockResolvedValue(createMockNotesResponse(notes, 2));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "list_notes", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("showing 2 of 2 notes");
+      expect(getTextContent(result)).toContain("**First Note**");
+      expect(getTextContent(result)).toContain("**Second Note**");
+      expect(getTextContent(result)).toContain("code: n1");
+      expect(getTextContent(result)).toContain("code: n2");
+    });
+
+    it("should show archived status", async () => {
+      const notes = [createMockNote({ archived: true })];
+      mockClient.listNotes.mockResolvedValue(createMockNotesResponse(notes));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "list_notes", {});
+
+      expect(getTextContent(result)).toContain("[archived]");
+    });
+
+    it("should show private scope", async () => {
+      const notes = [createMockNote({ scope: "private" })];
+      mockClient.listNotes.mockResolvedValue(createMockNotesResponse(notes));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "list_notes", {});
+
+      expect(getTextContent(result)).toContain("(private)");
+    });
+
+    it("should show '(No description)' for empty description", async () => {
+      const notes = [createMockNote({ description: "" })];
+      mockClient.listNotes.mockResolvedValue(createMockNotesResponse(notes));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "list_notes", {});
+
+      expect(getTextContent(result)).toContain("(No description)");
+    });
+
+    it("should pass parameters to client", async () => {
+      mockClient.listNotes.mockResolvedValue(createMockNotesResponse([]));
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "list_notes", {
+        include_archived: true,
+        per_page: 50,
+      });
+
+      expect(mockClient.listNotes).toHaveBeenCalledWith({
+        include_archived: true,
+        per_page: 50,
+      });
+    });
+
+    it("should show correct count when more notes exist", async () => {
+      const notes = [createMockNote()];
+      mockClient.listNotes.mockResolvedValue(createMockNotesResponse(notes, 100));
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "list_notes", {
+        per_page: 1,
+      });
+
+      expect(getTextContent(result)).toContain("showing 1 of 100 notes");
     });
   });
 });

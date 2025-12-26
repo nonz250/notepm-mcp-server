@@ -184,8 +184,8 @@ export class NotePMClient {
     const searchParams = new URLSearchParams();
 
     if (params.q) searchParams.set("q", params.q);
-    if (params.only_title) searchParams.set("only_title", "true");
-    if (params.include_archived) searchParams.set("include_archived", "true");
+    if (params.only_title) searchParams.set("only_title", "1");
+    if (params.include_archived) searchParams.set("include_archived", "1");
     if (params.note_code) searchParams.set("note_code", params.note_code);
     if (params.tag_name) searchParams.set("tag_name", params.tag_name);
     if (params.page) searchParams.set("page", params.page.toString());
