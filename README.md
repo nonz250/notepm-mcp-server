@@ -1,6 +1,10 @@
 # notepm-mcp-server
 
-[![npm version](https://badge.fury.io/js/@nonz250/notepm-mcp-server.svg)](https://www.npmjs.com/package/@nonz250/notepm-mcp-server)
+[![npm version](https://img.shields.io/npm/v/@nonz250/notepm-mcp-server)](https://www.npmjs.com/package/@nonz250/notepm-mcp-server)
+[![license](https://img.shields.io/npm/l/@nonz250/notepm-mcp-server)](https://github.com/nonz250/notepm-mcp-server/blob/main/LICENSE)
+[![node](https://img.shields.io/node/v/@nonz250/notepm-mcp-server)](https://nodejs.org/)
+[![CI](https://github.com/nonz250/notepm-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/nonz250/notepm-mcp-server/actions/workflows/ci.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 
 An unofficial [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for [NotePM](https://notepm.jp/) - a knowledge management and documentation platform.
 
