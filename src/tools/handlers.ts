@@ -101,7 +101,9 @@ export async function handleToolCall(
           )
           .join("\n");
 
-        return success(`Search results: showing ${result.pages.length} of ${result.meta.total} pages\n\n${pageList}`);
+        return success(
+          `Search results: showing ${result.pages.length} of ${result.meta.total} pages\n\n${pageList}`
+        );
       }
 
       case "get_page": {

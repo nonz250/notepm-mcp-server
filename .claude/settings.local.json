@@ -18,7 +18,10 @@
       "Bash(gh pr create:*)",
       "Bash(npx tsx:*)",
       "Bash(npm ls:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run format:check:*)",
+      "Bash(npm run format:*)"
     ]
   }
 }
