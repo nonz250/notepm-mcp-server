@@ -1,9 +1,9 @@
 /**
- * 環境変数から設定を読み込む
+ * Load configuration from environment variables
  *
- * 必要な環境変数:
- * - NOTEPM_TEAM_DOMAIN: チームドメイン（例: "demo" → demo.notepm.jp）
- * - NOTEPM_ACCESS_TOKEN: API アクセストークン
+ * Required environment variables:
+ * - NOTEPM_TEAM_DOMAIN: Team domain (e.g., "demo" → demo.notepm.jp)
+ * - NOTEPM_ACCESS_TOKEN: API access token
  */
 
 export interface Config {
@@ -18,15 +18,15 @@ export function loadConfig(): Config {
 
   if (!teamDomain) {
     throw new Error(
-      "環境変数 NOTEPM_TEAM_DOMAIN が設定されていません。\n" +
-        "例: export NOTEPM_TEAM_DOMAIN=demo"
+      "Environment variable NOTEPM_TEAM_DOMAIN is not set.\n" +
+        "Example: export NOTEPM_TEAM_DOMAIN=demo"
     );
   }
 
   if (!accessToken) {
     throw new Error(
-      "環境変数 NOTEPM_ACCESS_TOKEN が設定されていません。\n" +
-        "NotePM の個人設定 > アクセストークンから取得してください。"
+      "Environment variable NOTEPM_ACCESS_TOKEN is not set.\n" +
+        "Get it from NotePM: Personal Settings > Access Token"
     );
   }
 

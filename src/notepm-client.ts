@@ -1,28 +1,28 @@
 /**
- * NotePM API クライアント
+ * NotePM API Client
  *
- * NotePM REST API との通信を担当
+ * Handles communication with NotePM REST API
  * https://notepm.jp/docs/api
  */
 
 import { Config } from "./config.js";
 
 // ============================================================
-// 型定義
+// Type definitions
 // ============================================================
 
-/** ユーザー情報 */
+/** User information */
 export interface User {
   user_code: string;
   name: string;
 }
 
-/** タグ情報 */
+/** Tag information */
 export interface Tag {
   name: string;
 }
 
-/** ページ情報 */
+/** Page information */
 export interface Page {
   page_code: string;
   note_code: string;
@@ -37,7 +37,7 @@ export interface Page {
   tags: Tag[];
 }
 
-/** ページネーション情報 */
+/** Pagination metadata */
 export interface PaginationMeta {
   previous_page: string | null;
   next_page: string | null;
@@ -46,18 +46,18 @@ export interface PaginationMeta {
   total: number;
 }
 
-/** ページ一覧レスポンス */
+/** Pages list response */
 export interface PagesResponse {
   pages: Page[];
   meta: PaginationMeta;
 }
 
-/** 単一ページレスポンス */
+/** Single page response */
 export interface PageResponse {
   page: Page;
 }
 
-/** ページ検索パラメータ */
+/** Search pages parameters */
 export interface SearchPagesParams {
   q?: string;
   only_title?: boolean;
@@ -68,7 +68,7 @@ export interface SearchPagesParams {
   per_page?: number;
 }
 
-/** ページ作成パラメータ */
+/** Create page parameters */
 export interface CreatePageParams {
   note_code: string;
   title: string;
@@ -78,7 +78,7 @@ export interface CreatePageParams {
   tags?: string[];
 }
 
-/** API エラー */
+/** API Error */
 export class NotePMAPIError extends Error {
   constructor(
     public statusCode: number,
@@ -91,7 +91,7 @@ export class NotePMAPIError extends Error {
 }
 
 // ============================================================
-// API クライアント
+// API Client
 // ============================================================
 
 export class NotePMClient {
@@ -104,7 +104,7 @@ export class NotePMClient {
   }
 
   /**
-   * API リクエストを送信
+   * Send API request
    */
   private async request<T>(
     method: string,
@@ -129,11 +129,11 @@ export class NotePMClient {
       throw new NotePMAPIError(
         response.status,
         response.statusText,
-        `NotePM API エラー: ${response.status} ${response.statusText}\n${errorText}`
+        `NotePM API Error: ${response.status} ${response.statusText}\n${errorText}`
       );
     }
 
-    // 204 No Content の場合は空オブジェクトを返す
+    // Return empty object for 204 No Content
     if (response.status === 204) {
       return {} as T;
     }
@@ -142,7 +142,7 @@ export class NotePMClient {
   }
 
   /**
-   * ページを検索
+   * Search pages
    * GET /api/v1/pages
    */
   async searchPages(params: SearchPagesParams = {}): Promise<PagesResponse> {
@@ -163,7 +163,7 @@ export class NotePMClient {
   }
 
   /**
-   * ページを取得
+   * Get page
    * GET /api/v1/pages/:page_code
    */
   async getPage(pageCode: string): Promise<Page> {
@@ -172,7 +172,7 @@ export class NotePMClient {
   }
 
   /**
-   * ページを作成
+   * Create page
    * POST /api/v1/pages
    */
   async createPage(params: CreatePageParams): Promise<Page> {
@@ -181,7 +181,7 @@ export class NotePMClient {
   }
 
   /**
-   * ページを更新
+   * Update page
    * PATCH /api/v1/pages/:page_code
    */
   async updatePage(
@@ -193,7 +193,7 @@ export class NotePMClient {
   }
 
   /**
-   * ページを削除
+   * Delete page
    * DELETE /api/v1/pages/:page_code
    */
   async deletePage(pageCode: string): Promise<void> {

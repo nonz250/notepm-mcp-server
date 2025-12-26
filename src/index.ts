@@ -3,12 +3,12 @@
 /**
  * NotePM MCP Server
  *
- * NotePM API と連携する MCP サーバー
- * Claude Desktop や Claude Code から NotePM のページを検索・取得・作成できます
+ * MCP server for NotePM API integration.
+ * Enables Claude Desktop and Claude Code to search, retrieve, and create NotePM pages.
  *
- * 必要な環境変数:
- * - NOTEPM_TEAM_DOMAIN: チームドメイン（例: "demo"）
- * - NOTEPM_ACCESS_TOKEN: API アクセストークン
+ * Required environment variables:
+ * - NOTEPM_TEAM_DOMAIN: Team domain (e.g., "demo")
+ * - NOTEPM_ACCESS_TOKEN: API access token
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -23,14 +23,14 @@ import { NotePMClient } from "./notepm-client.js";
 import { TOOLS, handleToolCall } from "./tools.js";
 
 // ============================================================
-// 設定の読み込みとクライアント初期化
+// Load configuration and initialize client
 // ============================================================
 
 const config = loadConfig();
 const client = new NotePMClient(config);
 
 // ============================================================
-// サーバーインスタンスの作成
+// Create server instance
 // ============================================================
 
 const server = new Server(
@@ -46,18 +46,18 @@ const server = new Server(
 );
 
 // ============================================================
-// リクエストハンドラーの設定
+// Set up request handlers
 // ============================================================
 
 /**
- * tools/list リクエストのハンドラー
+ * Handler for tools/list request
  */
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return { tools: TOOLS };
 });
 
 /**
- * tools/call リクエストのハンドラー
+ * Handler for tools/call request
  */
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
@@ -65,16 +65,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 // ============================================================
-// サーバーの起動
+// Start server
 // ============================================================
 
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error(`NotePM MCP Server が起動しました (${config.teamDomain}.notepm.jp)`);
+  console.error(`NotePM MCP Server started (${config.teamDomain}.notepm.jp)`);
 }
 
 main().catch((error) => {
-  console.error("サーバー起動エラー:", error);
+  console.error("Server startup error:", error);
   process.exit(1);
 });

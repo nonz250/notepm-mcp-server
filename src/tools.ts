@@ -1,68 +1,68 @@
 /**
- * MCP ツール定義
+ * MCP Tool Definitions
  *
- * NotePM API と連携する MCP ツールを定義
+ * Define MCP tools for NotePM API integration
  */
 
 import { z } from "zod";
 import { NotePMClient, NotePMAPIError, Page } from "./notepm-client.js";
 
 // ============================================================
-// 入力スキーマ定義（Zod）
+// Input Schema Definitions (Zod)
 // ============================================================
 
 export const SearchPagesInputSchema = z.object({
-  query: z.string().optional().describe("検索キーワード"),
-  note_code: z.string().optional().describe("ノートコード（特定のノート内を検索）"),
-  tag_name: z.string().optional().describe("タグ名でフィルタ"),
+  query: z.string().optional().describe("Search keyword"),
+  note_code: z.string().optional().describe("Note code (search within specific note)"),
+  tag_name: z.string().optional().describe("Filter by tag name"),
   per_page: z
     .number()
     .min(1)
     .max(100)
     .optional()
     .default(20)
-    .describe("取得件数（1-100、デフォルト: 20）"),
+    .describe("Number of results (1-100, default: 20)"),
 });
 
 export const GetPageInputSchema = z.object({
-  page_code: z.string().describe("ページコード"),
+  page_code: z.string().describe("Page code"),
 });
 
 export const CreatePageInputSchema = z.object({
-  note_code: z.string().describe("ページを作成するノートのコード"),
-  title: z.string().max(100).describe("ページタイトル（最大100文字）"),
-  body: z.string().optional().describe("ページ本文（Markdown形式）"),
-  memo: z.string().max(255).optional().describe("メモ（最大255文字）"),
-  tags: z.array(z.string()).optional().describe("タグの配列"),
+  note_code: z.string().describe("Note code to create page in"),
+  title: z.string().max(100).describe("Page title (max 100 characters)"),
+  body: z.string().optional().describe("Page body (Markdown format)"),
+  memo: z.string().max(255).optional().describe("Memo (max 255 characters)"),
+  tags: z.array(z.string()).optional().describe("Array of tags"),
 });
 
 // ============================================================
-// ツール定義（MCP 形式）
+// Tool Definitions (MCP format)
 // ============================================================
 
 export const TOOLS = [
   {
     name: "search_pages",
     description:
-      "NotePM のページを検索します。キーワード、ノート、タグで絞り込みが可能です。",
+      "Search NotePM pages. Can filter by keyword, note, or tag.",
     inputSchema: {
       type: "object" as const,
       properties: {
         query: {
           type: "string",
-          description: "検索キーワード",
+          description: "Search keyword",
         },
         note_code: {
           type: "string",
-          description: "ノートコード（特定のノート内を検索）",
+          description: "Note code (search within specific note)",
         },
         tag_name: {
           type: "string",
-          description: "タグ名でフィルタ",
+          description: "Filter by tag name",
         },
         per_page: {
           type: "number",
-          description: "取得件数（1-100、デフォルト: 20）",
+          description: "Number of results (1-100, default: 20)",
           default: 20,
         },
       },
@@ -71,13 +71,13 @@ export const TOOLS = [
   {
     name: "get_page",
     description:
-      "NotePM のページを取得します。ページコードを指定して、タイトル・本文・タグなどの詳細情報を取得します。",
+      "Get a NotePM page. Retrieve title, body, tags and other details by page code.",
     inputSchema: {
       type: "object" as const,
       properties: {
         page_code: {
           type: "string",
-          description: "ページコード",
+          description: "Page code",
         },
       },
       required: ["page_code"],
@@ -86,30 +86,30 @@ export const TOOLS = [
   {
     name: "create_page",
     description:
-      "NotePM に新しいページを作成します。ノートコードとタイトルは必須です。",
+      "Create a new page in NotePM. Note code and title are required.",
     inputSchema: {
       type: "object" as const,
       properties: {
         note_code: {
           type: "string",
-          description: "ページを作成するノートのコード",
+          description: "Note code to create page in",
         },
         title: {
           type: "string",
-          description: "ページタイトル（最大100文字）",
+          description: "Page title (max 100 characters)",
         },
         body: {
           type: "string",
-          description: "ページ本文（Markdown形式）",
+          description: "Page body (Markdown format)",
         },
         memo: {
           type: "string",
-          description: "メモ（最大255文字）",
+          description: "Memo (max 255 characters)",
         },
         tags: {
           type: "array",
           items: { type: "string" },
-          description: "タグの配列",
+          description: "Array of tags",
         },
       },
       required: ["note_code", "title"],
@@ -118,30 +118,30 @@ export const TOOLS = [
 ];
 
 // ============================================================
-// ツールハンドラー
+// Tool Handlers
 // ============================================================
 
 /**
- * ページ情報をフォーマット
+ * Format page information
  */
 function formatPage(page: Page): string {
-  const tags = page.tags.map((t) => t.name).join(", ") || "なし";
+  const tags = page.tags.map((t) => t.name).join(", ") || "None";
   return [
     `## ${page.title}`,
-    `- ページコード: ${page.page_code}`,
-    `- ノートコード: ${page.note_code}`,
-    `- 作成者: ${page.created_by.name}`,
-    `- 作成日時: ${page.created_at}`,
-    `- 更新日時: ${page.updated_at}`,
-    `- タグ: ${tags}`,
+    `- Page code: ${page.page_code}`,
+    `- Note code: ${page.note_code}`,
+    `- Created by: ${page.created_by.name}`,
+    `- Created at: ${page.created_at}`,
+    `- Updated at: ${page.updated_at}`,
+    `- Tags: ${tags}`,
     "",
-    "### 本文",
-    page.body || "(本文なし)",
+    "### Body",
+    page.body || "(No body)",
   ].join("\n");
 }
 
 /**
- * ツールを実行
+ * Execute tool
  */
 export async function handleToolCall(
   client: NotePMClient,
@@ -154,7 +154,7 @@ export async function handleToolCall(
         const parsed = SearchPagesInputSchema.safeParse(args);
         if (!parsed.success) {
           return {
-            content: [{ type: "text", text: `入力エラー: ${parsed.error.message}` }],
+            content: [{ type: "text", text: `Input error: ${parsed.error.message}` }],
             isError: true,
           };
         }
@@ -169,14 +169,14 @@ export async function handleToolCall(
 
         if (result.pages.length === 0) {
           return {
-            content: [{ type: "text", text: "検索結果: 0件" }],
+            content: [{ type: "text", text: "Search results: 0 pages" }],
           };
         }
 
         const pageList = result.pages
           .map(
             (p, i) =>
-              `${i + 1}. **${p.title}** (コード: ${p.page_code})\n   - ノート: ${p.note_code} | 更新: ${p.updated_at}`
+              `${i + 1}. **${p.title}** (code: ${p.page_code})\n   - Note: ${p.note_code} | Updated: ${p.updated_at}`
           )
           .join("\n");
 
@@ -184,7 +184,7 @@ export async function handleToolCall(
           content: [
             {
               type: "text",
-              text: `検索結果: ${result.meta.total}件中 ${result.pages.length}件を表示\n\n${pageList}`,
+              text: `Search results: showing ${result.pages.length} of ${result.meta.total} pages\n\n${pageList}`,
             },
           ],
         };
@@ -194,7 +194,7 @@ export async function handleToolCall(
         const parsed = GetPageInputSchema.safeParse(args);
         if (!parsed.success) {
           return {
-            content: [{ type: "text", text: `入力エラー: ${parsed.error.message}` }],
+            content: [{ type: "text", text: `Input error: ${parsed.error.message}` }],
             isError: true,
           };
         }
@@ -209,7 +209,7 @@ export async function handleToolCall(
         const parsed = CreatePageInputSchema.safeParse(args);
         if (!parsed.success) {
           return {
-            content: [{ type: "text", text: `入力エラー: ${parsed.error.message}` }],
+            content: [{ type: "text", text: `Input error: ${parsed.error.message}` }],
             isError: true,
           };
         }
@@ -227,7 +227,7 @@ export async function handleToolCall(
           content: [
             {
               type: "text",
-              text: `ページを作成しました。\n\n${formatPage(page)}`,
+              text: `Page created.\n\n${formatPage(page)}`,
             },
           ],
         };
@@ -235,7 +235,7 @@ export async function handleToolCall(
 
       default:
         return {
-          content: [{ type: "text", text: `不明なツール: ${name}` }],
+          content: [{ type: "text", text: `Unknown tool: ${name}` }],
           isError: true,
         };
     }
