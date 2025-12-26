@@ -1,12 +1,16 @@
 {
   "name": "notepm-mcp-server",
-  "version": "1.0.0",
-  "description": "(Unofficial) MCP server for NotePM.",
+  "version": "0.0.1",
+  "description": "An unofficial MCP server for NotePM - a knowledge management platform",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "notepm-mcp-server": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "!dist/__tests__"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
@@ -16,14 +20,30 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write src/",
-    "format:check": "prettier --check src/"
+    "format:check": "prettier --check src/",
+    "prepublishOnly": "npm run build && npm test && npm run lint"
   },
   "keywords": [
     "mcp",
-    "notepm"
+    "notepm",
+    "model-context-protocol",
+    "claude",
+    "ai",
+    "knowledge-management"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "nonz250",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nonz250/notepm-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nonz250/notepm-mcp-server/issues"
+  },
+  "homepage": "https://github.com/nonz250/notepm-mcp-server#readme",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.1",
     "zod": "^4.2.1"
@@ -31,7 +51,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@trivago/prettier-plugin-sort-imports": "^6.0.0",
-    "@types/node": "^25.0.3",
+    "@types/node": "^22.19.3",
     "@vitest/coverage-v8": "^4.0.16",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
