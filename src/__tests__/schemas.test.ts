@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import {
   CreateNoteInputSchema,
   CreatePageInputSchema,
+  CreateTagInputSchema,
   DeleteNoteInputSchema,
   DeletePageInputSchema,
   GetPageInputSchema,
@@ -502,6 +503,38 @@ describe("DeleteNoteInputSchema", () => {
 
   it("should reject empty note_code", () => {
     const result = DeleteNoteInputSchema.safeParse({ note_code: "" });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("CreateTagInputSchema", () => {
+  it("should require name", () => {
+    const result = CreateTagInputSchema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it("should accept valid name", () => {
+    const result = CreateTagInputSchema.safeParse({ name: "my-tag" });
+    expect(result.success).toBe(true);
+  });
+
+  it("should reject empty name", () => {
+    const result = CreateTagInputSchema.safeParse({ name: "" });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject non-string name", () => {
+    const result = CreateTagInputSchema.safeParse({ name: 123 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should accept name at maximum boundary (100 chars)", () => {
+    const result = CreateTagInputSchema.safeParse({ name: "a".repeat(100) });
+    expect(result.success).toBe(true);
+  });
+
+  it("should reject name over 100 characters", () => {
+    const result = CreateTagInputSchema.safeParse({ name: "a".repeat(101) });
     expect(result.success).toBe(false);
   });
 });

@@ -13,6 +13,7 @@ import {
   createMockNotesResponse,
   createMockPage,
   createMockPagesResponse,
+  createMockTag,
   createMockTagsResponse,
 } from "./fixtures.js";
 
@@ -47,6 +48,7 @@ const createMockClient = () => ({
   updateNote: vi.fn(),
   deleteNote: vi.fn(),
   listTags: vi.fn(),
+  createTag: vi.fn(),
 });
 
 type MockClient = ReturnType<typeof createMockClient>;
@@ -755,6 +757,45 @@ describe("handleToolCall", () => {
         page: undefined,
         per_page: 50,
       });
+    });
+  });
+
+  // ============================================================
+  // create_tag Tests
+  // ============================================================
+
+  describe("create_tag", () => {
+    it("should return success message with tag name", async () => {
+      const tag = createMockTag({ name: "new-tag" });
+      mockClient.createTag.mockResolvedValue(tag);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_tag", {
+        name: "new-tag",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("Tag created: new-tag");
+    });
+
+    it("should call client with correct name", async () => {
+      mockClient.createTag.mockResolvedValue(createMockTag());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "create_tag", {
+        name: "my-tag",
+      });
+
+      expect(mockClient.createTag).toHaveBeenCalledWith({ name: "my-tag" });
+    });
+
+    it("should return input error for missing name", async () => {
+      const result = await handleToolCall(
+        mockClient as unknown as NotePMClient,
+        "create_tag",
+        {} // missing required name
+      );
+
+      expect(result.isError).toBe(true);
+      expect(getTextContent(result)).toContain("Input error:");
     });
   });
 });

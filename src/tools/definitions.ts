@@ -8,6 +8,7 @@ import { TOOL_NAMES } from "./constants.js";
 import {
   CreateNoteInputSchema,
   CreatePageInputSchema,
+  CreateTagInputSchema,
   DeleteNoteInputSchema,
   DeletePageInputSchema,
   GetPageInputSchema,
@@ -75,5 +76,10 @@ export const TOOLS: Tool[] = [
     name: TOOL_NAMES.LIST_TAGS,
     description: "List all tags in NotePM. Can filter by note code.",
     inputSchema: toInputSchema(ListTagsInputSchema),
+  },
+  {
+    name: TOOL_NAMES.CREATE_TAG,
+    description: "Create a new tag in NotePM.",
+    inputSchema: toInputSchema(CreateTagInputSchema),
   },
 ];
