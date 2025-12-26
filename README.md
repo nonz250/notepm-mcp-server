@@ -49,6 +49,17 @@ Add the following to your Claude Desktop configuration file:
 
 ### Claude Code
 
+#### Using CLI
+
+```bash
+claude mcp add notepm \
+  --env NOTEPM_TEAM_DOMAIN=your-team-domain \
+  --env NOTEPM_ACCESS_TOKEN=your-access-token \
+  -- npx -y @nonz250/notepm-mcp-server
+```
+
+#### Using settings file
+
 Add the following to your Claude Code settings file (`.claude/settings.json` or `.claude/settings.local.json`):
 
 ```json
@@ -109,6 +120,17 @@ If you installed globally, replace `npx` with the direct command:
 4. Copy the token and use it in your configuration
 
 ## Development
+
+### Using MCP Server Locally
+
+When developing this package, `npx @nonz250/notepm-mcp-server` won't work from within the project directory. Use the local build instead:
+
+```bash
+claude mcp add notepm \
+  --env NOTEPM_TEAM_DOMAIN=your-team-domain \
+  --env NOTEPM_ACCESS_TOKEN=your-access-token \
+  -- npm run start --prefix /path/to/notepm-mcp-server
+```
 
 ### Setup
 
