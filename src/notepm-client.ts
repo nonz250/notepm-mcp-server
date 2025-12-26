@@ -4,7 +4,6 @@
  * Handles communication with NotePM REST API
  * https://notepm.jp/docs/api
  */
-
 import { Config } from "./config.js";
 
 // ============================================================
@@ -106,11 +105,7 @@ export class NotePMClient {
   /**
    * Send API request
    */
-  private async request<T>(
-    method: string,
-    path: string,
-    body?: unknown
-  ): Promise<T> {
+  private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
     const url = `${this.baseUrl}${path}`;
 
     const headers: Record<string, string> = {
@@ -129,7 +124,7 @@ export class NotePMClient {
       throw new NotePMAPIError(
         response.status,
         response.statusText,
-        `NotePM API Error: ${response.status} ${response.statusText}\n${errorText}`
+        `NotePM API Error: ${String(response.status)} ${response.statusText}\n${errorText}`
       );
     }
 
@@ -197,6 +192,6 @@ export class NotePMClient {
    * DELETE /api/v1/pages/:page_code
    */
   async deletePage(pageCode: string): Promise<void> {
-    await this.request<void>("DELETE", `/pages/${pageCode}`);
+    await this.request<undefined>("DELETE", `/pages/${pageCode}`);
   }
 }

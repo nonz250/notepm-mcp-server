@@ -12,9 +12,16 @@ dist/
 .vscode/
 .idea/
 
+# AI Tools
+.claude/
+.serena/
+
 # OS
 .DS_Store
 
 # Logs
 *.log
 npm-debug.log*
+
+# Test coverage
+coverage/
