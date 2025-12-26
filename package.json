@@ -1,7 +1,7 @@
 {
   "name": "notepm-mcp-server",
   "version": "1.0.0",
-  "description": "NotePM 用の MCP サーバーです。",
+  "description": "(Unofficial) MCP server for NotePM.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {

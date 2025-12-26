@@ -1,2 +1,3 @@
 # notepm-mcp-server
-NotePM 用の MCP サーバーです。
+
+(Unofficial) MCP server for NotePM.
