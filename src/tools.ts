@@ -36,6 +36,18 @@ export const CreatePageInputSchema = z.object({
   tags: z.array(z.string()).optional().describe("Array of tags"),
 });
 
+export const UpdatePageInputSchema = z.object({
+  page_code: z.string().describe("Page code to update"),
+  title: z.string().max(100).optional().describe("Page title (max 100 characters)"),
+  body: z.string().optional().describe("Page body (Markdown format)"),
+  memo: z.string().max(255).optional().describe("Memo (max 255 characters)"),
+  tags: z.array(z.string()).optional().describe("Array of tags"),
+});
+
+export const DeletePageInputSchema = z.object({
+  page_code: z.string().describe("Page code to delete"),
+});
+
 // ============================================================
 // Tool Definitions (MCP format)
 // ============================================================
@@ -113,6 +125,53 @@ export const TOOLS = [
         },
       },
       required: ["note_code", "title"],
+    },
+  },
+  {
+    name: "update_page",
+    description:
+      "Update an existing NotePM page. Page code is required.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        page_code: {
+          type: "string",
+          description: "Page code to update",
+        },
+        title: {
+          type: "string",
+          description: "Page title (max 100 characters)",
+        },
+        body: {
+          type: "string",
+          description: "Page body (Markdown format)",
+        },
+        memo: {
+          type: "string",
+          description: "Memo (max 255 characters)",
+        },
+        tags: {
+          type: "array",
+          items: { type: "string" },
+          description: "Array of tags",
+        },
+      },
+      required: ["page_code"],
+    },
+  },
+  {
+    name: "delete_page",
+    description:
+      "Delete a NotePM page. This action cannot be undone.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {
+        page_code: {
+          type: "string",
+          description: "Page code to delete",
+        },
+      },
+      required: ["page_code"],
     },
   },
 ];
@@ -228,6 +287,54 @@ export async function handleToolCall(
             {
               type: "text",
               text: `Page created.\n\n${formatPage(page)}`,
+            },
+          ],
+        };
+      }
+
+      case "update_page": {
+        const parsed = UpdatePageInputSchema.safeParse(args);
+        if (!parsed.success) {
+          return {
+            content: [{ type: "text", text: `Input error: ${parsed.error.message}` }],
+            isError: true,
+          };
+        }
+
+        const { page_code, title, body, memo, tags } = parsed.data;
+        const page = await client.updatePage(page_code, {
+          title,
+          body,
+          memo,
+          tags,
+        });
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Page updated.\n\n${formatPage(page)}`,
+            },
+          ],
+        };
+      }
+
+      case "delete_page": {
+        const parsed = DeletePageInputSchema.safeParse(args);
+        if (!parsed.success) {
+          return {
+            content: [{ type: "text", text: `Input error: ${parsed.error.message}` }],
+            isError: true,
+          };
+        }
+
+        await client.deletePage(parsed.data.page_code);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Page deleted: ${parsed.data.page_code}`,
             },
           ],
         };
