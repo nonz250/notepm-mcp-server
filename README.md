@@ -1,10 +1,22 @@
 # notepm-mcp-server
 
-[![npm version](https://img.shields.io/npm/v/@nonz250/notepm-mcp-server)](https://www.npmjs.com/package/@nonz250/notepm-mcp-server)
-[![license](https://img.shields.io/npm/l/@nonz250/notepm-mcp-server)](https://github.com/nonz250/notepm-mcp-server/blob/main/LICENSE)
-[![node](https://img.shields.io/node/v/@nonz250/notepm-mcp-server)](https://nodejs.org/)
-[![CI](https://github.com/nonz250/notepm-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/nonz250/notepm-mcp-server/actions/workflows/ci.yml)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+<p align="center">
+  <img src="https://help.notepm.jp/hc/article_attachments/44087166436121" alt="NotePM" width="200">
+</p>
+
+<p align="center">
+  <strong>⚠️ UNOFFICIAL - This is NOT an official NotePM product ⚠️</strong>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@nonz250/notepm-mcp-server"><img src="https://img.shields.io/npm/v/@nonz250/notepm-mcp-server" alt="npm version"></a>
+  <a href="https://github.com/nonz250/notepm-mcp-server/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@nonz250/notepm-mcp-server" alt="license"></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/node/v/@nonz250/notepm-mcp-server" alt="node"></a>
+  <a href="https://github.com/nonz250/notepm-mcp-server/actions/workflows/ci.yml"><img src="https://github.com/nonz250/notepm-mcp-server/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.0-blue" alt="TypeScript"></a>
+</p>
+
+---
 
 An unofficial [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for [NotePM](https://notepm.jp/) - a knowledge management and documentation platform.
 
