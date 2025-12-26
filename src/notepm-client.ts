@@ -47,6 +47,15 @@ export interface CreateNoteParams {
   users?: string[];
 }
 
+/** Update note parameters */
+export interface UpdateNoteParams {
+  name?: string;
+  description?: string;
+  scope?: "open" | "private";
+  groups?: string[];
+  users?: string[];
+}
+
 /** Page information */
 export interface Page {
   page_code: string;
@@ -257,6 +266,15 @@ export class NotePMClient {
    */
   async createNote(params: CreateNoteParams): Promise<Note> {
     const response = await this.request<NoteResponse>("POST", "/notes", params);
+    return response.note;
+  }
+
+  /**
+   * Update note
+   * PATCH /api/v1/notes/:note_code
+   */
+  async updateNote(noteCode: string, params: UpdateNoteParams): Promise<Note> {
+    const response = await this.request<NoteResponse>("PATCH", `/notes/${noteCode}`, params);
     return response.note;
   }
 }

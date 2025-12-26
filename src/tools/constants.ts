@@ -16,6 +16,7 @@ export const TOOL_NAMES = {
   DELETE_PAGE: "delete_page",
   LIST_NOTES: "list_notes",
   CREATE_NOTE: "create_note",
+  UPDATE_NOTE: "update_note",
 } as const;
 
 /**

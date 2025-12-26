@@ -43,6 +43,7 @@ const createMockClient = () => ({
   deletePage: vi.fn(),
   listNotes: vi.fn(),
   createNote: vi.fn(),
+  updateNote: vi.fn(),
 });
 
 type MockClient = ReturnType<typeof createMockClient>;
@@ -549,6 +550,89 @@ describe("handleToolCall", () => {
         groups: undefined,
         users: undefined,
       });
+    });
+  });
+
+  // ============================================================
+  // update_note Tests
+  // ============================================================
+
+  describe("update_note", () => {
+    it("should return success message with formatted note", async () => {
+      const note = createMockNote({ name: "Updated Note" });
+      mockClient.updateNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "update_note", {
+        note_code: "note123",
+        name: "Updated Note",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Note updated.");
+      expect(getTextContent(result)).toContain("## Updated Note");
+    });
+
+    it("should pass note_code and update params to client", async () => {
+      mockClient.updateNote.mockResolvedValue(createMockNote());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "update_note", {
+        note_code: "note123",
+        name: "New Name",
+        description: "New Description",
+        scope: "private",
+        groups: ["group1"],
+        users: ["user1"],
+      });
+
+      expect(mockClient.updateNote).toHaveBeenCalledWith("note123", {
+        name: "New Name",
+        description: "New Description",
+        scope: "private",
+        groups: ["group1"],
+        users: ["user1"],
+      });
+    });
+
+    it("should allow partial updates", async () => {
+      mockClient.updateNote.mockResolvedValue(createMockNote());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "update_note", {
+        note_code: "note123",
+        name: "Only Name Changed",
+      });
+
+      expect(mockClient.updateNote).toHaveBeenCalledWith("note123", {
+        name: "Only Name Changed",
+        description: undefined,
+        scope: undefined,
+        groups: undefined,
+        users: undefined,
+      });
+    });
+
+    it("should show '(No description)' for empty description", async () => {
+      const note = createMockNote({ description: "" });
+      mockClient.updateNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "update_note", {
+        note_code: "note123",
+      });
+
+      expect(getTextContent(result)).toContain("(No description)");
+    });
+
+    it("should format note with all fields", async () => {
+      const note = createMockNote();
+      mockClient.updateNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "update_note", {
+        note_code: "note123",
+      });
+
+      expect(getTextContent(result)).toContain("## Test Note");
+      expect(getTextContent(result)).toContain("Note code: note123");
+      expect(getTextContent(result)).toContain("Scope: All members");
+      expect(getTextContent(result)).toContain("Test description");
     });
   });
 });

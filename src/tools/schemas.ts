@@ -70,6 +70,18 @@ export const CreateNoteInputSchema = z.object({
   users: z.array(z.string()).optional().describe("Array of user codes to grant access (only for private scope)"),
 });
 
+export const UpdateNoteInputSchema = z.object({
+  note_code: z.string().min(1).describe("Note code to update"),
+  name: z.string().max(30).optional().describe("Note name (max 30 characters)"),
+  description: z.string().max(200).optional().describe("Note description (max 200 characters)"),
+  scope: z
+    .enum(["open", "private"])
+    .optional()
+    .describe("Visibility scope ('open': all members, 'private': specified members only)"),
+  groups: z.array(z.string()).optional().describe("Array of group names to grant access (only for private scope)"),
+  users: z.array(z.string()).optional().describe("Array of user codes to grant access (only for private scope)"),
+});
+
 // ============================================================
 // Inferred Types
 // ============================================================
@@ -94,3 +106,6 @@ export type ListNotesInput = z.infer<typeof ListNotesInputSchema>;
 
 /** Inferred type for create note input */
 export type CreateNoteInput = z.infer<typeof CreateNoteInputSchema>;
+
+/** Inferred type for update note input */
+export type UpdateNoteInput = z.infer<typeof UpdateNoteInputSchema>;
