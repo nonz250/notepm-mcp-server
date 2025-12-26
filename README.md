@@ -66,15 +66,28 @@ Add the following to your Claude Code settings file (`.claude/settings.json` or 
 }
 ```
 
+#### Using CLI
+
+If you prefer using the CLI, global installation is required:
+
+```bash
+npm install -g @nonz250/notepm-mcp-server
+
+claude mcp add notepm \
+  --env NOTEPM_TEAM_DOMAIN=your-team-domain \
+  --env NOTEPM_ACCESS_TOKEN=your-access-token \
+  -- notepm-mcp-server-nonz250
+```
+
 ### Using Global Installation
 
-If you installed globally, replace `npx` with the direct command:
+If you installed globally, use the `notepm-mcp-server-nonz250` command:
 
 ```json
 {
   "mcpServers": {
     "notepm": {
-      "command": "notepm-mcp-server",
+      "command": "notepm-mcp-server-nonz250",
       "env": {
         "NOTEPM_TEAM_DOMAIN": "your-team-domain",
         "NOTEPM_ACCESS_TOKEN": "your-access-token"
