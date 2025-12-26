@@ -12,6 +12,10 @@ dist/
 .vscode/
 .idea/
 
+# AI Tools
+.claude/
+.serena/
+
 # OS
 .DS_Store
 
