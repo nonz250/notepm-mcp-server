@@ -60,6 +60,20 @@ export const ListNotesInputSchema = z.object({
     .describe("Number of results (1-100, default: 20)"),
 });
 
+export const CreateNoteInputSchema = z.object({
+  name: z.string().min(1).max(100).describe("Note name (1-100 characters)"),
+  description: z.string().max(255).optional().describe("Note description (max 255 characters)"),
+  scope: z
+    .number()
+    .min(0)
+    .max(1)
+    .optional()
+    .describe("Visibility scope (0: all members, 1: participating members only)"),
+  groups: z.array(z.string()).optional().describe("Array of group codes to grant access"),
+  users: z.array(z.string()).optional().describe("Array of user codes to grant access"),
+  icon_url: z.url().optional().describe("Note icon URL"),
+});
+
 // ============================================================
 // Inferred Types
 // ============================================================
@@ -81,3 +95,6 @@ export type DeletePageInput = z.infer<typeof DeletePageInputSchema>;
 
 /** Inferred type for list notes input */
 export type ListNotesInput = z.infer<typeof ListNotesInputSchema>;
+
+/** Inferred type for create note input */
+export type CreateNoteInput = z.infer<typeof CreateNoteInputSchema>;

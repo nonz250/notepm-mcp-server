@@ -43,10 +43,12 @@ export const createMockPagesResponse = (pages: Page[], total?: number): PagesRes
 export const createMockNote = (overrides: Partial<Note> = {}): Note => ({
   note_code: "note123",
   name: "Test Note",
-  description: "Test note description",
+  description: "Test description",
+  scope: "open",
   icon_url: null,
   archived: false,
-  scope: "open",
+  created_at: "2024-01-01T00:00:00Z",
+  updated_at: "2024-01-02T00:00:00Z",
   ...overrides,
 });
 

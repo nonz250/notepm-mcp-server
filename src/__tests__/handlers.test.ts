@@ -42,6 +42,7 @@ const createMockClient = () => ({
   updatePage: vi.fn(),
   deletePage: vi.fn(),
   listNotes: vi.fn(),
+  createNote: vi.fn(),
 });
 
 type MockClient = ReturnType<typeof createMockClient>;
@@ -451,6 +452,102 @@ describe("handleToolCall", () => {
       });
 
       expect(getTextContent(result)).toContain("showing 1 of 100 notes");
+    });
+  });
+
+  // ============================================================
+  // create_note Tests
+  // ============================================================
+
+  describe("create_note", () => {
+    it("should return success message with formatted note", async () => {
+      const note = createMockNote({ name: "New Note" });
+      mockClient.createNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
+        name: "New Note",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Note created.");
+      expect(getTextContent(result)).toContain("## New Note");
+    });
+
+    it("should format note with all fields", async () => {
+      const note = createMockNote();
+      mockClient.createNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
+        name: "Test Note",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Note code: note123");
+      expect(getTextContent(result)).toContain("Description: Test description");
+      expect(getTextContent(result)).toContain("Scope: All members");
+      expect(getTextContent(result)).toContain("Archived: No");
+    });
+
+    it("should show correct scope for participating members only", async () => {
+      const note = createMockNote({ scope: 1 });
+      mockClient.createNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
+        name: "Private Note",
+        scope: 1,
+      });
+
+      expect(getTextContent(result)).toContain("Scope: Participating members only");
+    });
+
+    it("should show '(No description)' for empty description", async () => {
+      const note = createMockNote({ description: "" });
+      mockClient.createNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
+        name: "No Description Note",
+      });
+
+      expect(getTextContent(result)).toContain("Description: (No description)");
+    });
+
+    it("should pass all parameters to client", async () => {
+      mockClient.createNote.mockResolvedValue(createMockNote());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
+        name: "Full Note",
+        description: "A detailed description",
+        scope: 1,
+        groups: ["group1", "group2"],
+        users: ["user1"],
+        icon_url: "https://example.com/icon.png",
+      });
+
+      expect(mockClient.createNote).toHaveBeenCalledWith({
+        name: "Full Note",
+        description: "A detailed description",
+        scope: 1,
+        groups: ["group1", "group2"],
+        users: ["user1"],
+        icon_url: "https://example.com/icon.png",
+      });
+    });
+
+    it("should handle minimal parameters", async () => {
+      mockClient.createNote.mockResolvedValue(createMockNote());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
+        name: "Minimal Note",
+      });
+
+      expect(mockClient.createNote).toHaveBeenCalledWith({
+        name: "Minimal Note",
+        description: undefined,
+        scope: undefined,
+        groups: undefined,
+        users: undefined,
+        icon_url: undefined,
+      });
     });
   });
 });

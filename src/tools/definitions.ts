@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { TOOL_NAMES } from "./constants.js";
 import {
+  CreateNoteInputSchema,
   CreatePageInputSchema,
   DeletePageInputSchema,
   GetPageInputSchema,
@@ -51,5 +52,10 @@ export const TOOLS: Tool[] = [
     name: TOOL_NAMES.LIST_NOTES,
     description: "List all NotePM notes. Returns note codes, names, and descriptions.",
     inputSchema: toInputSchema(ListNotesInputSchema),
+  },
+  {
+    name: TOOL_NAMES.CREATE_NOTE,
+    description: "Create a new note in NotePM. Note name is required.",
+    inputSchema: toInputSchema(CreateNoteInputSchema),
   },
 ];
