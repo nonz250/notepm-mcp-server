@@ -19,6 +19,7 @@ export interface User {
 /** Tag information */
 export interface Tag {
   name: string;
+  page_count?: number;
 }
 
 /** Note information */
@@ -100,6 +101,19 @@ export interface NotesResponse {
 /** List notes parameters */
 export interface ListNotesParams {
   include_archived?: boolean;
+  page?: number;
+  per_page?: number;
+}
+
+/** Tags list response */
+export interface TagsResponse {
+  tags: Tag[];
+  meta: PaginationMeta;
+}
+
+/** List tags parameters */
+export interface ListTagsParams {
+  note_code?: string;
   page?: number;
   per_page?: number;
 }
@@ -284,5 +298,22 @@ export class NotePMClient {
    */
   async deleteNote(noteCode: string): Promise<void> {
     await this.request<undefined>("DELETE", `/notes/${noteCode}`);
+  }
+
+  /**
+   * List tags
+   * GET /api/v1/tags
+   */
+  async listTags(params: ListTagsParams = {}): Promise<TagsResponse> {
+    const searchParams = new URLSearchParams();
+
+    if (params.note_code) searchParams.set("note_code", params.note_code);
+    if (params.page) searchParams.set("page", params.page.toString());
+    if (params.per_page) searchParams.set("per_page", params.per_page.toString());
+
+    const query = searchParams.toString();
+    const path = `/tags${query ? `?${query}` : ""}`;
+
+    return this.request<TagsResponse>("GET", path);
   }
 }

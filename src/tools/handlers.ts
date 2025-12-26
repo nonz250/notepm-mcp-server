@@ -13,6 +13,7 @@ import {
   DeletePageInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
+  ListTagsInputSchema,
   SearchPagesInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
@@ -199,6 +200,21 @@ export async function handleToolCall(
         const { note_code } = parseInput(DeleteNoteInputSchema, args);
         await client.deleteNote(note_code);
         return success(`Note deleted: ${note_code}`);
+      }
+
+      case TOOL_NAMES.LIST_TAGS: {
+        const { note_code, page, per_page } = parseInput(ListTagsInputSchema, args);
+        const result = await client.listTags({ note_code, page, per_page });
+
+        if (result.tags.length === 0) {
+          return success("Tags: 0 tags found");
+        }
+
+        const tagList = result.tags.map((t, i) => `${String(i + 1)}. ${t.name}`).join("\n");
+
+        return success(
+          `Tags: showing ${String(result.tags.length)} of ${String(result.meta.total)} tags\n\n${tagList}`
+        );
       }
 
       default:
