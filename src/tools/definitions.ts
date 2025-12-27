@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { TOOL_NAMES } from "./constants.js";
 import {
+  ArchiveNoteInputSchema,
   CreateNoteInputSchema,
   CreatePageInputSchema,
   CreateTagInputSchema,
@@ -78,6 +79,11 @@ export const TOOLS: Tool[] = [
     name: TOOL_NAMES.DELETE_NOTE,
     description: "Delete a NotePM note. This action cannot be undone. All pages within the note will also be deleted.",
     inputSchema: toInputSchema(DeleteNoteInputSchema),
+  },
+  {
+    name: TOOL_NAMES.ARCHIVE_NOTE,
+    description: "Archive a NotePM note. Archived notes are hidden from the default list but can be restored.",
+    inputSchema: toInputSchema(ArchiveNoteInputSchema),
   },
   {
     name: TOOL_NAMES.LIST_TAGS,

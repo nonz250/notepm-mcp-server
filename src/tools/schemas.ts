@@ -90,6 +90,10 @@ export const DeleteNoteInputSchema = z.object({
   note_code: z.string().min(1).describe("Note code to delete"),
 });
 
+export const ArchiveNoteInputSchema = z.object({
+  note_code: z.string().min(1).describe("Note code to archive"),
+});
+
 export const ListTagsInputSchema = z.object({
   note_code: z.string().optional().describe("Note code (list tags within specific note)"),
   page: z.number().min(1).optional().describe("Page number for pagination"),
@@ -143,6 +147,9 @@ export type UpdateNoteInput = z.infer<typeof UpdateNoteInputSchema>;
 
 /** Inferred type for delete note input */
 export type DeleteNoteInput = z.infer<typeof DeleteNoteInputSchema>;
+
+/** Inferred type for archive note input */
+export type ArchiveNoteInput = z.infer<typeof ArchiveNoteInputSchema>;
 
 /** Inferred type for list tags input */
 export type ListTagsInput = z.infer<typeof ListTagsInputSchema>;

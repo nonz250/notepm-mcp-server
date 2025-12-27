@@ -472,6 +472,31 @@ describe("NotePMClient", () => {
   });
 
   // ============================================================
+  // archiveNote Tests
+  // ============================================================
+
+  describe("archiveNote", () => {
+    it("should call PATCH /notes/:note_code/archive", async () => {
+      const note = createMockNote({ archived: true });
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      await client.archiveNote("note123");
+
+      expectFetchCalledWith("PATCH", "/notes/note123/archive");
+    });
+
+    it("should return archived note", async () => {
+      const note = createMockNote({ archived: true, name: "Archived Note" });
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      const result = await client.archiveNote("note123");
+
+      expect(result.name).toBe("Archived Note");
+      expect(result.archived).toBe(true);
+    });
+  });
+
+  // ============================================================
   // createNote Tests
   // ============================================================
 
