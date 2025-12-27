@@ -94,6 +94,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Configure npm for OIDC
+        run: npm config delete //registry.npmjs.org/:_authToken || true
+
       - name: Publish to npm
         run: npm publish --access public --provenance
 
