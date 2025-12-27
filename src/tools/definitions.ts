@@ -8,6 +8,7 @@ import { TOOL_NAMES } from "./constants.js";
 import {
   CreateNoteInputSchema,
   CreatePageInputSchema,
+  DeleteNoteInputSchema,
   DeletePageInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
@@ -63,5 +64,10 @@ export const TOOLS: Tool[] = [
     name: TOOL_NAMES.UPDATE_NOTE,
     description: "Update an existing NotePM note. Note code is required.",
     inputSchema: toInputSchema(UpdateNoteInputSchema),
+  },
+  {
+    name: TOOL_NAMES.DELETE_NOTE,
+    description: "Delete a NotePM note. This action cannot be undone. All pages within the note will also be deleted.",
+    inputSchema: toInputSchema(DeleteNoteInputSchema),
   },
 ];

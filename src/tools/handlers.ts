@@ -9,6 +9,7 @@ import { TOOL_NAMES, ToolName } from "./constants.js";
 import {
   CreateNoteInputSchema,
   CreatePageInputSchema,
+  DeleteNoteInputSchema,
   DeletePageInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
@@ -192,6 +193,12 @@ export async function handleToolCall(
         );
         const note = await client.updateNote(note_code, { name, description, scope, groups, users });
         return success(`Note updated.\n\n${formatNote(note)}`);
+      }
+
+      case TOOL_NAMES.DELETE_NOTE: {
+        const { note_code } = parseInput(DeleteNoteInputSchema, args);
+        await client.deleteNote(note_code);
+        return success(`Note deleted: ${note_code}`);
       }
 
       default:
