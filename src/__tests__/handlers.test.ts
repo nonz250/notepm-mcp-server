@@ -160,6 +160,7 @@ describe("handleToolCall", () => {
         query: "test query",
         note_code: "note123",
         tag_name: "important",
+        page: 2,
         per_page: 50,
       });
 
@@ -167,6 +168,7 @@ describe("handleToolCall", () => {
         q: "test query",
         note_code: "note123",
         tag_name: "important",
+        page: 2,
         per_page: 50,
       });
     });
@@ -429,11 +431,13 @@ describe("handleToolCall", () => {
 
       await handleToolCall(mockClient as unknown as NotePMClient, "list_notes", {
         include_archived: true,
+        page: 3,
         per_page: 50,
       });
 
       expect(mockClient.listNotes).toHaveBeenCalledWith({
         include_archived: true,
+        page: 3,
         per_page: 50,
       });
     });

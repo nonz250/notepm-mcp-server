@@ -97,8 +97,11 @@ export async function handleToolCall(
   try {
     switch (name as ToolName) {
       case TOOL_NAMES.SEARCH_PAGES: {
-        const { query, note_code, tag_name, per_page } = parseInput(SearchPagesInputSchema, args);
-        const result = await client.searchPages({ q: query, note_code, tag_name, per_page });
+        const { query, note_code, tag_name, page, per_page } = parseInput(
+          SearchPagesInputSchema,
+          args
+        );
+        const result = await client.searchPages({ q: query, note_code, tag_name, page, per_page });
 
         if (result.pages.length === 0) {
           return success("Search results: 0 pages");
@@ -141,8 +144,8 @@ export async function handleToolCall(
       }
 
       case TOOL_NAMES.LIST_NOTES: {
-        const { include_archived, per_page } = parseInput(ListNotesInputSchema, args);
-        const result = await client.listNotes({ include_archived, per_page });
+        const { include_archived, page, per_page } = parseInput(ListNotesInputSchema, args);
+        const result = await client.listNotes({ include_archived, page, per_page });
 
         if (result.notes.length === 0) {
           return success("No notes found.");

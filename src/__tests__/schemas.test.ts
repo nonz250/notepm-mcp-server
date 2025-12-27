@@ -71,6 +71,24 @@ describe("SearchPagesInputSchema", () => {
     const result = SearchPagesInputSchema.safeParse({ query: 123 });
     expect(result.success).toBe(false);
   });
+
+  it("should accept page parameter", () => {
+    const result = SearchPagesInputSchema.safeParse({ page: 2 });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page).toBe(2);
+    }
+  });
+
+  it("should reject page below minimum (0)", () => {
+    const result = SearchPagesInputSchema.safeParse({ page: 0 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject non-number page", () => {
+    const result = SearchPagesInputSchema.safeParse({ page: "2" });
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("GetPageInputSchema", () => {
@@ -322,6 +340,19 @@ describe("ListNotesInputSchema", () => {
 
   it("should reject per_page out of range", () => {
     const result = ListNotesInputSchema.safeParse({ per_page: 200 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should accept page parameter", () => {
+    const result = ListNotesInputSchema.safeParse({ page: 3 });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page).toBe(3);
+    }
+  });
+
+  it("should reject page below minimum (0)", () => {
+    const result = ListNotesInputSchema.safeParse({ page: 0 });
     expect(result.success).toBe(false);
   });
 });
