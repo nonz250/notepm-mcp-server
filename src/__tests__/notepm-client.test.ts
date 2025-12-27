@@ -509,6 +509,43 @@ describe("NotePMClient", () => {
   });
 
   // ============================================================
+  // unarchiveNote Tests
+  // ============================================================
+
+  describe("unarchiveNote", () => {
+    it("should call PATCH /notes/:note_code/extract", async () => {
+      mockFetch.mockReturnValue(
+        Promise.resolve({
+          ok: true,
+          status: 204,
+          statusText: "No Content",
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(""),
+        })
+      );
+
+      await client.unarchiveNote("note123");
+
+      expectFetchCalledWith("PATCH", "/notes/note123/extract");
+    });
+
+    it("should handle 204 No Content response", async () => {
+      mockFetch.mockReturnValue(
+        Promise.resolve({
+          ok: true,
+          status: 204,
+          statusText: "No Content",
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(""),
+        })
+      );
+
+      // Should not throw
+      await expect(client.unarchiveNote("note123")).resolves.toBeUndefined();
+    });
+  });
+
+  // ============================================================
   // createNote Tests
   // ============================================================
 

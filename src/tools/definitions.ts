@@ -18,6 +18,7 @@ import {
   ListNotesInputSchema,
   ListTagsInputSchema,
   SearchPagesInputSchema,
+  UnarchiveNoteInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
 } from "./schemas.js";
@@ -84,6 +85,11 @@ export const TOOLS: Tool[] = [
     name: TOOL_NAMES.ARCHIVE_NOTE,
     description: "Archive a NotePM note. Archived notes are hidden from the default list but can be restored.",
     inputSchema: toInputSchema(ArchiveNoteInputSchema),
+  },
+  {
+    name: TOOL_NAMES.UNARCHIVE_NOTE,
+    description: "Unarchive a NotePM note. Restores an archived note back to the active notes list.",
+    inputSchema: toInputSchema(UnarchiveNoteInputSchema),
   },
   {
     name: TOOL_NAMES.LIST_TAGS,
