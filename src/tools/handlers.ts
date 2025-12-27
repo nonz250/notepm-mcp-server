@@ -7,6 +7,7 @@ import { z } from "zod";
 import { Note, NotePMAPIError, NotePMClient, Page } from "../notepm-client.js";
 import { TOOL_NAMES, ToolName } from "./constants.js";
 import {
+  ArchiveNoteInputSchema,
   CreateNoteInputSchema,
   CreatePageInputSchema,
   CreateTagInputSchema,
@@ -209,6 +210,12 @@ export async function handleToolCall(
         const { note_code } = parseInput(DeleteNoteInputSchema, args);
         await client.deleteNote(note_code);
         return success(`Note deleted: ${note_code}`);
+      }
+
+      case TOOL_NAMES.ARCHIVE_NOTE: {
+        const { note_code } = parseInput(ArchiveNoteInputSchema, args);
+        await client.archiveNote(note_code);
+        return success(`Note archived: ${note_code}`);
       }
 
       case TOOL_NAMES.LIST_TAGS: {
