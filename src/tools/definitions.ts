@@ -12,6 +12,7 @@ import {
   GetPageInputSchema,
   ListNotesInputSchema,
   SearchPagesInputSchema,
+  UpdateNoteInputSchema,
   UpdatePageInputSchema,
 } from "./schemas.js";
 
@@ -55,7 +56,12 @@ export const TOOLS: Tool[] = [
   },
   {
     name: TOOL_NAMES.CREATE_NOTE,
-    description: "Create a new note in NotePM. Note name is required.",
+    description: "Create a new note in NotePM. Note name and scope are required.",
     inputSchema: toInputSchema(CreateNoteInputSchema),
+  },
+  {
+    name: TOOL_NAMES.UPDATE_NOTE,
+    description: "Update an existing NotePM note. Note code is required.",
+    inputSchema: toInputSchema(UpdateNoteInputSchema),
   },
 ];

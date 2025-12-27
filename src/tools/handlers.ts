@@ -13,6 +13,7 @@ import {
   GetPageInputSchema,
   ListNotesInputSchema,
   SearchPagesInputSchema,
+  UpdateNoteInputSchema,
   UpdatePageInputSchema,
 } from "./schemas.js";
 
@@ -182,6 +183,15 @@ export async function handleToolCall(
         );
         const note = await client.createNote({ name, description, scope, groups, users });
         return success(`Note created.\n\n${formatNote(note)}`);
+      }
+
+      case TOOL_NAMES.UPDATE_NOTE: {
+        const { note_code, name, description, scope, groups, users } = parseInput(
+          UpdateNoteInputSchema,
+          args
+        );
+        const note = await client.updateNote(note_code, { name, description, scope, groups, users });
+        return success(`Note updated.\n\n${formatNote(note)}`);
       }
 
       default:
