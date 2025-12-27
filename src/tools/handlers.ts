@@ -4,12 +4,13 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 
-import { NotePMAPIError, NotePMClient, Page } from "../notepm-client.js";
+import { Note, NotePMAPIError, NotePMClient, Page } from "../notepm-client.js";
 import { TOOL_NAMES, ToolName } from "./constants.js";
 import {
   CreatePageInputSchema,
   DeletePageInputSchema,
   GetPageInputSchema,
+  ListNotesInputSchema,
   SearchPagesInputSchema,
   UpdatePageInputSchema,
 } from "./schemas.js";
@@ -72,6 +73,15 @@ function formatPage(page: Page): string {
   ].join("\n");
 }
 
+/**
+ * Format note information for list display
+ */
+function formatNoteListItem(note: Note, index: number): string {
+  const status = note.archived ? " [archived]" : "";
+  const scope = note.scope === "private" ? " (private)" : "";
+  return `${String(index + 1)}. **${note.name}**${status}${scope} (code: ${note.note_code})\n   - ${note.description || "(No description)"}`;
+}
+
 // ============================================================
 // Main Handler
 // ============================================================
@@ -87,8 +97,11 @@ export async function handleToolCall(
   try {
     switch (name as ToolName) {
       case TOOL_NAMES.SEARCH_PAGES: {
-        const { query, note_code, tag_name, per_page } = parseInput(SearchPagesInputSchema, args);
-        const result = await client.searchPages({ q: query, note_code, tag_name, per_page });
+        const { query, note_code, tag_name, page, per_page } = parseInput(
+          SearchPagesInputSchema,
+          args
+        );
+        const result = await client.searchPages({ q: query, note_code, tag_name, page, per_page });
 
         if (result.pages.length === 0) {
           return success("Search results: 0 pages");
@@ -128,6 +141,21 @@ export async function handleToolCall(
         const { page_code } = parseInput(DeletePageInputSchema, args);
         await client.deletePage(page_code);
         return success(`Page deleted: ${page_code}`);
+      }
+
+      case TOOL_NAMES.LIST_NOTES: {
+        const { include_archived, page, per_page } = parseInput(ListNotesInputSchema, args);
+        const result = await client.listNotes({ include_archived, page, per_page });
+
+        if (result.notes.length === 0) {
+          return success("No notes found.");
+        }
+
+        const noteList = result.notes.map((n, i) => formatNoteListItem(n, i)).join("\n");
+
+        return success(
+          `Notes: showing ${String(result.notes.length)} of ${String(result.meta.total)} notes\n\n${noteList}`
+        );
       }
 
       default:

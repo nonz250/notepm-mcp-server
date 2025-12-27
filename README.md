@@ -115,7 +115,8 @@ If you installed globally, replace `npx` with the direct command:
 
 | Tool | Description |
 |------|-------------|
-| `search_pages` | Search NotePM pages by keyword, note, or tag |
+| `list_notes` | List all notes in your workspace |
+| `search_pages` | Search pages by keyword, note, or tag |
 | `get_page` | Get a page's full content including title, body, and tags |
 | `create_page` | Create a new page in a specified note |
 | `update_page` | Update an existing page's content |

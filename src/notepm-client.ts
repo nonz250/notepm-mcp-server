@@ -21,6 +21,16 @@ export interface Tag {
   name: string;
 }
 
+/** Note information */
+export interface Note {
+  note_code: string;
+  name: string;
+  description: string;
+  icon_url: string | null;
+  archived: boolean;
+  scope: "open" | "private";
+}
+
 /** Page information */
 export interface Page {
   page_code: string;
@@ -54,6 +64,19 @@ export interface PagesResponse {
 /** Single page response */
 export interface PageResponse {
   page: Page;
+}
+
+/** Notes list response */
+export interface NotesResponse {
+  notes: Note[];
+  meta: PaginationMeta;
+}
+
+/** List notes parameters */
+export interface ListNotesParams {
+  include_archived?: boolean;
+  page?: number;
+  per_page?: number;
 }
 
 /** Search pages parameters */
@@ -137,6 +160,23 @@ export class NotePMClient {
   }
 
   /**
+   * List notes
+   * GET /api/v1/notes
+   */
+  async listNotes(params: ListNotesParams = {}): Promise<NotesResponse> {
+    const searchParams = new URLSearchParams();
+
+    if (params.include_archived) searchParams.set("include_archived", "1");
+    if (params.page) searchParams.set("page", params.page.toString());
+    if (params.per_page) searchParams.set("per_page", params.per_page.toString());
+
+    const query = searchParams.toString();
+    const path = `/notes${query ? `?${query}` : ""}`;
+
+    return this.request<NotesResponse>("GET", path);
+  }
+
+  /**
    * Search pages
    * GET /api/v1/pages
    */
@@ -144,8 +184,8 @@ export class NotePMClient {
     const searchParams = new URLSearchParams();
 
     if (params.q) searchParams.set("q", params.q);
-    if (params.only_title) searchParams.set("only_title", "true");
-    if (params.include_archived) searchParams.set("include_archived", "true");
+    if (params.only_title) searchParams.set("only_title", "1");
+    if (params.include_archived) searchParams.set("include_archived", "1");
     if (params.note_code) searchParams.set("note_code", params.note_code);
     if (params.tag_name) searchParams.set("tag_name", params.tag_name);
     if (params.page) searchParams.set("page", params.page.toString());
