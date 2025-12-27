@@ -19,6 +19,7 @@ import {
   ListNotesInputSchema,
   ListTagsInputSchema,
   SearchPagesInputSchema,
+  UnarchiveNoteInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
 } from "./schemas.js";
@@ -216,6 +217,12 @@ export async function handleToolCall(
         const { note_code } = parseInput(ArchiveNoteInputSchema, args);
         await client.archiveNote(note_code);
         return success(`Note archived: ${note_code}`);
+      }
+
+      case TOOL_NAMES.UNARCHIVE_NOTE: {
+        const { note_code } = parseInput(UnarchiveNoteInputSchema, args);
+        await client.unarchiveNote(note_code);
+        return success(`Note unarchived: ${note_code}`);
       }
 
       case TOOL_NAMES.LIST_TAGS: {

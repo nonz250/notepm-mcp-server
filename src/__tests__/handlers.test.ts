@@ -49,6 +49,7 @@ const createMockClient = () => ({
   updateNote: vi.fn(),
   deleteNote: vi.fn(),
   archiveNote: vi.fn(),
+  unarchiveNote: vi.fn(),
   listTags: vi.fn(),
   createTag: vi.fn(),
   deleteTag: vi.fn(),
@@ -814,6 +815,49 @@ describe("handleToolCall", () => {
 
       expect(result.isError).toBe(true);
       expect(getTextContent(result)).toContain("Input error:");
+    });
+  });
+
+  // ============================================================
+  // unarchive_note Tests
+  // ============================================================
+
+  describe("unarchive_note", () => {
+    it("should return success message with note_code", async () => {
+      mockClient.unarchiveNote.mockResolvedValue(undefined);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "unarchive_note", {
+        note_code: "unarchived123",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("Note unarchived: unarchived123");
+    });
+
+    it("should call client with correct note_code", async () => {
+      mockClient.unarchiveNote.mockResolvedValue(undefined);
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "unarchive_note", {
+        note_code: "restore_me",
+      });
+
+      expect(mockClient.unarchiveNote).toHaveBeenCalledWith("restore_me");
+    });
+
+    it("should return error for empty note_code", async () => {
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "unarchive_note", {
+        note_code: "",
+      });
+
+      expect(result.isError).toBe(true);
+      expect(getTextContent(result)).toContain("Input error");
+    });
+
+    it("should return error for missing note_code", async () => {
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "unarchive_note", {});
+
+      expect(result.isError).toBe(true);
+      expect(getTextContent(result)).toContain("Input error");
     });
   });
 

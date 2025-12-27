@@ -17,6 +17,7 @@ import {
   GetPageInputSchema,
   ListNotesInputSchema,
   SearchPagesInputSchema,
+  UnarchiveNoteInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
 } from "../tools/schemas.js";
@@ -560,6 +561,33 @@ describe("ArchiveNoteInputSchema", () => {
 
   it("should reject empty note_code", () => {
     const result = ArchiveNoteInputSchema.safeParse({ note_code: "" });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("UnarchiveNoteInputSchema", () => {
+  it("should require note_code", () => {
+    const result = UnarchiveNoteInputSchema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it("should accept valid note_code", () => {
+    const result = UnarchiveNoteInputSchema.safeParse({ note_code: "abc123" });
+    expect(result.success).toBe(true);
+  });
+
+  it("should reject non-string note_code", () => {
+    const result = UnarchiveNoteInputSchema.safeParse({ note_code: 123 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject null note_code", () => {
+    const result = UnarchiveNoteInputSchema.safeParse({ note_code: null });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject empty note_code", () => {
+    const result = UnarchiveNoteInputSchema.safeParse({ note_code: "" });
     expect(result.success).toBe(false);
   });
 });

@@ -333,6 +333,14 @@ export class NotePMClient {
   }
 
   /**
+   * Unarchive note (extract from archive)
+   * PATCH /api/v1/notes/:note_code/extract
+   */
+  async unarchiveNote(noteCode: string): Promise<void> {
+    await this.request<undefined>("PATCH", `/notes/${noteCode}/extract`);
+  }
+
+  /**
    * List tags
    * GET /api/v1/tags
    */

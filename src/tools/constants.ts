@@ -20,6 +20,7 @@ export const TOOL_NAMES = {
   UPDATE_NOTE: "update_note",
   DELETE_NOTE: "delete_note",
   ARCHIVE_NOTE: "archive_note",
+  UNARCHIVE_NOTE: "unarchive_note",
   LIST_TAGS: "list_tags",
   CREATE_TAG: "create_tag",
   DELETE_TAG: "delete_tag",
