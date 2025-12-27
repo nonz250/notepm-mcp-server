@@ -116,9 +116,12 @@ If you installed globally, replace `npx` with the direct command:
 | Tool | Description |
 |------|-------------|
 | `list_notes` | List all notes in your workspace |
+| `get_note` | Get a note's details including name, description, and scope |
 | `create_note` | Create a new note with name, description, and access settings |
 | `update_note` | Update an existing note's name, description, or access settings |
 | `delete_note` | Delete a note and all its pages (irreversible) |
+| `archive_note` | Archive a note (hidden from default list but can be restored) |
+| `unarchive_note` | Restore an archived note back to the active list |
 | `search_pages` | Search pages by keyword, note, or tag |
 | `get_page` | Get a page's full content including title, body, and tags |
 | `create_page` | Create a new page in a specified note |
@@ -179,6 +182,10 @@ npm test
 npm run lint
 npm run format
 ```
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 

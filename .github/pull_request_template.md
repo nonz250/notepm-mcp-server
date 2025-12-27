@@ -1,17 +1,17 @@
 ## Summary
 
-<!-- Brief description of changes -->
+<!-- Briefly describe what this PR does -->
 
-## Changes
+## Related Issues
 
--
+<!-- Link any related issues: Fixes #123, Closes #456 -->
 
 ## Test Plan
 
 - [ ]
+- [ ] Manual testing with NotePM API (if applicable)
 
 ## Checklist
 
-- [ ] Code builds without errors (`npm run build`)
-- [ ] Tests pass (if applicable)
+- [ ] Self-review completed
 - [ ] Documentation updated (if applicable)
