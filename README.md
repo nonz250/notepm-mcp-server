@@ -127,6 +127,9 @@ If you installed globally, replace `npx` with the direct command:
 | `create_page` | Create a new page in a specified note |
 | `update_page` | Update an existing page's content |
 | `delete_page` | Delete a page (irreversible) |
+| `list_tags` | List all tags in your workspace |
+| `create_tag` | Create a new tag |
+| `delete_tag` | Delete a tag (irreversible) |
 
 ## Environment Variables
 
