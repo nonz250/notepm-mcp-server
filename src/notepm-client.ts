@@ -26,9 +26,25 @@ export interface Note {
   note_code: string;
   name: string;
   description: string;
+  scope: "open" | "private" | number;
   icon_url: string | null;
   archived: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+/** Single note response */
+export interface NoteResponse {
+  note: Note;
+}
+
+/** Create note parameters */
+export interface CreateNoteParams {
+  name: string;
+  description?: string;
   scope: "open" | "private";
+  groups?: string[];
+  users?: string[];
 }
 
 /** Page information */
@@ -233,5 +249,14 @@ export class NotePMClient {
    */
   async deletePage(pageCode: string): Promise<void> {
     await this.request<undefined>("DELETE", `/pages/${pageCode}`);
+  }
+
+  /**
+   * Create note
+   * POST /api/v1/notes
+   */
+  async createNote(params: CreateNoteParams): Promise<Note> {
+    const response = await this.request<NoteResponse>("POST", "/notes", params);
+    return response.note;
   }
 }
