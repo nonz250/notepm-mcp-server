@@ -11,6 +11,8 @@ import {
   createMockNotesResponse,
   createMockPage,
   createMockPagesResponse,
+  createMockTag,
+  createMockTagsResponse,
 } from "./fixtures.js";
 
 // ============================================================
@@ -432,6 +434,169 @@ describe("NotePMClient", () => {
 
       // Should not throw
       await expect(client.deleteNote("note123")).resolves.toBeUndefined();
+    });
+  });
+
+  // ============================================================
+  // createNote Tests
+  // ============================================================
+
+  describe("createNote", () => {
+    it("should call POST /notes with required params", async () => {
+      const note = createMockNote();
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      await client.createNote({
+        name: "New Note",
+        scope: "open",
+      });
+
+      expectFetchCalledWith("POST", "/notes", {
+        name: "New Note",
+        scope: "open",
+      });
+    });
+
+    it("should call POST /notes with all params", async () => {
+      const note = createMockNote();
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      await client.createNote({
+        name: "New Note",
+        description: "Note description",
+        scope: "private",
+        groups: ["group1"],
+        users: ["user1"],
+      });
+
+      expectFetchCalledWith("POST", "/notes", {
+        name: "New Note",
+        description: "Note description",
+        scope: "private",
+        groups: ["group1"],
+        users: ["user1"],
+      });
+    });
+
+    it("should return created note", async () => {
+      const note = createMockNote({ name: "Created Note" });
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      const result = await client.createNote({
+        name: "Created Note",
+        scope: "open",
+      });
+
+      expect(result.name).toBe("Created Note");
+    });
+  });
+
+  // ============================================================
+  // updateNote Tests
+  // ============================================================
+
+  describe("updateNote", () => {
+    it("should call PATCH /notes/:note_code", async () => {
+      const note = createMockNote();
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      await client.updateNote("note123", { name: "Updated Name" });
+
+      expectFetchCalledWith("PATCH", "/notes/note123", { name: "Updated Name" });
+    });
+
+    it("should send partial update", async () => {
+      const note = createMockNote();
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      await client.updateNote("note123", {
+        description: "Updated description only",
+      });
+
+      expectFetchCalledWith("PATCH", "/notes/note123", { description: "Updated description only" });
+    });
+
+    it("should send all update fields", async () => {
+      const note = createMockNote();
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      await client.updateNote("note123", {
+        name: "New Name",
+        description: "New Description",
+        scope: "private",
+        groups: ["newgroup"],
+        users: ["newuser"],
+      });
+
+      expectFetchCalledWith("PATCH", "/notes/note123", {
+        name: "New Name",
+        description: "New Description",
+        scope: "private",
+        groups: ["newgroup"],
+        users: ["newuser"],
+      });
+    });
+
+    it("should return updated note", async () => {
+      const note = createMockNote({ name: "Updated Note" });
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      const result = await client.updateNote("note123", { name: "Updated Note" });
+
+      expect(result.name).toBe("Updated Note");
+    });
+  });
+
+  // ============================================================
+  // listTags Tests
+  // ============================================================
+
+  describe("listTags", () => {
+    it("should call GET /tags without params", async () => {
+      mockFetch.mockReturnValue(mockResponse(createMockTagsResponse([])));
+
+      await client.listTags();
+
+      expectFetchCalledWith("GET", "/tags");
+    });
+
+    it("should call GET /tags with query params", async () => {
+      mockFetch.mockReturnValue(mockResponse(createMockTagsResponse([])));
+
+      await client.listTags({
+        note_code: "note123",
+        per_page: 50,
+        page: 2,
+      });
+
+      const [url] = mockFetch.mock.calls[0] as [string, FetchOptions];
+      expect(url).toContain("/tags?");
+      expect(url).toContain("note_code=note123");
+      expect(url).toContain("per_page=50");
+      expect(url).toContain("page=2");
+    });
+
+    it("should return tags response", async () => {
+      const tags = [createMockTag(), createMockTag({ name: "tag2" })];
+      mockFetch.mockReturnValue(mockResponse(createMockTagsResponse(tags, 100)));
+
+      const result = await client.listTags();
+
+      expect(result.tags).toHaveLength(2);
+      expect(result.meta.total).toBe(100);
+    });
+
+    it("should return tags with all fields", async () => {
+      const tag = createMockTag({
+        name: "important",
+        page_count: 10,
+      });
+      mockFetch.mockReturnValue(mockResponse(createMockTagsResponse([tag])));
+
+      const result = await client.listTags();
+
+      expect(result.tags[0].name).toBe("important");
+      expect(result.tags[0].page_count).toBe(10);
     });
   });
 

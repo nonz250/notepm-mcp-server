@@ -518,6 +518,31 @@ describe("handleToolCall", () => {
       expect(getTextContent(result)).toContain("Description: (No description)");
     });
 
+    it("should show 'N/A' for undefined created_at and updated_at", async () => {
+      const note = createMockNote({ created_at: undefined, updated_at: undefined });
+      mockClient.createNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
+        name: "New Note",
+        scope: "open",
+      });
+
+      expect(getTextContent(result)).toContain("Created at: N/A");
+      expect(getTextContent(result)).toContain("Updated at: N/A");
+    });
+
+    it("should show 'Yes' for archived note", async () => {
+      const note = createMockNote({ archived: true });
+      mockClient.createNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
+        name: "Archived Note",
+        scope: "open",
+      });
+
+      expect(getTextContent(result)).toContain("Archived: Yes");
+    });
+
     it("should pass all parameters to client", async () => {
       mockClient.createNote.mockResolvedValue(createMockNote());
 
