@@ -91,6 +91,40 @@ describe("NotePMClient", () => {
   };
 
   // ============================================================
+  // getNote Tests
+  // ============================================================
+
+  describe("getNote", () => {
+    it("should call GET /notes/:note_code", async () => {
+      const note = createMockNote();
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      await client.getNote("note123");
+
+      expectFetchCalledWith("GET", "/notes/note123");
+    });
+
+    it("should return note object", async () => {
+      const note = createMockNote({ name: "My Note" });
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      const result = await client.getNote("note123");
+
+      expect(result.name).toBe("My Note");
+      expect(result.note_code).toBe("note123");
+    });
+
+    it("should handle special characters in note_code", async () => {
+      const note = createMockNote();
+      mockFetch.mockReturnValue(mockResponse({ note }));
+
+      await client.getNote("note-with-dash");
+
+      expectFetchCalledWith("GET", "/notes/note-with-dash");
+    });
+  });
+
+  // ============================================================
   // listNotes Tests
   // ============================================================
 

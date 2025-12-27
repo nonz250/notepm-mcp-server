@@ -214,6 +214,15 @@ export class NotePMClient {
   }
 
   /**
+   * Get note
+   * GET /api/v1/notes/:note_code
+   */
+  async getNote(noteCode: string): Promise<Note> {
+    const response = await this.request<NoteResponse>("GET", `/notes/${noteCode}`);
+    return response.note;
+  }
+
+  /**
    * List notes
    * GET /api/v1/notes
    */
