@@ -35,7 +35,7 @@ describe("TOOLS", () => {
     for (const tool of TOOLS) {
       expect(tool.description).toBeDefined();
       expect(typeof tool.description).toBe("string");
-      expect(tool.description.length).toBeGreaterThan(0);
+      expect(tool.description?.length).toBeGreaterThan(0);
     }
   });
 });
