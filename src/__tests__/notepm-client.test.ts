@@ -704,4 +704,41 @@ describe("NotePMClient", () => {
       expect(result.name).toBe("created-tag");
     });
   });
+
+  // ============================================================
+  // deleteTag Tests
+  // ============================================================
+
+  describe("deleteTag", () => {
+    it("should call DELETE /tags with name", async () => {
+      mockFetch.mockReturnValue(
+        Promise.resolve({
+          ok: true,
+          status: 204,
+          statusText: "No Content",
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(""),
+        })
+      );
+
+      await client.deleteTag({ name: "tag-to-delete" });
+
+      expectFetchCalledWith("DELETE", "/tags", { name: "tag-to-delete" });
+    });
+
+    it("should handle 204 No Content response", async () => {
+      mockFetch.mockReturnValue(
+        Promise.resolve({
+          ok: true,
+          status: 204,
+          statusText: "No Content",
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(""),
+        })
+      );
+
+      // Should not throw
+      await expect(client.deleteTag({ name: "tag-to-delete" })).resolves.toBeUndefined();
+    });
+  });
 });

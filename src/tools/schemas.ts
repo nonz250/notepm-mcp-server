@@ -102,6 +102,10 @@ export const CreateTagInputSchema = z.object({
   name: z.string().min(1).max(100).describe("Tag name (1-100 characters)"),
 });
 
+export const DeleteTagInputSchema = z.object({
+  name: z.string().min(1).max(30).describe("Tag name to delete (1-30 characters)"),
+});
+
 // ============================================================
 // Inferred Types
 // ============================================================
@@ -138,3 +142,6 @@ export type ListTagsInput = z.infer<typeof ListTagsInputSchema>;
 
 /** Inferred type for create tag input */
 export type CreateTagInput = z.infer<typeof CreateTagInputSchema>;
+
+/** Inferred type for delete tag input */
+export type DeleteTagInput = z.infer<typeof DeleteTagInputSchema>;

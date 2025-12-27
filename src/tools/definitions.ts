@@ -11,6 +11,7 @@ import {
   CreateTagInputSchema,
   DeleteNoteInputSchema,
   DeletePageInputSchema,
+  DeleteTagInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
   ListTagsInputSchema,
@@ -81,5 +82,10 @@ export const TOOLS: Tool[] = [
     name: TOOL_NAMES.CREATE_TAG,
     description: "Create a new tag in NotePM.",
     inputSchema: toInputSchema(CreateTagInputSchema),
+  },
+  {
+    name: TOOL_NAMES.DELETE_TAG,
+    description: "Delete a tag from NotePM. This action cannot be undone.",
+    inputSchema: toInputSchema(DeleteTagInputSchema),
   },
 ];

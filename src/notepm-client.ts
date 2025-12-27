@@ -149,6 +149,11 @@ export interface CreateTagParams {
   name: string;
 }
 
+/** Delete tag parameters */
+export interface DeleteTagParams {
+  name: string;
+}
+
 /** API Error */
 export class NotePMAPIError extends Error {
   constructor(
@@ -334,5 +339,13 @@ export class NotePMClient {
   async createTag(params: CreateTagParams): Promise<Tag> {
     const response = await this.request<TagResponse>("POST", "/tags", params);
     return response.tag;
+  }
+
+  /**
+   * Delete tag
+   * DELETE /api/v1/tags
+   */
+  async deleteTag(params: DeleteTagParams): Promise<void> {
+    await this.request<undefined>("DELETE", "/tags", params);
   }
 }

@@ -12,6 +12,7 @@ import {
   CreateTagInputSchema,
   DeleteNoteInputSchema,
   DeletePageInputSchema,
+  DeleteTagInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
   ListTagsInputSchema,
@@ -222,6 +223,12 @@ export async function handleToolCall(
         const { name } = parseInput(CreateTagInputSchema, args);
         const tag = await client.createTag({ name });
         return success(`Tag created: ${tag.name}`);
+      }
+
+      case TOOL_NAMES.DELETE_TAG: {
+        const { name } = parseInput(DeleteTagInputSchema, args);
+        await client.deleteTag({ name });
+        return success(`Tag deleted: ${name}`);
       }
 
       default:
