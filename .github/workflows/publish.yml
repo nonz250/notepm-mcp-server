@@ -95,7 +95,7 @@ jobs:
         run: npm run build
 
       - name: Publish to npm
-        run: npm publish --access public
+        run: npm publish --access public --provenance
 
       - name: Create tag
         run: |
