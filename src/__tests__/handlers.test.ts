@@ -49,6 +49,7 @@ const createMockClient = () => ({
   deleteNote: vi.fn(),
   listTags: vi.fn(),
   createTag: vi.fn(),
+  deleteTag: vi.fn(),
 });
 
 type MockClient = ReturnType<typeof createMockClient>;
@@ -793,6 +794,53 @@ describe("handleToolCall", () => {
         "create_tag",
         {} // missing required name
       );
+
+      expect(result.isError).toBe(true);
+      expect(getTextContent(result)).toContain("Input error:");
+    });
+  });
+
+  // ============================================================
+  // delete_tag Tests
+  // ============================================================
+
+  describe("delete_tag", () => {
+    it("should return success message with tag name", async () => {
+      mockClient.deleteTag.mockResolvedValue(undefined);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "delete_tag", {
+        name: "tag-to-delete",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("Tag deleted: tag-to-delete");
+    });
+
+    it("should call client with correct name", async () => {
+      mockClient.deleteTag.mockResolvedValue(undefined);
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "delete_tag", {
+        name: "my-tag",
+      });
+
+      expect(mockClient.deleteTag).toHaveBeenCalledWith({ name: "my-tag" });
+    });
+
+    it("should return input error for missing name", async () => {
+      const result = await handleToolCall(
+        mockClient as unknown as NotePMClient,
+        "delete_tag",
+        {} // missing required name
+      );
+
+      expect(result.isError).toBe(true);
+      expect(getTextContent(result)).toContain("Input error:");
+    });
+
+    it("should return input error for empty name", async () => {
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "delete_tag", {
+        name: "",
+      });
 
       expect(result.isError).toBe(true);
       expect(getTextContent(result)).toContain("Input error:");
