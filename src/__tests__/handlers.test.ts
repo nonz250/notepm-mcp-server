@@ -44,6 +44,7 @@ const createMockClient = () => ({
   updatePage: vi.fn(),
   deletePage: vi.fn(),
   listNotes: vi.fn(),
+  getNote: vi.fn(),
   createNote: vi.fn(),
   updateNote: vi.fn(),
   deleteNote: vi.fn(),
@@ -459,6 +460,80 @@ describe("handleToolCall", () => {
       });
 
       expect(getTextContent(result)).toContain("showing 1 of 100 notes");
+    });
+  });
+
+  // ============================================================
+  // get_note Tests
+  // ============================================================
+
+  describe("get_note", () => {
+    it("should format note with all fields", async () => {
+      const note = createMockNote();
+      mockClient.getNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_note", {
+        note_code: "note123",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("## Test Note");
+      expect(getTextContent(result)).toContain("Note code: note123");
+      expect(getTextContent(result)).toContain("Description: Test description");
+      expect(getTextContent(result)).toContain("Scope: All members");
+      expect(getTextContent(result)).toContain("Archived: No");
+    });
+
+    it("should show '(No description)' for empty description", async () => {
+      const note = createMockNote({ description: "" });
+      mockClient.getNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_note", {
+        note_code: "note123",
+      });
+
+      expect(getTextContent(result)).toContain("Description: (No description)");
+    });
+
+    it("should show correct scope for private note", async () => {
+      const note = createMockNote({ scope: "private" });
+      mockClient.getNote.mockResolvedValue(note);
+
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_note", {
+        note_code: "note123",
+      });
+
+      expect(getTextContent(result)).toContain("Scope: Participating members only");
+    });
+
+    it("should call client with correct note_code", async () => {
+      mockClient.getNote.mockResolvedValue(createMockNote());
+
+      await handleToolCall(mockClient as unknown as NotePMClient, "get_note", {
+        note_code: "specific_code",
+      });
+
+      expect(mockClient.getNote).toHaveBeenCalledWith("specific_code");
+    });
+
+    it("should return input error for missing note_code", async () => {
+      const result = await handleToolCall(
+        mockClient as unknown as NotePMClient,
+        "get_note",
+        {} // missing required note_code
+      );
+
+      expect(result.isError).toBe(true);
+      expect(getTextContent(result)).toContain("Input error:");
+    });
+
+    it("should return input error for empty note_code", async () => {
+      const result = await handleToolCall(mockClient as unknown as NotePMClient, "get_note", {
+        note_code: "",
+      });
+
+      expect(result.isError).toBe(true);
+      expect(getTextContent(result)).toContain("Input error:");
     });
   });
 

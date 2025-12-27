@@ -12,6 +12,7 @@ import {
   DeleteNoteInputSchema,
   DeletePageInputSchema,
   DeleteTagInputSchema,
+  GetNoteInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
   ListTagsInputSchema,
@@ -57,6 +58,11 @@ export const TOOLS: Tool[] = [
     name: TOOL_NAMES.LIST_NOTES,
     description: "List all NotePM notes. Returns note codes, names, and descriptions.",
     inputSchema: toInputSchema(ListNotesInputSchema),
+  },
+  {
+    name: TOOL_NAMES.GET_NOTE,
+    description: "Get a NotePM note. Retrieve name, description, scope and other details by note code.",
+    inputSchema: toInputSchema(GetNoteInputSchema),
   },
   {
     name: TOOL_NAMES.CREATE_NOTE,

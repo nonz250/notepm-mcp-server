@@ -13,6 +13,7 @@ import {
   DeleteNoteInputSchema,
   DeletePageInputSchema,
   DeleteTagInputSchema,
+  GetNoteInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
   ListTagsInputSchema,
@@ -178,6 +179,12 @@ export async function handleToolCall(
         return success(
           `Notes: showing ${String(result.notes.length)} of ${String(result.meta.total)} notes\n\n${noteList}`
         );
+      }
+
+      case TOOL_NAMES.GET_NOTE: {
+        const { note_code } = parseInput(GetNoteInputSchema, args);
+        const note = await client.getNote(note_code);
+        return success(formatNote(note));
       }
 
       case TOOL_NAMES.CREATE_NOTE: {

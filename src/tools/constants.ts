@@ -15,6 +15,7 @@ export const TOOL_NAMES = {
   UPDATE_PAGE: "update_page",
   DELETE_PAGE: "delete_page",
   LIST_NOTES: "list_notes",
+  GET_NOTE: "get_note",
   CREATE_NOTE: "create_note",
   UPDATE_NOTE: "update_note",
   DELETE_NOTE: "delete_note",

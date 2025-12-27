@@ -12,6 +12,7 @@ import {
   DeleteNoteInputSchema,
   DeletePageInputSchema,
   DeleteTagInputSchema,
+  GetNoteInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
   SearchPagesInputSchema,
@@ -358,6 +359,33 @@ describe("ListNotesInputSchema", () => {
 
   it("should reject page below minimum (0)", () => {
     const result = ListNotesInputSchema.safeParse({ page: 0 });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("GetNoteInputSchema", () => {
+  it("should require note_code", () => {
+    const result = GetNoteInputSchema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it("should accept valid note_code", () => {
+    const result = GetNoteInputSchema.safeParse({ note_code: "abc123" });
+    expect(result.success).toBe(true);
+  });
+
+  it("should reject non-string note_code", () => {
+    const result = GetNoteInputSchema.safeParse({ note_code: 123 });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject empty string note_code", () => {
+    const result = GetNoteInputSchema.safeParse({ note_code: "" });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject null note_code", () => {
+    const result = GetNoteInputSchema.safeParse({ note_code: null });
     expect(result.success).toBe(false);
   });
 });
