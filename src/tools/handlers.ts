@@ -176,11 +176,11 @@ export async function handleToolCall(
       }
 
       case TOOL_NAMES.CREATE_NOTE: {
-        const { name, description, scope, groups, users, icon_url } = parseInput(
+        const { name, description, scope, groups, users } = parseInput(
           CreateNoteInputSchema,
           args
         );
-        const note = await client.createNote({ name, description, scope, groups, users, icon_url });
+        const note = await client.createNote({ name, description, scope, groups, users });
         return success(`Note created.\n\n${formatNote(note)}`);
       }
 

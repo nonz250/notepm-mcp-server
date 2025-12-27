@@ -61,17 +61,13 @@ export const ListNotesInputSchema = z.object({
 });
 
 export const CreateNoteInputSchema = z.object({
-  name: z.string().min(1).max(100).describe("Note name (1-100 characters)"),
-  description: z.string().max(255).optional().describe("Note description (max 255 characters)"),
+  name: z.string().min(1).max(30).describe("Note name (1-30 characters)"),
+  description: z.string().max(200).optional().describe("Note description (max 200 characters)"),
   scope: z
-    .number()
-    .min(0)
-    .max(1)
-    .optional()
-    .describe("Visibility scope (0: all members, 1: participating members only)"),
-  groups: z.array(z.string()).optional().describe("Array of group codes to grant access"),
-  users: z.array(z.string()).optional().describe("Array of user codes to grant access"),
-  icon_url: z.url().optional().describe("Note icon URL"),
+    .enum(["open", "private"])
+    .describe("Visibility scope ('open': all members, 'private': specified members only)"),
+  groups: z.array(z.string()).optional().describe("Array of group names to grant access (only for private scope)"),
+  users: z.array(z.string()).optional().describe("Array of user codes to grant access (only for private scope)"),
 });
 
 // ============================================================

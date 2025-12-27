@@ -42,10 +42,9 @@ export interface NoteResponse {
 export interface CreateNoteParams {
   name: string;
   description?: string;
-  scope?: number;
+  scope: "open" | "private";
   groups?: string[];
   users?: string[];
-  icon_url?: string;
 }
 
 /** Page information */

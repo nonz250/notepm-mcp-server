@@ -466,6 +466,7 @@ describe("handleToolCall", () => {
 
       const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
         name: "New Note",
+        scope: "open",
       });
 
       expect(result.isError).toBeUndefined();
@@ -479,6 +480,7 @@ describe("handleToolCall", () => {
 
       const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
         name: "Test Note",
+        scope: "open",
       });
 
       expect(result.isError).toBeUndefined();
@@ -489,12 +491,12 @@ describe("handleToolCall", () => {
     });
 
     it("should show correct scope for participating members only", async () => {
-      const note = createMockNote({ scope: 1 });
+      const note = createMockNote({ scope: "private" });
       mockClient.createNote.mockResolvedValue(note);
 
       const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
         name: "Private Note",
-        scope: 1,
+        scope: "private",
       });
 
       expect(getTextContent(result)).toContain("Scope: Participating members only");
@@ -506,6 +508,7 @@ describe("handleToolCall", () => {
 
       const result = await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
         name: "No Description Note",
+        scope: "open",
       });
 
       expect(getTextContent(result)).toContain("Description: (No description)");
@@ -517,36 +520,34 @@ describe("handleToolCall", () => {
       await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
         name: "Full Note",
         description: "A detailed description",
-        scope: 1,
+        scope: "private",
         groups: ["group1", "group2"],
         users: ["user1"],
-        icon_url: "https://example.com/icon.png",
       });
 
       expect(mockClient.createNote).toHaveBeenCalledWith({
         name: "Full Note",
         description: "A detailed description",
-        scope: 1,
+        scope: "private",
         groups: ["group1", "group2"],
         users: ["user1"],
-        icon_url: "https://example.com/icon.png",
       });
     });
 
-    it("should handle minimal parameters", async () => {
+    it("should handle minimal parameters (name and scope only)", async () => {
       mockClient.createNote.mockResolvedValue(createMockNote());
 
       await handleToolCall(mockClient as unknown as NotePMClient, "create_note", {
         name: "Minimal Note",
+        scope: "open",
       });
 
       expect(mockClient.createNote).toHaveBeenCalledWith({
         name: "Minimal Note",
         description: undefined,
-        scope: undefined,
+        scope: "open",
         groups: undefined,
         users: undefined,
-        icon_url: undefined,
       });
     });
   });
