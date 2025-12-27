@@ -9,6 +9,7 @@ import { TOOL_NAMES, ToolName } from "./constants.js";
 import {
   CreateNoteInputSchema,
   CreatePageInputSchema,
+  CreateTagInputSchema,
   DeleteNoteInputSchema,
   DeletePageInputSchema,
   GetPageInputSchema,
@@ -215,6 +216,12 @@ export async function handleToolCall(
         return success(
           `Tags: showing ${String(result.tags.length)} of ${String(result.meta.total)} tags\n\n${tagList}`
         );
+      }
+
+      case TOOL_NAMES.CREATE_TAG: {
+        const { name } = parseInput(CreateTagInputSchema, args);
+        const tag = await client.createTag({ name });
+        return success(`Tag created: ${tag.name}`);
       }
 
       default:

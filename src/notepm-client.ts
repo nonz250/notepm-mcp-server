@@ -118,6 +118,11 @@ export interface ListTagsParams {
   per_page?: number;
 }
 
+/** Single tag response */
+export interface TagResponse {
+  tag: Tag;
+}
+
 /** Search pages parameters */
 export interface SearchPagesParams {
   q?: string;
@@ -137,6 +142,11 @@ export interface CreatePageParams {
   memo?: string;
   folder_id?: number;
   tags?: string[];
+}
+
+/** Create tag parameters */
+export interface CreateTagParams {
+  name: string;
 }
 
 /** API Error */
@@ -315,5 +325,14 @@ export class NotePMClient {
     const path = `/tags${query ? `?${query}` : ""}`;
 
     return this.request<TagsResponse>("GET", path);
+  }
+
+  /**
+   * Create tag
+   * POST /api/v1/tags
+   */
+  async createTag(params: CreateTagParams): Promise<Tag> {
+    const response = await this.request<TagResponse>("POST", "/tags", params);
+    return response.tag;
   }
 }

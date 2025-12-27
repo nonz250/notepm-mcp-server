@@ -680,4 +680,28 @@ describe("NotePMClient", () => {
       expect(url).toContain("https://custom.example.com/api/v1");
     });
   });
+
+  // ============================================================
+  // createTag Tests
+  // ============================================================
+
+  describe("createTag", () => {
+    it("should call POST /tags with name", async () => {
+      const tag = createMockTag();
+      mockFetch.mockReturnValue(mockResponse({ tag }));
+
+      await client.createTag({ name: "new-tag" });
+
+      expectFetchCalledWith("POST", "/tags", { name: "new-tag" });
+    });
+
+    it("should return created tag", async () => {
+      const tag = createMockTag({ name: "created-tag" });
+      mockFetch.mockReturnValue(mockResponse({ tag }));
+
+      const result = await client.createTag({ name: "created-tag" });
+
+      expect(result.name).toBe("created-tag");
+    });
+  });
 });
