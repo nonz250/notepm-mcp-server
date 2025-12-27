@@ -12,6 +12,7 @@ import {
   DeletePageInputSchema,
   GetPageInputSchema,
   ListNotesInputSchema,
+  ListTagsInputSchema,
   SearchPagesInputSchema,
   UpdateNoteInputSchema,
   UpdatePageInputSchema,
@@ -69,5 +70,10 @@ export const TOOLS: Tool[] = [
     name: TOOL_NAMES.DELETE_NOTE,
     description: "Delete a NotePM note. This action cannot be undone. All pages within the note will also be deleted.",
     inputSchema: toInputSchema(DeleteNoteInputSchema),
+  },
+  {
+    name: TOOL_NAMES.LIST_TAGS,
+    description: "List all tags in NotePM. Can filter by note code.",
+    inputSchema: toInputSchema(ListTagsInputSchema),
   },
 ];

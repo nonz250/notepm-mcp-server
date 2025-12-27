@@ -3,7 +3,7 @@
  *
  * Common mock data factories for tests
  */
-import { Note, NotesResponse, Page, PagesResponse } from "../notepm-client.js";
+import { Note, NotesResponse, Page, PagesResponse, Tag, TagsResponse } from "../notepm-client.js";
 
 /**
  * Create a mock Page object with optional overrides
@@ -63,5 +63,28 @@ export const createMockNotesResponse = (notes: Note[], total?: number): NotesRes
     page: 1,
     per_page: 20,
     total: total ?? notes.length,
+  },
+});
+
+/**
+ * Create a mock Tag object with optional overrides
+ */
+export const createMockTag = (overrides: Partial<Tag> = {}): Tag => ({
+  name: "test-tag",
+  page_count: 5,
+  ...overrides,
+});
+
+/**
+ * Create a mock TagsResponse object
+ */
+export const createMockTagsResponse = (tags: Tag[], total?: number): TagsResponse => ({
+  tags,
+  meta: {
+    previous_page: null,
+    next_page: null,
+    page: 1,
+    per_page: 50,
+    total: total ?? tags.length,
   },
 });
