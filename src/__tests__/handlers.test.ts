@@ -775,22 +775,19 @@ describe("handleToolCall", () => {
   // ============================================================
 
   describe("archive_note", () => {
-    it("should return success message with formatted note", async () => {
-      const note = createMockNote({ archived: true });
-      mockClient.archiveNote.mockResolvedValue(note);
+    it("should return success message with note_code", async () => {
+      mockClient.archiveNote.mockResolvedValue(undefined);
 
       const result = await handleToolCall(mockClient as unknown as NotePMClient, "archive_note", {
         note_code: "note123",
       });
 
       expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toContain("Note archived.");
-      expect(getTextContent(result)).toContain("## Test Note");
-      expect(getTextContent(result)).toContain("Archived: Yes");
+      expect(getTextContent(result)).toBe("Note archived: note123");
     });
 
     it("should call client with correct note_code", async () => {
-      mockClient.archiveNote.mockResolvedValue(createMockNote({ archived: true }));
+      mockClient.archiveNote.mockResolvedValue(undefined);
 
       await handleToolCall(mockClient as unknown as NotePMClient, "archive_note", {
         note_code: "archive_me",

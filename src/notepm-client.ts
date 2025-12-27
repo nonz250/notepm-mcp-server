@@ -328,9 +328,8 @@ export class NotePMClient {
    * Archive note
    * PATCH /api/v1/notes/:note_code/archive
    */
-  async archiveNote(noteCode: string): Promise<Note> {
-    const response = await this.request<NoteResponse>("PATCH", `/notes/${noteCode}/archive`);
-    return response.note;
+  async archiveNote(noteCode: string): Promise<void> {
+    await this.request<undefined>("PATCH", `/notes/${noteCode}/archive`);
   }
 
   /**

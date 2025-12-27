@@ -214,8 +214,8 @@ export async function handleToolCall(
 
       case TOOL_NAMES.ARCHIVE_NOTE: {
         const { note_code } = parseInput(ArchiveNoteInputSchema, args);
-        const note = await client.archiveNote(note_code);
-        return success(`Note archived.\n\n${formatNote(note)}`);
+        await client.archiveNote(note_code);
+        return success(`Note archived: ${note_code}`);
       }
 
       case TOOL_NAMES.LIST_TAGS: {

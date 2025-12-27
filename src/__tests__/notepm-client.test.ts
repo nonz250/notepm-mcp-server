@@ -477,22 +477,34 @@ describe("NotePMClient", () => {
 
   describe("archiveNote", () => {
     it("should call PATCH /notes/:note_code/archive", async () => {
-      const note = createMockNote({ archived: true });
-      mockFetch.mockReturnValue(mockResponse({ note }));
+      mockFetch.mockReturnValue(
+        Promise.resolve({
+          ok: true,
+          status: 204,
+          statusText: "No Content",
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(""),
+        })
+      );
 
       await client.archiveNote("note123");
 
       expectFetchCalledWith("PATCH", "/notes/note123/archive");
     });
 
-    it("should return archived note", async () => {
-      const note = createMockNote({ archived: true, name: "Archived Note" });
-      mockFetch.mockReturnValue(mockResponse({ note }));
+    it("should handle 204 No Content response", async () => {
+      mockFetch.mockReturnValue(
+        Promise.resolve({
+          ok: true,
+          status: 204,
+          statusText: "No Content",
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(""),
+        })
+      );
 
-      const result = await client.archiveNote("note123");
-
-      expect(result.name).toBe("Archived Note");
-      expect(result.archived).toBe(true);
+      // Should not throw
+      await expect(client.archiveNote("note123")).resolves.toBeUndefined();
     });
   });
 
