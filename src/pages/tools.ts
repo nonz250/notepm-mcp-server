@@ -6,7 +6,6 @@ import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { toInputSchema } from "../shared/index.js";
 import {
   CreatePageInputSchema,
-  DeletePageInputSchema,
   GetPageInputSchema,
   SearchPagesInputSchema,
   UpdatePageInputSchema,
@@ -33,10 +32,5 @@ export const PAGE_TOOLS: Tool[] = [
     name: PAGE_TOOL_NAMES.UPDATE_PAGE,
     description: "Update an existing NotePM page. Page code is required.",
     inputSchema: toInputSchema(UpdatePageInputSchema),
-  },
-  {
-    name: PAGE_TOOL_NAMES.DELETE_PAGE,
-    description: "Delete a NotePM page. This action cannot be undone.",
-    inputSchema: toInputSchema(DeletePageInputSchema),
   },
 ];

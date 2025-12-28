@@ -61,12 +61,4 @@ export class PageClient {
     const response = await this.http.request<PageResponse>("PATCH", `/pages/${pageCode}`, params);
     return response.page;
   }
-
-  /**
-   * Delete page
-   * DELETE /api/v1/pages/:page_code
-   */
-  async delete(pageCode: string): Promise<void> {
-    await this.http.request<undefined>("DELETE", `/pages/${pageCode}`);
-  }
 }

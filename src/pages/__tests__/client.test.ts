@@ -173,14 +173,4 @@ describe("PageClient", () => {
       expect(result).toEqual(mockPage);
     });
   });
-
-  describe("delete", () => {
-    it("should call DELETE /pages/:page_code", async () => {
-      mockHttp.request.mockResolvedValue(undefined);
-
-      await client.delete("abc123");
-
-      expect(mockHttp.request).toHaveBeenCalledWith("DELETE", "/pages/abc123");
-    });
-  });
 });

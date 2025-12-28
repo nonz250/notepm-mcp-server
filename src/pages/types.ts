@@ -67,7 +67,6 @@ export const PAGE_TOOL_NAMES = {
   GET_PAGE: "get_page",
   CREATE_PAGE: "create_page",
   UPDATE_PAGE: "update_page",
-  DELETE_PAGE: "delete_page",
 } as const;
 
 /** Type representing valid page tool names */

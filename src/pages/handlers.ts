@@ -7,7 +7,6 @@ import { parseInput, success } from "../shared/result.js";
 import { PageClient } from "./client.js";
 import {
   CreatePageInputSchema,
-  DeletePageInputSchema,
   GetPageInputSchema,
   SearchPagesInputSchema,
   UpdatePageInputSchema,
@@ -89,12 +88,6 @@ export async function handlePageToolCall(
       const { page_code, title, body, memo, tags } = parseInput(UpdatePageInputSchema, args);
       const page = await client.update(page_code, { title, body, memo, tags });
       return success(`Page updated.\n\n${formatPage(page)}`);
-    }
-
-    case PAGE_TOOL_NAMES.DELETE_PAGE: {
-      const { page_code } = parseInput(DeletePageInputSchema, args);
-      await client.delete(page_code);
-      return success(`Page deleted: ${page_code}`);
     }
   }
 }
