@@ -2,8 +2,8 @@
  * Page domain tool definitions
  */
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
 
+import { toInputSchema } from "../shared/index.js";
 import {
   CreatePageInputSchema,
   DeletePageInputSchema,
@@ -12,13 +12,6 @@ import {
   UpdatePageInputSchema,
 } from "./schemas.js";
 import { PAGE_TOOL_NAMES } from "./types.js";
-
-/**
- * Convert Zod schema to MCP-compatible JSON Schema
- */
-function toInputSchema(schema: z.ZodType): Tool["inputSchema"] {
-  return z.toJSONSchema(schema, { target: "draft-07" }) as Tool["inputSchema"];
-}
 
 export const PAGE_TOOLS: Tool[] = [
   {

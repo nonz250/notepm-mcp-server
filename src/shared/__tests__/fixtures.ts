@@ -4,8 +4,9 @@
  * Common mock data factories for tests
  */
 import type { Note, NotesResponse } from "../../notes/types.js";
-import type { Page, PagesResponse, Tag } from "../../pages/types.js";
+import type { Page, PagesResponse } from "../../pages/types.js";
 import type { TagsResponse } from "../../tags/types.js";
+import type { Tag } from "../types.js";
 
 /**
  * Create a mock Page object with optional overrides

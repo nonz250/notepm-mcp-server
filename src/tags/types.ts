@@ -1,13 +1,10 @@
 /**
  * Tag domain types
  */
-import type { PaginationMeta } from "../shared/types.js";
+import type { PaginationMeta, Tag } from "../shared/types.js";
 
-/** Tag information */
-export interface Tag {
-  name: string;
-  page_count?: number;
-}
+// Re-export Tag for use by consumers of this module
+export type { Tag };
 
 /** Single tag response */
 export interface TagResponse {

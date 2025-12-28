@@ -1,13 +1,10 @@
 /**
  * Page domain types
  */
-import type { PaginationMeta, User } from "../shared/types.js";
+import type { PaginationMeta, Tag, User } from "../shared/types.js";
 
-/** Tag information */
-export interface Tag {
-  name: string;
-  page_count?: number;
-}
+// Re-export Tag for use by consumers of this module
+export type { Tag };
 
 /** Page information */
 export interface Page {

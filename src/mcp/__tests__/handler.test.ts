@@ -131,13 +131,13 @@ describe("handleToolCall", () => {
   // ============================================================
 
   describe("search_pages", () => {
-    it("should return '0 pages' for empty results", async () => {
+    it("should return 'No pages found.' for empty results", async () => {
       mockPageClient.search.mockResolvedValue(createMockPagesResponse([]));
 
       const result = await handleToolCall(clients, "search_pages", {});
 
       expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toBe("Search results: 0 pages");
+      expect(getTextContent(result)).toBe("No pages found.");
     });
 
     it("should format search results correctly", async () => {
@@ -238,13 +238,13 @@ describe("handleToolCall", () => {
   // ============================================================
 
   describe("list_tags", () => {
-    it("should return '0 tags found' for empty results", async () => {
+    it("should return 'No tags found.' for empty results", async () => {
       mockTagClient.list.mockResolvedValue(createMockTagsResponse([]));
 
       const result = await handleToolCall(clients, "list_tags", {});
 
       expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toBe("Tags: 0 tags found");
+      expect(getTextContent(result)).toBe("No tags found.");
     });
 
     it("should format tag list correctly", async () => {

@@ -39,6 +39,36 @@ describe("SearchPagesInputSchema", () => {
     }
   });
 
+  it("should accept only_title parameter", () => {
+    const result = SearchPagesInputSchema.safeParse({
+      only_title: true,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.only_title).toBe(true);
+    }
+  });
+
+  it("should accept include_archived parameter", () => {
+    const result = SearchPagesInputSchema.safeParse({
+      include_archived: true,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.include_archived).toBe(true);
+    }
+  });
+
+  it("should reject non-boolean only_title", () => {
+    const result = SearchPagesInputSchema.safeParse({ only_title: "true" });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject non-boolean include_archived", () => {
+    const result = SearchPagesInputSchema.safeParse({ include_archived: "true" });
+    expect(result.success).toBe(false);
+  });
+
   it("should accept per_page at minimum boundary (1)", () => {
     const result = SearchPagesInputSchema.safeParse({ per_page: 1 });
     expect(result.success).toBe(true);

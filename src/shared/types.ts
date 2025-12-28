@@ -8,6 +8,12 @@ export interface User {
   name: string;
 }
 
+/** Tag information */
+export interface Tag {
+  name: string;
+  page_count?: number;
+}
+
 /** Pagination metadata */
 export interface PaginationMeta {
   previous_page: string | null;

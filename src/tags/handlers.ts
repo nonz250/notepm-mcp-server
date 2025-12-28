@@ -34,7 +34,7 @@ export async function handleTagToolCall(
       const result = await client.list({ note_code, page, per_page });
 
       if (result.tags.length === 0) {
-        return success("Tags: 0 tags found");
+        return success("No tags found.");
       }
 
       const tagList = result.tags.map((t, i) => `${String(i + 1)}. ${t.name}`).join("\n");

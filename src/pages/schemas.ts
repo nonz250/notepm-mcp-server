@@ -9,6 +9,8 @@ import { z } from "zod";
 
 export const SearchPagesInputSchema = z.object({
   query: z.string().optional().describe("Search keyword"),
+  only_title: z.boolean().optional().describe("Search only in page titles (default: false)"),
+  include_archived: z.boolean().optional().describe("Include archived pages (default: false)"),
   note_code: z.string().optional().describe("Note code (search within specific note)"),
   tag_name: z.string().optional().describe("Filter by tag name"),
   page: z.number().min(1).optional().describe("Page number (default: 1)"),

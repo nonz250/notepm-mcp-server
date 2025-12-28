@@ -7,8 +7,7 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
 import { handleNoteToolCall, isNoteToolName, NoteClient } from "../notes/index.js";
 import { handlePageToolCall, isPageToolName, PageClient } from "../pages/index.js";
-import { error, InputError } from "../shared/index.js";
-import { NotePMAPIError } from "../shared/errors.js";
+import { error, InputError, NotePMAPIError } from "../shared/index.js";
 import { handleTagToolCall, isTagToolName, TagClient } from "../tags/index.js";
 
 interface Clients {

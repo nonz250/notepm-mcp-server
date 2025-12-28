@@ -51,11 +51,14 @@ export async function handlePageToolCall(
 ): Promise<CallToolResult> {
   switch (name) {
     case PAGE_TOOL_NAMES.SEARCH_PAGES: {
-      const { query, note_code, tag_name, page, per_page } = parseInput(SearchPagesInputSchema, args);
-      const result = await client.search({ q: query, note_code, tag_name, page, per_page });
+      const { query, only_title, include_archived, note_code, tag_name, page, per_page } = parseInput(
+        SearchPagesInputSchema,
+        args
+      );
+      const result = await client.search({ q: query, only_title, include_archived, note_code, tag_name, page, per_page });
 
       if (result.pages.length === 0) {
-        return success("Search results: 0 pages");
+        return success("No pages found.");
       }
 
       const pageList = result.pages
