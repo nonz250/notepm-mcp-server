@@ -120,6 +120,16 @@ npm run lint:fix  # Auto-fix issues
 - Use explicit return types for public functions
 - Use Zod schemas for input validation
 
+## Tool Design Philosophy
+
+This MCP server is designed for AI agents. We intentionally do not expose every NotePM API endpoint as a tool.
+
+Some argue that "too many tools" cause problems for AI agents. We disagree—10-15 tools don't confuse modern AI models (100+ might be different). The real issue is not the number of tools, but **what those tools do**.
+
+We removed `delete_page` not because "we had too many tools," but because **AI making irreversible deletions is risky**. We removed `archive_note` not to reduce count, but because **it's an administrative decision humans should make**.
+
+Forcing tools into fewer, complex schemas to reduce count is counterproductive—it makes each tool harder to use correctly.
+
 ## Testing
 
 ### Running Tests
