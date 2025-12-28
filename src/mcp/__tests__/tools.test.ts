@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { NOTE_TOOL_NAMES } from "../../notes/types.js";
 import { PAGE_TOOL_NAMES } from "../../pages/types.js";
 import { TAG_TOOL_NAMES } from "../../tags/types.js";
-import { TOOLS } from "../tools.js";
+import { TOOLS } from "../index.js";
 
 describe("TOOLS", () => {
   it("should have all expected tools defined", () => {

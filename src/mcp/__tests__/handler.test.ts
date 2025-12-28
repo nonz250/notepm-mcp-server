@@ -18,7 +18,7 @@ import {
   createMockTagsResponse,
 } from "../../shared/__tests__/fixtures.js";
 import type { TagClient } from "../../tags/client.js";
-import { handleToolCall } from "../handler.js";
+import { handleToolCall } from "../index.js";
 
 // ============================================================
 // Helper Functions
@@ -169,6 +169,49 @@ describe("handleToolCall", () => {
     });
   });
 
+  describe("create_page", () => {
+    it("should return success message with page details", async () => {
+      const page = createMockPage({ page_code: "new123", title: "New Page" });
+      mockPageClient.create.mockResolvedValue(page);
+
+      const result = await handleToolCall(clients, "create_page", {
+        note_code: "note123",
+        title: "New Page",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Page created.");
+      expect(getTextContent(result)).toContain("## New Page");
+    });
+  });
+
+  describe("update_page", () => {
+    it("should return success message with updated page details", async () => {
+      const page = createMockPage({ page_code: "page123", title: "Updated Page" });
+      mockPageClient.update.mockResolvedValue(page);
+
+      const result = await handleToolCall(clients, "update_page", {
+        page_code: "page123",
+        title: "Updated Page",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Page updated.");
+      expect(getTextContent(result)).toContain("## Updated Page");
+    });
+  });
+
+  describe("delete_page", () => {
+    it("should return success message", async () => {
+      mockPageClient.delete.mockResolvedValue(undefined);
+
+      const result = await handleToolCall(clients, "delete_page", { page_code: "page123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("Page deleted: page123");
+    });
+  });
+
   // ============================================================
   // Note Tools Tests
   // ============================================================
@@ -208,6 +251,49 @@ describe("handleToolCall", () => {
       expect(result.isError).toBeUndefined();
       expect(getTextContent(result)).toContain("## Test Note");
       expect(getTextContent(result)).toContain("Note code: note123");
+    });
+  });
+
+  describe("create_note", () => {
+    it("should return success message with note details", async () => {
+      const note = createMockNote({ note_code: "new123", name: "New Note" });
+      mockNoteClient.create.mockResolvedValue(note);
+
+      const result = await handleToolCall(clients, "create_note", {
+        name: "New Note",
+        scope: "open",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Note created.");
+      expect(getTextContent(result)).toContain("## New Note");
+    });
+  });
+
+  describe("update_note", () => {
+    it("should return success message with updated note details", async () => {
+      const note = createMockNote({ note_code: "note123", name: "Updated Note" });
+      mockNoteClient.update.mockResolvedValue(note);
+
+      const result = await handleToolCall(clients, "update_note", {
+        note_code: "note123",
+        name: "Updated Note",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Note updated.");
+      expect(getTextContent(result)).toContain("## Updated Note");
+    });
+  });
+
+  describe("delete_note", () => {
+    it("should return success message", async () => {
+      mockNoteClient.delete.mockResolvedValue(undefined);
+
+      const result = await handleToolCall(clients, "delete_note", { note_code: "note123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("Note deleted: note123");
     });
   });
 
