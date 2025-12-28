@@ -166,6 +166,28 @@ describe("handleToolCall", () => {
       expect(result.isError).toBeUndefined();
       expect(getTextContent(result)).toContain("## Test Page");
       expect(getTextContent(result)).toContain("Page code: page123");
+      expect(getTextContent(result)).toContain("Tags: tag1, tag2");
+      expect(getTextContent(result)).toContain("Test body content");
+    });
+
+    it("should handle page with no tags", async () => {
+      const page = createMockPage({ tags: [] });
+      mockPageClient.get.mockResolvedValue(page);
+
+      const result = await handleToolCall(clients, "get_page", { page_code: "page123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Tags: None");
+    });
+
+    it("should handle page with no body", async () => {
+      const page = createMockPage({ body: "" });
+      mockPageClient.get.mockResolvedValue(page);
+
+      const result = await handleToolCall(clients, "get_page", { page_code: "page123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("(No body)");
     });
   });
 
@@ -239,6 +261,36 @@ describe("handleToolCall", () => {
       expect(getTextContent(result)).toContain("showing 2 of 2 notes");
       expect(getTextContent(result)).toContain("**First Note**");
     });
+
+    it("should show archived status in list", async () => {
+      const notes = [createMockNote({ note_code: "n1", name: "Archived Note", archived: true })];
+      mockNoteClient.list.mockResolvedValue(createMockNotesResponse(notes, 1));
+
+      const result = await handleToolCall(clients, "list_notes", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("[archived]");
+    });
+
+    it("should show private scope in list", async () => {
+      const notes = [createMockNote({ note_code: "n1", name: "Private Note", scope: "private" })];
+      mockNoteClient.list.mockResolvedValue(createMockNotesResponse(notes, 1));
+
+      const result = await handleToolCall(clients, "list_notes", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("(private)");
+    });
+
+    it("should show no description placeholder in list", async () => {
+      const notes = [createMockNote({ note_code: "n1", name: "No Desc Note", description: "" })];
+      mockNoteClient.list.mockResolvedValue(createMockNotesResponse(notes, 1));
+
+      const result = await handleToolCall(clients, "list_notes", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("(No description)");
+    });
   });
 
   describe("get_note", () => {
@@ -251,6 +303,59 @@ describe("handleToolCall", () => {
       expect(result.isError).toBeUndefined();
       expect(getTextContent(result)).toContain("## Test Note");
       expect(getTextContent(result)).toContain("Note code: note123");
+      expect(getTextContent(result)).toContain("Scope: All members");
+      expect(getTextContent(result)).toContain("Archived: No");
+    });
+
+    it("should handle scope as number 0 (open)", async () => {
+      const note = createMockNote({ scope: 0 as unknown as "open" });
+      mockNoteClient.get.mockResolvedValue(note);
+
+      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Scope: All members");
+    });
+
+    it("should handle private scope", async () => {
+      const note = createMockNote({ scope: "private" });
+      mockNoteClient.get.mockResolvedValue(note);
+
+      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Scope: Participating members only");
+    });
+
+    it("should handle archived note", async () => {
+      const note = createMockNote({ archived: true });
+      mockNoteClient.get.mockResolvedValue(note);
+
+      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Archived: Yes");
+    });
+
+    it("should handle note with no description", async () => {
+      const note = createMockNote({ description: "" });
+      mockNoteClient.get.mockResolvedValue(note);
+
+      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("(No description)");
+    });
+
+    it("should handle note with missing dates", async () => {
+      const note = createMockNote({ created_at: undefined, updated_at: undefined });
+      mockNoteClient.get.mockResolvedValue(note);
+
+      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Created at: N/A");
+      expect(getTextContent(result)).toContain("Updated at: N/A");
     });
   });
 
