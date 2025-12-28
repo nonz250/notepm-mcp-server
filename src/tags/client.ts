@@ -4,7 +4,6 @@
 import { HttpClient } from "../shared/http-client.js";
 import type {
   CreateTagParams,
-  DeleteTagParams,
   ListTagsParams,
   Tag,
   TagResponse,
@@ -38,13 +37,5 @@ export class TagClient {
   async create(params: CreateTagParams): Promise<Tag> {
     const response = await this.http.request<TagResponse>("POST", "/tags", params);
     return response.tag;
-  }
-
-  /**
-   * Delete tag
-   * DELETE /api/v1/tags
-   */
-  async delete(params: DeleteTagParams): Promise<void> {
-    await this.http.request<undefined>("DELETE", "/tags", params);
   }
 }

@@ -29,16 +29,10 @@ export interface CreateTagParams {
   name: string;
 }
 
-/** Delete tag parameters */
-export interface DeleteTagParams {
-  name: string;
-}
-
 /** Tool name constants for tags */
 export const TAG_TOOL_NAMES = {
   LIST_TAGS: "list_tags",
   CREATE_TAG: "create_tag",
-  DELETE_TAG: "delete_tag",
 } as const;
 
 /** Type representing valid tag tool names */

@@ -44,9 +44,6 @@ const createMockNoteClient = () => ({
   get: vi.fn(),
   create: vi.fn(),
   update: vi.fn(),
-  delete: vi.fn(),
-  archive: vi.fn(),
-  unarchive: vi.fn(),
 });
 
 const createMockPageClient = () => ({
@@ -54,13 +51,11 @@ const createMockPageClient = () => ({
   get: vi.fn(),
   create: vi.fn(),
   update: vi.fn(),
-  delete: vi.fn(),
 });
 
 const createMockTagClient = () => ({
   list: vi.fn(),
   create: vi.fn(),
-  delete: vi.fn(),
 });
 
 type MockNoteClient = ReturnType<typeof createMockNoteClient>;
@@ -223,17 +218,6 @@ describe("handleToolCall", () => {
     });
   });
 
-  describe("delete_page", () => {
-    it("should return success message", async () => {
-      mockPageClient.delete.mockResolvedValue(undefined);
-
-      const result = await handleToolCall(clients, "delete_page", { page_code: "page123" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toBe("Page deleted: page123");
-    });
-  });
-
   // ============================================================
   // Note Tools Tests
   // ============================================================
@@ -391,39 +375,6 @@ describe("handleToolCall", () => {
     });
   });
 
-  describe("delete_note", () => {
-    it("should return success message", async () => {
-      mockNoteClient.delete.mockResolvedValue(undefined);
-
-      const result = await handleToolCall(clients, "delete_note", { note_code: "note123" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toBe("Note deleted: note123");
-    });
-  });
-
-  describe("archive_note", () => {
-    it("should return success message", async () => {
-      mockNoteClient.archive.mockResolvedValue(undefined);
-
-      const result = await handleToolCall(clients, "archive_note", { note_code: "note123" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toBe("Note archived: note123");
-    });
-  });
-
-  describe("unarchive_note", () => {
-    it("should return success message", async () => {
-      mockNoteClient.unarchive.mockResolvedValue(undefined);
-
-      const result = await handleToolCall(clients, "unarchive_note", { note_code: "note123" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toBe("Note unarchived: note123");
-    });
-  });
-
   // ============================================================
   // Tag Tools Tests
   // ============================================================
@@ -458,17 +409,6 @@ describe("handleToolCall", () => {
 
       expect(result.isError).toBeUndefined();
       expect(getTextContent(result)).toBe("Tag created: new-tag");
-    });
-  });
-
-  describe("delete_tag", () => {
-    it("should return success message", async () => {
-      mockTagClient.delete.mockResolvedValue(undefined);
-
-      const result = await handleToolCall(clients, "delete_tag", { name: "tag-to-delete" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toBe("Tag deleted: tag-to-delete");
     });
   });
 });

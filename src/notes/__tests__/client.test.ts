@@ -104,40 +104,4 @@ describe("NoteClient", () => {
       expect(result).toEqual(mockNote);
     });
   });
-
-  describe("delete", () => {
-    it("should call DELETE /notes/:note_code", async () => {
-      mockHttp.request.mockResolvedValue(undefined);
-
-      await client.delete("abc123");
-
-      expect(mockHttp.request).toHaveBeenCalledWith("DELETE", "/notes/abc123");
-    });
-  });
-
-  describe("archive", () => {
-    it("should call PATCH /notes/:note_code/archive", async () => {
-      mockHttp.request.mockResolvedValue(undefined);
-
-      await client.archive("abc123");
-
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "PATCH",
-        "/notes/abc123/archive"
-      );
-    });
-  });
-
-  describe("unarchive", () => {
-    it("should call PATCH /notes/:note_code/extract", async () => {
-      mockHttp.request.mockResolvedValue(undefined);
-
-      await client.unarchive("abc123");
-
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "PATCH",
-        "/notes/abc123/extract"
-      );
-    });
-  });
 });

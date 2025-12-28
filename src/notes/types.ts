@@ -62,9 +62,6 @@ export const NOTE_TOOL_NAMES = {
   GET_NOTE: "get_note",
   CREATE_NOTE: "create_note",
   UPDATE_NOTE: "update_note",
-  DELETE_NOTE: "delete_note",
-  ARCHIVE_NOTE: "archive_note",
-  UNARCHIVE_NOTE: "unarchive_note",
 } as const;
 
 /** Type representing valid note tool names */

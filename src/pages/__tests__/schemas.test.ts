@@ -5,7 +5,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   CreatePageInputSchema,
-  DeletePageInputSchema,
   GetPageInputSchema,
   SearchPagesInputSchema,
   UpdatePageInputSchema,
@@ -320,33 +319,6 @@ describe("UpdatePageInputSchema", () => {
       page_code: "",
       title: "Updated Title",
     });
-    expect(result.success).toBe(false);
-  });
-});
-
-describe("DeletePageInputSchema", () => {
-  it("should require page_code", () => {
-    const result = DeletePageInputSchema.safeParse({});
-    expect(result.success).toBe(false);
-  });
-
-  it("should accept valid page_code", () => {
-    const result = DeletePageInputSchema.safeParse({ page_code: "abc123" });
-    expect(result.success).toBe(true);
-  });
-
-  it("should reject non-string page_code", () => {
-    const result = DeletePageInputSchema.safeParse({ page_code: 123 });
-    expect(result.success).toBe(false);
-  });
-
-  it("should reject null page_code", () => {
-    const result = DeletePageInputSchema.safeParse({ page_code: null });
-    expect(result.success).toBe(false);
-  });
-
-  it("should reject empty page_code", () => {
-    const result = DeletePageInputSchema.safeParse({ page_code: "" });
     expect(result.success).toBe(false);
   });
 });

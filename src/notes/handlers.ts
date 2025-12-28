@@ -6,12 +6,9 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { parseInput, success } from "../shared/result.js";
 import { NoteClient } from "./client.js";
 import {
-  ArchiveNoteInputSchema,
   CreateNoteInputSchema,
-  DeleteNoteInputSchema,
   GetNoteInputSchema,
   ListNotesInputSchema,
-  UnarchiveNoteInputSchema,
   UpdateNoteInputSchema,
 } from "./schemas.js";
 import type { Note, NoteToolName } from "./types.js";
@@ -89,24 +86,6 @@ export async function handleNoteToolCall(
       const { note_code, name, description, scope, groups, users } = parseInput(UpdateNoteInputSchema, args);
       const note = await client.update(note_code, { name, description, scope, groups, users });
       return success(`Note updated.\n\n${formatNote(note)}`);
-    }
-
-    case NOTE_TOOL_NAMES.DELETE_NOTE: {
-      const { note_code } = parseInput(DeleteNoteInputSchema, args);
-      await client.delete(note_code);
-      return success(`Note deleted: ${note_code}`);
-    }
-
-    case NOTE_TOOL_NAMES.ARCHIVE_NOTE: {
-      const { note_code } = parseInput(ArchiveNoteInputSchema, args);
-      await client.archive(note_code);
-      return success(`Note archived: ${note_code}`);
-    }
-
-    case NOTE_TOOL_NAMES.UNARCHIVE_NOTE: {
-      const { note_code } = parseInput(UnarchiveNoteInputSchema, args);
-      await client.unarchive(note_code);
-      return success(`Note unarchived: ${note_code}`);
     }
   }
 }

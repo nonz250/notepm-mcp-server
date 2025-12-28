@@ -14,21 +14,16 @@ describe("TOOLS", () => {
     expect(toolNames).toContain(PAGE_TOOL_NAMES.GET_PAGE);
     expect(toolNames).toContain(PAGE_TOOL_NAMES.CREATE_PAGE);
     expect(toolNames).toContain(PAGE_TOOL_NAMES.UPDATE_PAGE);
-    expect(toolNames).toContain(PAGE_TOOL_NAMES.DELETE_PAGE);
 
     // Note tools
     expect(toolNames).toContain(NOTE_TOOL_NAMES.LIST_NOTES);
     expect(toolNames).toContain(NOTE_TOOL_NAMES.GET_NOTE);
     expect(toolNames).toContain(NOTE_TOOL_NAMES.CREATE_NOTE);
     expect(toolNames).toContain(NOTE_TOOL_NAMES.UPDATE_NOTE);
-    expect(toolNames).toContain(NOTE_TOOL_NAMES.DELETE_NOTE);
-    expect(toolNames).toContain(NOTE_TOOL_NAMES.ARCHIVE_NOTE);
-    expect(toolNames).toContain(NOTE_TOOL_NAMES.UNARCHIVE_NOTE);
 
     // Tag tools
     expect(toolNames).toContain(TAG_TOOL_NAMES.LIST_TAGS);
     expect(toolNames).toContain(TAG_TOOL_NAMES.CREATE_TAG);
-    expect(toolNames).toContain(TAG_TOOL_NAMES.DELETE_TAG);
   });
 
   it("should have valid inputSchema for each tool", () => {

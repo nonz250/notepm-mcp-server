@@ -20,7 +20,7 @@
 
 An unofficial [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for [NotePM](https://notepm.jp/) - a knowledge management and documentation platform.
 
-This server enables AI assistants like Claude to search, read, create, update, and delete pages in your NotePM workspace.
+This server enables AI assistants like Claude to search, read, create, and update pages in your NotePM workspace.
 
 ## Requirements
 
@@ -119,17 +119,12 @@ If you installed globally, replace `npx` with the direct command:
 | `get_note` | Get a note's details including name, description, and scope |
 | `create_note` | Create a new note with name, description, and access settings |
 | `update_note` | Update an existing note's name, description, or access settings |
-| `delete_note` | Delete a note and all its pages (irreversible) |
-| `archive_note` | Archive a note (hidden from default list but can be restored) |
-| `unarchive_note` | Restore an archived note back to the active list |
 | `search_pages` | Search pages by keyword, note, or tag |
 | `get_page` | Get a page's full content including title, body, and tags |
 | `create_page` | Create a new page in a specified note |
 | `update_page` | Update an existing page's content |
-| `delete_page` | Delete a page (irreversible) |
 | `list_tags` | List all tags in your workspace |
 | `create_tag` | Create a new tag |
-| `delete_tag` | Delete a tag (irreversible) |
 
 ## Environment Variables
 
