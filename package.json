@@ -1,6 +1,6 @@
 {
   "name": "@nonz250/notepm-mcp-server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "An unofficial MCP server for NotePM - a knowledge management platform",
   "type": "module",
   "main": "dist/index.js",
