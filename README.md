@@ -115,11 +115,12 @@ If you installed globally, replace `npx` with the direct command:
 
 | Tool | Description |
 |------|-------------|
+| `list_folders` | List folders in a note with hierarchy |
+| `list_notes` | List all notes in your workspace |
 | `search_pages` | Search pages by keyword, note, or tag |
 | `get_page` | Get a page's full content including title, body, and tags |
 | `create_page` | Create a new page in a specified note |
 | `update_page` | Update an existing page's content |
-| `list_notes` | List all notes in your workspace |
 | `list_tags` | List all tags in your workspace |
 | `create_tag` | Create a new tag |
 

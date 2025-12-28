@@ -6,10 +6,13 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { FolderClient } from "../../folders/client.js";
 import type { NoteClient } from "../../notes/client.js";
 import type { PageClient } from "../../pages/client.js";
 import { NotePMAPIError } from "../../shared/errors.js";
 import {
+  createMockFolder,
+  createMockFoldersResponse,
   createMockNote,
   createMockNotesResponse,
   createMockPage,
@@ -39,6 +42,10 @@ function getTextContent(result: CallToolResult): string {
 // Mock Setup
 // ============================================================
 
+const createMockFolderClient = () => ({
+  list: vi.fn(),
+});
+
 const createMockNoteClient = () => ({
   list: vi.fn(),
 });
@@ -55,21 +62,25 @@ const createMockTagClient = () => ({
   create: vi.fn(),
 });
 
+type MockFolderClient = ReturnType<typeof createMockFolderClient>;
 type MockNoteClient = ReturnType<typeof createMockNoteClient>;
 type MockPageClient = ReturnType<typeof createMockPageClient>;
 type MockTagClient = ReturnType<typeof createMockTagClient>;
 
 describe("handleToolCall", () => {
+  let mockFolderClient: MockFolderClient;
   let mockNoteClient: MockNoteClient;
   let mockPageClient: MockPageClient;
   let mockTagClient: MockTagClient;
-  let clients: { notes: NoteClient; pages: PageClient; tags: TagClient };
+  let clients: { folders: FolderClient; notes: NoteClient; pages: PageClient; tags: TagClient };
 
   beforeEach(() => {
+    mockFolderClient = createMockFolderClient();
     mockNoteClient = createMockNoteClient();
     mockPageClient = createMockPageClient();
     mockTagClient = createMockTagClient();
     clients = {
+      folders: mockFolderClient as unknown as FolderClient,
       notes: mockNoteClient as unknown as NoteClient,
       pages: mockPageClient as unknown as PageClient,
       tags: mockTagClient as unknown as TagClient,
@@ -308,6 +319,43 @@ describe("handleToolCall", () => {
 
       expect(result.isError).toBeUndefined();
       expect(getTextContent(result)).toBe("Tag created: new-tag");
+    });
+  });
+
+  // ============================================================
+  // Folder Tools Tests
+  // ============================================================
+
+  describe("list_folders", () => {
+    it("should return 'No folders found.' for empty results", async () => {
+      mockFolderClient.list.mockResolvedValue(createMockFoldersResponse([]));
+
+      const result = await handleToolCall(clients, "list_folders", { note_code: "note123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("No folders found in this note.");
+    });
+
+    it("should format folder list with hierarchy", async () => {
+      const folders = [
+        createMockFolder({ folder_id: 1, name: "Parent Folder", parent_folder_id: null }),
+        createMockFolder({ folder_id: 2, name: "Child Folder", parent_folder_id: 1 }),
+      ];
+      mockFolderClient.list.mockResolvedValue(createMockFoldersResponse(folders));
+
+      const result = await handleToolCall(clients, "list_folders", { note_code: "note123" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain('Folders in note "note123"');
+      expect(getTextContent(result)).toContain("**Parent Folder**");
+      expect(getTextContent(result)).toContain("**Child Folder**");
+    });
+
+    it("should require note_code parameter", async () => {
+      const result = await handleToolCall(clients, "list_folders", {});
+
+      expect(result.isError).toBe(true);
+      expect(getTextContent(result)).toContain("Input error:");
     });
   });
 });
