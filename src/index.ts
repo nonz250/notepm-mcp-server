@@ -16,9 +16,11 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
-import { loadConfig } from "./config.js";
-import { NotePMClient } from "./notepm-client.js";
-import { TOOLS, handleToolCall } from "./tools/index.js";
+import { handleToolCall, TOOLS } from "./mcp/index.js";
+import { NoteClient } from "./notes/index.js";
+import { PageClient } from "./pages/index.js";
+import { HttpClient, loadConfig } from "./shared/index.js";
+import { TagClient } from "./tags/index.js";
 
 // ============================================================
 // Load package info
@@ -28,11 +30,16 @@ const require = createRequire(import.meta.url);
 const packageJson = require("../package.json") as { name: string; version: string };
 
 // ============================================================
-// Load configuration and initialize client
+// Load configuration and initialize clients
 // ============================================================
 
 const config = loadConfig();
-const client = new NotePMClient(config);
+const httpClient = new HttpClient(config);
+const clients = {
+  notes: new NoteClient(httpClient),
+  pages: new PageClient(httpClient),
+  tags: new TagClient(httpClient),
+};
 
 // ============================================================
 // Create server instance
@@ -69,7 +76,7 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
  */
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
-  return handleToolCall(client, name, args);
+  return handleToolCall(clients, name, args);
 });
 
 // ============================================================

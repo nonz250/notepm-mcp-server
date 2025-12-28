@@ -3,7 +3,10 @@
  *
  * Common mock data factories for tests
  */
-import { Note, NotesResponse, Page, PagesResponse, Tag, TagsResponse } from "../notepm-client.js";
+import type { Note, NotesResponse } from "../../notes/types.js";
+import type { Page, PagesResponse } from "../../pages/types.js";
+import type { TagsResponse } from "../../tags/types.js";
+import type { Tag } from "../types.js";
 
 /**
  * Create a mock Page object with optional overrides
