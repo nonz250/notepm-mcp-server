@@ -75,15 +75,4 @@ describe("TagClient", () => {
       expect(result).toEqual(mockTag);
     });
   });
-
-  describe("delete", () => {
-    it("should call DELETE /tags with params", async () => {
-      mockHttp.request.mockResolvedValue(undefined);
-
-      const params = { name: "tag-to-delete" };
-      await client.delete(params);
-
-      expect(mockHttp.request).toHaveBeenCalledWith("DELETE", "/tags", params);
-    });
-  });
 });

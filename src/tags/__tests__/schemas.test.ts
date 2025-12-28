@@ -5,7 +5,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   CreateTagInputSchema,
-  DeleteTagInputSchema,
   ListTagsInputSchema,
 } from "../schemas.js";
 
@@ -88,43 +87,6 @@ describe("CreateTagInputSchema", () => {
 
   it("should reject name over 100 characters", () => {
     const result = CreateTagInputSchema.safeParse({ name: "a".repeat(101) });
-    expect(result.success).toBe(false);
-  });
-});
-
-describe("DeleteTagInputSchema", () => {
-  it("should require name", () => {
-    const result = DeleteTagInputSchema.safeParse({});
-    expect(result.success).toBe(false);
-  });
-
-  it("should accept valid name", () => {
-    const result = DeleteTagInputSchema.safeParse({ name: "my-tag" });
-    expect(result.success).toBe(true);
-  });
-
-  it("should reject empty name", () => {
-    const result = DeleteTagInputSchema.safeParse({ name: "" });
-    expect(result.success).toBe(false);
-  });
-
-  it("should reject non-string name", () => {
-    const result = DeleteTagInputSchema.safeParse({ name: 123 });
-    expect(result.success).toBe(false);
-  });
-
-  it("should reject null name", () => {
-    const result = DeleteTagInputSchema.safeParse({ name: null });
-    expect(result.success).toBe(false);
-  });
-
-  it("should accept name at maximum boundary (30 chars)", () => {
-    const result = DeleteTagInputSchema.safeParse({ name: "a".repeat(30) });
-    expect(result.success).toBe(true);
-  });
-
-  it("should reject name over 30 characters", () => {
-    const result = DeleteTagInputSchema.safeParse({ name: "a".repeat(31) });
     expect(result.success).toBe(false);
   });
 });

@@ -7,7 +7,6 @@ import { parseInput, success } from "../shared/result.js";
 import { TagClient } from "./client.js";
 import {
   CreateTagInputSchema,
-  DeleteTagInputSchema,
   ListTagsInputSchema,
 } from "./schemas.js";
 import type { TagToolName } from "./types.js";
@@ -48,12 +47,6 @@ export async function handleTagToolCall(
       const { name } = parseInput(CreateTagInputSchema, args);
       const tag = await client.create({ name });
       return success(`Tag created: ${tag.name}`);
-    }
-
-    case TAG_TOOL_NAMES.DELETE_TAG: {
-      const { name } = parseInput(DeleteTagInputSchema, args);
-      await client.delete({ name });
-      return success(`Tag deleted: ${name}`);
     }
   }
 }
