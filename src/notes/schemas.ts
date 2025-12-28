@@ -45,18 +45,6 @@ export const UpdateNoteInputSchema = z.object({
   users: z.array(z.string()).optional().describe("Array of user codes to grant access (only for private scope)"),
 });
 
-export const DeleteNoteInputSchema = z.object({
-  note_code: z.string().min(1).describe("Note code to delete"),
-});
-
-export const ArchiveNoteInputSchema = z.object({
-  note_code: z.string().min(1).describe("Note code to archive"),
-});
-
-export const UnarchiveNoteInputSchema = z.object({
-  note_code: z.string().min(1).describe("Note code to unarchive"),
-});
-
 // ============================================================
 // Inferred Types
 // ============================================================
@@ -72,12 +60,3 @@ export type CreateNoteInput = z.infer<typeof CreateNoteInputSchema>;
 
 /** Inferred type for update note input */
 export type UpdateNoteInput = z.infer<typeof UpdateNoteInputSchema>;
-
-/** Inferred type for delete note input */
-export type DeleteNoteInput = z.infer<typeof DeleteNoteInputSchema>;
-
-/** Inferred type for archive note input */
-export type ArchiveNoteInput = z.infer<typeof ArchiveNoteInputSchema>;
-
-/** Inferred type for unarchive note input */
-export type UnarchiveNoteInput = z.infer<typeof UnarchiveNoteInputSchema>;

@@ -57,28 +57,4 @@ export class NoteClient {
     const response = await this.http.request<NoteResponse>("PATCH", `/notes/${noteCode}`, params);
     return response.note;
   }
-
-  /**
-   * Delete note
-   * DELETE /api/v1/notes/:note_code
-   */
-  async delete(noteCode: string): Promise<void> {
-    await this.http.request<undefined>("DELETE", `/notes/${noteCode}`);
-  }
-
-  /**
-   * Archive note
-   * PATCH /api/v1/notes/:note_code/archive
-   */
-  async archive(noteCode: string): Promise<void> {
-    await this.http.request<undefined>("PATCH", `/notes/${noteCode}/archive`);
-  }
-
-  /**
-   * Unarchive note (extract from archive)
-   * PATCH /api/v1/notes/:note_code/extract
-   */
-  async unarchive(noteCode: string): Promise<void> {
-    await this.http.request<undefined>("PATCH", `/notes/${noteCode}/extract`);
-  }
 }
