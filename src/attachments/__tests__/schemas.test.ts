@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { SearchAttachmentsInputSchema } from "../schemas.js";
+import { SearchAttachmentsInputSchema, UploadAttachmentInputSchema } from "../schemas.js";
 
 describe("SearchAttachmentsInputSchema", () => {
   it("should accept empty input with defaults", () => {
@@ -84,6 +84,83 @@ describe("SearchAttachmentsInputSchema", () => {
 
   it("should reject page below minimum (0)", () => {
     const result = SearchAttachmentsInputSchema.safeParse({ page: 0 });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("UploadAttachmentInputSchema", () => {
+  const validInput = {
+    file_name: "document.pdf",
+    file_data: "SGVsbG8gV29ybGQ=", // "Hello World" in base64
+    note_code: "note123",
+  };
+
+  it("should accept valid input with required fields", () => {
+    const result = UploadAttachmentInputSchema.safeParse(validInput);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.file_name).toBe("document.pdf");
+      expect(result.data.file_data).toBe("SGVsbG8gV29ybGQ=");
+      expect(result.data.note_code).toBe("note123");
+    }
+  });
+
+  it("should accept input with optional page_code", () => {
+    const result = UploadAttachmentInputSchema.safeParse({
+      ...validInput,
+      page_code: "page456",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page_code).toBe("page456");
+    }
+  });
+
+  it("should reject empty file_name", () => {
+    const result = UploadAttachmentInputSchema.safeParse({
+      ...validInput,
+      file_name: "",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject empty file_data", () => {
+    const result = UploadAttachmentInputSchema.safeParse({
+      ...validInput,
+      file_data: "",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject empty note_code", () => {
+    const result = UploadAttachmentInputSchema.safeParse({
+      ...validInput,
+      note_code: "",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject missing file_name", () => {
+    const result = UploadAttachmentInputSchema.safeParse({
+      file_data: validInput.file_data,
+      note_code: validInput.note_code,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject missing file_data", () => {
+    const result = UploadAttachmentInputSchema.safeParse({
+      file_name: validInput.file_name,
+      note_code: validInput.note_code,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject missing note_code", () => {
+    const result = UploadAttachmentInputSchema.safeParse({
+      file_name: validInput.file_name,
+      file_data: validInput.file_data,
+    });
     expect(result.success).toBe(false);
   });
 });

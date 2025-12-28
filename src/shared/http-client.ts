@@ -46,4 +46,31 @@ export class HttpClient {
 
     return response.json() as Promise<T>;
   }
+
+  /**
+   * Send multipart/form-data request (for file uploads)
+   */
+  async uploadFile<T>(path: string, formData: FormData): Promise<T> {
+    const url = `${this.baseUrl}${path}`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+        // Note: Do not set Content-Type for FormData, browser/node will set it with boundary
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new NotePMAPIError(
+        response.status,
+        response.statusText,
+        `NotePM API Error: ${String(response.status)} ${response.statusText}\n${errorText}`
+      );
+    }
+
+    return response.json() as Promise<T>;
+  }
 }

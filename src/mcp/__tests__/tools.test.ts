@@ -13,6 +13,7 @@ describe("TOOLS", () => {
 
     // Attachment tools
     expect(toolNames).toContain(ATTACHMENT_TOOL_NAMES.SEARCH_ATTACHMENTS);
+    expect(toolNames).toContain(ATTACHMENT_TOOL_NAMES.UPLOAD_ATTACHMENT);
 
     // Folder tools
     expect(toolNames).toContain(FOLDER_TOOL_NAMES.LIST_FOLDERS);

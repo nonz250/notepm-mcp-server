@@ -23,9 +23,19 @@ export const SearchAttachmentsInputSchema = z.object({
     .describe("Number of results (1-100, default: 20)"),
 });
 
+export const UploadAttachmentInputSchema = z.object({
+  file_name: z.string().min(1).describe("File name with extension (e.g., 'document.pdf')"),
+  file_data: z.string().min(1).describe("Base64 encoded file content"),
+  note_code: z.string().min(1).describe("Note code to attach the file to"),
+  page_code: z.string().optional().describe("Page code to attach the file to (optional)"),
+});
+
 // ============================================================
 // Inferred Types
 // ============================================================
 
 /** Inferred type for search attachments input */
 export type SearchAttachmentsInput = z.infer<typeof SearchAttachmentsInputSchema>;
+
+/** Inferred type for upload attachment input */
+export type UploadAttachmentInput = z.infer<typeof UploadAttachmentInputSchema>;

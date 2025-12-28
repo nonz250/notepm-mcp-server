@@ -5,7 +5,7 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
 import { parseInput, success } from "../shared/result.js";
 import { AttachmentClient } from "./client.js";
-import { SearchAttachmentsInputSchema } from "./schemas.js";
+import { SearchAttachmentsInputSchema, UploadAttachmentInputSchema } from "./schemas.js";
 import type { Attachment, AttachmentToolName } from "./types.js";
 import { ATTACHMENT_TOOL_NAMES } from "./types.js";
 
@@ -40,14 +40,9 @@ export function isAttachmentToolName(name: string): name is AttachmentToolName {
 }
 
 /**
- * Handle attachment tool calls
+ * Handle search_attachments tool
  */
-export async function handleAttachmentToolCall(
-  client: AttachmentClient,
-  _name: AttachmentToolName,
-  args: unknown
-): Promise<CallToolResult> {
-  // Currently only search_attachments is supported
+async function handleSearchAttachments(client: AttachmentClient, args: unknown): Promise<CallToolResult> {
   const { q, file_name, note_code, page_code, include_archived, page, per_page } = parseInput(
     SearchAttachmentsInputSchema,
     args
@@ -71,4 +66,45 @@ export async function handleAttachmentToolCall(
   return success(
     `Attachments: showing ${String(result.attachments.length)} of ${String(result.meta.total)} attachments\n\n${attachmentList}`
   );
+}
+
+/**
+ * Handle upload_attachment tool
+ */
+async function handleUploadAttachment(client: AttachmentClient, args: unknown): Promise<CallToolResult> {
+  const { file_name, file_data, note_code, page_code } = parseInput(UploadAttachmentInputSchema, args);
+
+  const result = await client.upload({
+    file_name,
+    file_data,
+    note_code,
+    page_code,
+  });
+
+  const attachment = result.attachment;
+  const pageInfo = attachment.page_code ? `\n- Page: ${attachment.page_code}` : "";
+
+  return success(
+    `File uploaded successfully!\n\n` +
+      `**${attachment.file_name}**\n` +
+      `- File ID: ${attachment.file_id}\n` +
+      `- Size: ${formatFileSize(attachment.file_size)}\n` +
+      `- Note: ${attachment.note_code}${pageInfo}`
+  );
+}
+
+/**
+ * Handle attachment tool calls
+ */
+export async function handleAttachmentToolCall(
+  client: AttachmentClient,
+  name: AttachmentToolName,
+  args: unknown
+): Promise<CallToolResult> {
+  switch (name) {
+    case ATTACHMENT_TOOL_NAMES.SEARCH_ATTACHMENTS:
+      return handleSearchAttachments(client, args);
+    case ATTACHMENT_TOOL_NAMES.UPLOAD_ATTACHMENT:
+      return handleUploadAttachment(client, args);
+  }
 }

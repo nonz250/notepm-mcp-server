@@ -47,6 +47,7 @@ function getTextContent(result: CallToolResult): string {
 
 const createMockAttachmentClient = () => ({
   search: vi.fn(),
+  upload: vi.fn(),
 });
 
 const createMockFolderClient = () => ({
@@ -439,6 +440,76 @@ describe("handleToolCall", () => {
       expect(result.isError).toBeUndefined();
       expect(getTextContent(result)).toContain("Note: note123");
       expect(getTextContent(result)).not.toContain("(page:");
+    });
+  });
+
+  describe("upload_attachment", () => {
+    it("should return success message with uploaded file details", async () => {
+      const uploadResponse = {
+        attachment: createMockAttachment({
+          file_id: "new123",
+          file_name: "document.pdf",
+          file_size: 1024,
+          note_code: "note123",
+        }),
+      };
+      mockAttachmentClient.upload.mockResolvedValue(uploadResponse);
+
+      const result = await handleToolCall(clients, "upload_attachment", {
+        file_name: "document.pdf",
+        file_data: "SGVsbG8gV29ybGQ=",
+        note_code: "note123",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("File uploaded successfully!");
+      expect(getTextContent(result)).toContain("**document.pdf**");
+      expect(getTextContent(result)).toContain("File ID: new123");
+      expect(getTextContent(result)).toContain("Note: note123");
+    });
+
+    it("should show page info when provided", async () => {
+      const uploadResponse = {
+        attachment: createMockAttachment({
+          file_id: "new123",
+          file_name: "document.pdf",
+          file_size: 1024,
+          note_code: "note123",
+          page_code: "page456",
+        }),
+      };
+      mockAttachmentClient.upload.mockResolvedValue(uploadResponse);
+
+      const result = await handleToolCall(clients, "upload_attachment", {
+        file_name: "document.pdf",
+        file_data: "SGVsbG8gV29ybGQ=",
+        note_code: "note123",
+        page_code: "page456",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Page: page456");
+    });
+
+    it("should show formatted file size", async () => {
+      const uploadResponse = {
+        attachment: createMockAttachment({
+          file_id: "new123",
+          file_name: "large-file.zip",
+          file_size: 2048000, // ~2MB
+          note_code: "note123",
+        }),
+      };
+      mockAttachmentClient.upload.mockResolvedValue(uploadResponse);
+
+      const result = await handleToolCall(clients, "upload_attachment", {
+        file_name: "large-file.zip",
+        file_data: "SGVsbG8gV29ybGQ=",
+        note_code: "note123",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("2.0 MB");
     });
   });
 

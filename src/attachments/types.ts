@@ -37,9 +37,23 @@ export interface SearchAttachmentsParams {
   per_page?: number;
 }
 
+/** Upload attachment parameters */
+export interface UploadAttachmentParams {
+  file_name: string;
+  file_data: string; // Base64 encoded file content
+  note_code: string;
+  page_code?: string;
+}
+
+/** Upload attachment response */
+export interface UploadAttachmentResponse {
+  attachment: Attachment;
+}
+
 /** Tool name constants for attachments */
 export const ATTACHMENT_TOOL_NAMES = {
   SEARCH_ATTACHMENTS: "search_attachments",
+  UPLOAD_ATTACHMENT: "upload_attachment",
 } as const;
 
 /** Type representing valid attachment tool names */

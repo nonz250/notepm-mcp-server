@@ -8,10 +8,10 @@ import { AttachmentClient } from "../client.js";
 
 describe("AttachmentClient", () => {
   let client: AttachmentClient;
-  let mockHttp: { request: ReturnType<typeof vi.fn> };
+  let mockHttp: { request: ReturnType<typeof vi.fn>; uploadFile: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    mockHttp = { request: vi.fn() };
+    mockHttp = { request: vi.fn(), uploadFile: vi.fn() };
     client = new AttachmentClient(mockHttp as unknown as HttpClient);
   });
 
@@ -89,6 +89,86 @@ describe("AttachmentClient", () => {
         "GET",
         "/attachments?q=doc&file_name=report&note_code=note123&page_code=page456&include_archived=1&page=2&per_page=50"
       );
+    });
+  });
+
+  describe("upload", () => {
+    const mockUploadResponse = {
+      attachment: {
+        file_id: "file123",
+        file_name: "document.pdf",
+        file_size: 1024,
+        note_code: "note123",
+        page_code: null,
+        created_at: "2024-01-01T00:00:00Z",
+        created_by: { user_code: "user1", name: "Test User" },
+      },
+    };
+
+    it("should call uploadFile with FormData", async () => {
+      mockHttp.uploadFile.mockResolvedValue(mockUploadResponse);
+
+      await client.upload({
+        file_name: "document.pdf",
+        file_data: "SGVsbG8gV29ybGQ=", // "Hello World" in base64
+        note_code: "note123",
+      });
+
+      expect(mockHttp.uploadFile).toHaveBeenCalledWith("/attachments", expect.any(FormData));
+    });
+
+    it("should include note_code in FormData", async () => {
+      mockHttp.uploadFile.mockResolvedValue(mockUploadResponse);
+
+      await client.upload({
+        file_name: "document.pdf",
+        file_data: "SGVsbG8gV29ybGQ=",
+        note_code: "note123",
+      });
+
+      const formData = mockHttp.uploadFile.mock.calls[0][1] as FormData;
+      expect(formData.get("note_code")).toBe("note123");
+    });
+
+    it("should include page_code in FormData when provided", async () => {
+      mockHttp.uploadFile.mockResolvedValue(mockUploadResponse);
+
+      await client.upload({
+        file_name: "document.pdf",
+        file_data: "SGVsbG8gV29ybGQ=",
+        note_code: "note123",
+        page_code: "page456",
+      });
+
+      const formData = mockHttp.uploadFile.mock.calls[0][1] as FormData;
+      expect(formData.get("page_code")).toBe("page456");
+    });
+
+    it("should not include page_code when not provided", async () => {
+      mockHttp.uploadFile.mockResolvedValue(mockUploadResponse);
+
+      await client.upload({
+        file_name: "document.pdf",
+        file_data: "SGVsbG8gV29ybGQ=",
+        note_code: "note123",
+      });
+
+      const formData = mockHttp.uploadFile.mock.calls[0][1] as FormData;
+      expect(formData.get("page_code")).toBeNull();
+    });
+
+    it("should include file in FormData as Blob", async () => {
+      mockHttp.uploadFile.mockResolvedValue(mockUploadResponse);
+
+      await client.upload({
+        file_name: "document.pdf",
+        file_data: "SGVsbG8gV29ybGQ=",
+        note_code: "note123",
+      });
+
+      const formData = mockHttp.uploadFile.mock.calls[0][1] as FormData;
+      const file = formData.get("file");
+      expect(file).toBeInstanceOf(Blob);
     });
   });
 });

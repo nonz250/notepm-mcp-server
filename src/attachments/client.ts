@@ -2,7 +2,12 @@
  * Attachment domain API client
  */
 import { HttpClient } from "../shared/http-client.js";
-import type { AttachmentsResponse, SearchAttachmentsParams } from "./types.js";
+import type {
+  AttachmentsResponse,
+  SearchAttachmentsParams,
+  UploadAttachmentParams,
+  UploadAttachmentResponse,
+} from "./types.js";
 
 export class AttachmentClient {
   constructor(private http: HttpClient) {}
@@ -26,5 +31,24 @@ export class AttachmentClient {
     const path = `/attachments${query ? `?${query}` : ""}`;
 
     return this.http.request<AttachmentsResponse>("GET", path);
+  }
+
+  /**
+   * Upload attachment
+   * POST /api/v1/attachments
+   */
+  async upload(params: UploadAttachmentParams): Promise<UploadAttachmentResponse> {
+    // Decode base64 to binary
+    const binaryData = Buffer.from(params.file_data, "base64");
+    const blob = new Blob([binaryData]);
+
+    const formData = new FormData();
+    formData.append("file", blob, params.file_name);
+    formData.append("note_code", params.note_code);
+    if (params.page_code) {
+      formData.append("page_code", params.page_code);
+    }
+
+    return this.http.uploadFile<UploadAttachmentResponse>("/attachments", formData);
   }
 }
