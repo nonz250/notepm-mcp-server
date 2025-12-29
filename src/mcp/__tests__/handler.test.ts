@@ -6,11 +6,14 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { AttachmentClient } from "../../attachments/client.js";
 import type { FolderClient } from "../../folders/client.js";
 import type { NoteClient } from "../../notes/client.js";
 import type { PageClient } from "../../pages/client.js";
 import { NotePMAPIError } from "../../shared/errors.js";
 import {
+  createMockAttachment,
+  createMockAttachmentsResponse,
   createMockFolder,
   createMockFoldersResponse,
   createMockNote,
@@ -42,6 +45,10 @@ function getTextContent(result: CallToolResult): string {
 // Mock Setup
 // ============================================================
 
+const createMockAttachmentClient = () => ({
+  search: vi.fn(),
+});
+
 const createMockFolderClient = () => ({
   list: vi.fn(),
 });
@@ -62,24 +69,34 @@ const createMockTagClient = () => ({
   create: vi.fn(),
 });
 
+type MockAttachmentClient = ReturnType<typeof createMockAttachmentClient>;
 type MockFolderClient = ReturnType<typeof createMockFolderClient>;
 type MockNoteClient = ReturnType<typeof createMockNoteClient>;
 type MockPageClient = ReturnType<typeof createMockPageClient>;
 type MockTagClient = ReturnType<typeof createMockTagClient>;
 
 describe("handleToolCall", () => {
+  let mockAttachmentClient: MockAttachmentClient;
   let mockFolderClient: MockFolderClient;
   let mockNoteClient: MockNoteClient;
   let mockPageClient: MockPageClient;
   let mockTagClient: MockTagClient;
-  let clients: { folders: FolderClient; notes: NoteClient; pages: PageClient; tags: TagClient };
+  let clients: {
+    attachments: AttachmentClient;
+    folders: FolderClient;
+    notes: NoteClient;
+    pages: PageClient;
+    tags: TagClient;
+  };
 
   beforeEach(() => {
+    mockAttachmentClient = createMockAttachmentClient();
     mockFolderClient = createMockFolderClient();
     mockNoteClient = createMockNoteClient();
     mockPageClient = createMockPageClient();
     mockTagClient = createMockTagClient();
     clients = {
+      attachments: mockAttachmentClient as unknown as AttachmentClient,
       folders: mockFolderClient as unknown as FolderClient,
       notes: mockNoteClient as unknown as NoteClient,
       pages: mockPageClient as unknown as PageClient,
@@ -319,6 +336,109 @@ describe("handleToolCall", () => {
 
       expect(result.isError).toBeUndefined();
       expect(getTextContent(result)).toBe("Tag created: new-tag");
+    });
+  });
+
+  // ============================================================
+  // Attachment Tools Tests
+  // ============================================================
+
+  describe("search_attachments", () => {
+    it("should return 'No attachments found.' for empty results", async () => {
+      mockAttachmentClient.search.mockResolvedValue(createMockAttachmentsResponse([]));
+
+      const result = await handleToolCall(clients, "search_attachments", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toBe("No attachments found.");
+    });
+
+    it("should format attachment list correctly", async () => {
+      const attachments = [
+        createMockAttachment({ file_id: "f1", file_name: "doc1.pdf" }),
+        createMockAttachment({ file_id: "f2", file_name: "doc2.pdf" }),
+      ];
+      mockAttachmentClient.search.mockResolvedValue(createMockAttachmentsResponse(attachments, 2));
+
+      const result = await handleToolCall(clients, "search_attachments", { q: "doc" });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("showing 2 of 2 attachments");
+      expect(getTextContent(result)).toContain("**doc1.pdf**");
+      expect(getTextContent(result)).toContain("**doc2.pdf**");
+    });
+
+    it("should show file size and note info", async () => {
+      const attachments = [
+        createMockAttachment({
+          file_id: "f1",
+          file_name: "report.pdf",
+          file_size: 1024000,
+          note_code: "note123",
+        }),
+      ];
+      mockAttachmentClient.search.mockResolvedValue(createMockAttachmentsResponse(attachments, 1));
+
+      const result = await handleToolCall(clients, "search_attachments", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("**report.pdf**");
+      expect(getTextContent(result)).toContain("1000.0 KB");
+      expect(getTextContent(result)).toContain("Note: note123");
+    });
+
+    it("should format file size in MB for large files", async () => {
+      const attachments = [
+        createMockAttachment({
+          file_id: "f1",
+          file_name: "video.mp4",
+          file_size: 5242880, // 5 MB
+          note_code: "note123",
+        }),
+      ];
+      mockAttachmentClient.search.mockResolvedValue(createMockAttachmentsResponse(attachments, 1));
+
+      const result = await handleToolCall(clients, "search_attachments", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("**video.mp4**");
+      expect(getTextContent(result)).toContain("5.0 MB");
+    });
+
+    it("should format file size in bytes for small files", async () => {
+      const attachments = [
+        createMockAttachment({
+          file_id: "f1",
+          file_name: "tiny.txt",
+          file_size: 512,
+          note_code: "note123",
+        }),
+      ];
+      mockAttachmentClient.search.mockResolvedValue(createMockAttachmentsResponse(attachments, 1));
+
+      const result = await handleToolCall(clients, "search_attachments", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("**tiny.txt**");
+      expect(getTextContent(result)).toContain("512 B");
+    });
+
+    it("should not show page info when page_code is null", async () => {
+      const attachments = [
+        createMockAttachment({
+          file_id: "f1",
+          file_name: "orphan.pdf",
+          note_code: "note123",
+          page_code: null,
+        }),
+      ];
+      mockAttachmentClient.search.mockResolvedValue(createMockAttachmentsResponse(attachments, 1));
+
+      const result = await handleToolCall(clients, "search_attachments", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Note: note123");
+      expect(getTextContent(result)).not.toContain("(page:");
     });
   });
 
