@@ -386,6 +386,42 @@ describe("handleToolCall", () => {
       expect(getTextContent(result)).toContain("1000.0 KB");
       expect(getTextContent(result)).toContain("Note: note123");
     });
+
+    it("should format file size in MB for large files", async () => {
+      const attachments = [
+        createMockAttachment({
+          file_id: "f1",
+          file_name: "video.mp4",
+          file_size: 5242880, // 5 MB
+          note_code: "note123",
+        }),
+      ];
+      mockAttachmentClient.search.mockResolvedValue(createMockAttachmentsResponse(attachments, 1));
+
+      const result = await handleToolCall(clients, "search_attachments", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("**video.mp4**");
+      expect(getTextContent(result)).toContain("5.0 MB");
+    });
+
+    it("should format file size in bytes for small files", async () => {
+      const attachments = [
+        createMockAttachment({
+          file_id: "f1",
+          file_name: "tiny.txt",
+          file_size: 512,
+          note_code: "note123",
+        }),
+      ];
+      mockAttachmentClient.search.mockResolvedValue(createMockAttachmentsResponse(attachments, 1));
+
+      const result = await handleToolCall(clients, "search_attachments", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("**tiny.txt**");
+      expect(getTextContent(result)).toContain("512 B");
+    });
   });
 
   // ============================================================
