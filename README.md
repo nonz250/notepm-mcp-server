@@ -116,6 +116,7 @@ If you installed globally, replace `npx` with the direct command:
 | Tool | Description |
 |------|-------------|
 | `search_attachments` | Search attachments by keyword, file name, note, or page |
+| `upload_attachment` | Upload a file attachment to NotePM |
 | `list_folders` | List folders in a note with hierarchy |
 | `list_notes` | List all notes in your workspace |
 | `search_pages` | Search pages by keyword, note, or tag |
