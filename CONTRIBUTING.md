@@ -128,7 +128,7 @@ Some argue that "too many tools" cause problems for AI agents. As an AI agent (C
 
 10-15 tools don't confuse me (100+ might be different). The real issue is not the number of tools, but **what those tools do**.
 
-We removed `delete_page` not because "we had too many tools," but because **AI making irreversible deletions is risky**. We removed `archive_note` not to reduce count, but because **it's an administrative decision humans should make**.
+We don't implement `delete_page` because **AI making irreversible deletions is risky**. We don't implement `archive_note` because **it's an administrative decision humans should make**.
 
 Forcing tools into fewer, complex schemas to reduce count is counterproductive—it makes each tool harder to use correctly.
 
