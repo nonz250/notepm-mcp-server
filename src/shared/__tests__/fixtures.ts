@@ -103,8 +103,9 @@ export const createMockAttachment = (overrides: Partial<Attachment> = {}): Attac
   file_size: 1024000,
   note_code: "note456",
   page_code: "page789",
+  comment_number: null,
+  download_url: "https://example.notepm.jp/api/v1/attachments/download/file123",
   created_at: "2024-01-01T00:00:00Z",
-  created_by: { user_code: "user1", name: "Test User" },
   ...overrides,
 });
 

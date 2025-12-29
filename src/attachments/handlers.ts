@@ -28,8 +28,7 @@ function formatAttachmentListItem(attachment: Attachment, index: number): string
     `   - File ID: ${attachment.file_id}`,
     `   - Size: ${formatFileSize(attachment.file_size)}`,
     `   - Note: ${attachment.note_code}${pageInfo}`,
-    `   - Uploaded by: ${attachment.created_by.name}`,
-    `   - Uploaded at: ${attachment.created_at}`,
+    `   - Created at: ${attachment.created_at}`,
   ].join("\n");
 }
 

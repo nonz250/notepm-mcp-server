@@ -2,12 +2,6 @@
  * Attachment domain types
  */
 
-/** User reference in attachment */
-export interface AttachmentUser {
-  user_code: string;
-  name: string;
-}
-
 /** Attachment information */
 export interface Attachment {
   file_id: string;
@@ -15,8 +9,9 @@ export interface Attachment {
   file_size: number;
   note_code: string;
   page_code: string | null;
+  comment_number: number | null;
+  download_url: string;
   created_at: string;
-  created_by: AttachmentUser;
 }
 
 /** Attachments list response */
