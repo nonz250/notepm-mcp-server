@@ -17,7 +17,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
 import { FolderClient } from "./folders/index.js";
-import { handleToolCall, TOOLS } from "./mcp/index.js";
+import { TOOLS, handleToolCall } from "./mcp/index.js";
 import { NoteClient } from "./notes/index.js";
 import { PageClient } from "./pages/index.js";
 import { HttpClient, loadConfig } from "./shared/index.js";

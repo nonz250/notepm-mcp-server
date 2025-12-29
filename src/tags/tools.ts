@@ -4,10 +4,7 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 
 import { toInputSchema } from "../shared/index.js";
-import {
-  CreateTagInputSchema,
-  ListTagsInputSchema,
-} from "./schemas.js";
+import { CreateTagInputSchema, ListTagsInputSchema } from "./schemas.js";
 import { TAG_TOOL_NAMES } from "./types.js";
 
 export const TAG_TOOLS: Tool[] = [

@@ -3,8 +3,8 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { HttpClient } from "../http-client.js";
 import { NotePMAPIError } from "../errors.js";
+import { HttpClient } from "../http-client.js";
 
 describe("HttpClient", () => {
   const mockConfig = {
@@ -36,17 +36,14 @@ describe("HttpClient", () => {
 
       await client.request("GET", "/notes");
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        "https://test-team.notepm.jp/api/v1/notes",
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer test-token",
-            "Content-Type": "application/json",
-          },
-          body: undefined,
-        }
-      );
+      expect(mockFetch).toHaveBeenCalledWith("https://test-team.notepm.jp/api/v1/notes", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer test-token",
+          "Content-Type": "application/json",
+        },
+        body: undefined,
+      });
     });
 
     it("should make POST request with body", async () => {
@@ -59,17 +56,14 @@ describe("HttpClient", () => {
       const body = { name: "Test Note", scope: "open" };
       await client.request("POST", "/notes", body);
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        "https://test-team.notepm.jp/api/v1/notes",
-        {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer test-token",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      expect(mockFetch).toHaveBeenCalledWith("https://test-team.notepm.jp/api/v1/notes", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer test-token",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
     });
 
     it("should return JSON response", async () => {
@@ -105,9 +99,7 @@ describe("HttpClient", () => {
         text: () => Promise.resolve('{"messages":["Not found"]}'),
       });
 
-      await expect(client.request("GET", "/notes/nonexistent")).rejects.toThrow(
-        NotePMAPIError
-      );
+      await expect(client.request("GET", "/notes/nonexistent")).rejects.toThrow(NotePMAPIError);
     });
 
     it("should include error details in NotePMAPIError", async () => {

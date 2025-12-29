@@ -9,7 +9,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { FolderClient } from "../../folders/client.js";
 import type { NoteClient } from "../../notes/client.js";
 import type { PageClient } from "../../pages/client.js";
-import { NotePMAPIError } from "../../shared/errors.js";
 import {
   createMockFolder,
   createMockFoldersResponse,
@@ -20,6 +19,7 @@ import {
   createMockTag,
   createMockTagsResponse,
 } from "../../shared/__tests__/fixtures.js";
+import { NotePMAPIError } from "../../shared/errors.js";
 import type { TagClient } from "../../tags/client.js";
 import { handleToolCall } from "../index.js";
 
@@ -123,9 +123,9 @@ describe("handleToolCall", () => {
     it("should throw unexpected errors", async () => {
       mockPageClient.get.mockRejectedValue(new Error("Unexpected error"));
 
-      await expect(
-        handleToolCall(clients, "get_page", { page_code: "test" })
-      ).rejects.toThrow("Unexpected error");
+      await expect(handleToolCall(clients, "get_page", { page_code: "test" })).rejects.toThrow(
+        "Unexpected error"
+      );
     });
   });
 

@@ -29,10 +29,7 @@ describe("NoteClient", () => {
 
       await client.list({ include_archived: true });
 
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "GET",
-        "/notes?include_archived=1"
-      );
+      expect(mockHttp.request).toHaveBeenCalledWith("GET", "/notes?include_archived=1");
     });
 
     it("should include page param", async () => {
@@ -62,5 +59,4 @@ describe("NoteClient", () => {
       );
     });
   });
-
 });

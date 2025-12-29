@@ -6,10 +6,10 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
 import { FolderClient, handleFolderToolCall, isFolderToolName } from "../folders/index.js";
-import { handleNoteToolCall, isNoteToolName, NoteClient } from "../notes/index.js";
-import { handlePageToolCall, isPageToolName, PageClient } from "../pages/index.js";
-import { error, InputError, NotePMAPIError } from "../shared/index.js";
-import { handleTagToolCall, isTagToolName, TagClient } from "../tags/index.js";
+import { NoteClient, handleNoteToolCall, isNoteToolName } from "../notes/index.js";
+import { PageClient, handlePageToolCall, isPageToolName } from "../pages/index.js";
+import { InputError, NotePMAPIError, error } from "../shared/index.js";
+import { TagClient, handleTagToolCall, isTagToolName } from "../tags/index.js";
 
 interface Clients {
   folders: FolderClient;
