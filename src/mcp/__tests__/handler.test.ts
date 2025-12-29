@@ -422,6 +422,24 @@ describe("handleToolCall", () => {
       expect(getTextContent(result)).toContain("**tiny.txt**");
       expect(getTextContent(result)).toContain("512 B");
     });
+
+    it("should not show page info when page_code is null", async () => {
+      const attachments = [
+        createMockAttachment({
+          file_id: "f1",
+          file_name: "orphan.pdf",
+          note_code: "note123",
+          page_code: null,
+        }),
+      ];
+      mockAttachmentClient.search.mockResolvedValue(createMockAttachmentsResponse(attachments, 1));
+
+      const result = await handleToolCall(clients, "search_attachments", {});
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Note: note123");
+      expect(getTextContent(result)).not.toContain("(page:");
+    });
   });
 
   // ============================================================
