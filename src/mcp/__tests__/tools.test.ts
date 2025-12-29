@@ -17,9 +17,6 @@ describe("TOOLS", () => {
 
     // Note tools
     expect(toolNames).toContain(NOTE_TOOL_NAMES.LIST_NOTES);
-    expect(toolNames).toContain(NOTE_TOOL_NAMES.GET_NOTE);
-    expect(toolNames).toContain(NOTE_TOOL_NAMES.CREATE_NOTE);
-    expect(toolNames).toContain(NOTE_TOOL_NAMES.UPDATE_NOTE);
 
     // Tag tools
     expect(toolNames).toContain(TAG_TOOL_NAMES.LIST_TAGS);

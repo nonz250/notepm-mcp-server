@@ -63,45 +63,4 @@ describe("NoteClient", () => {
     });
   });
 
-  describe("get", () => {
-    it("should call GET /notes/:note_code and return note", async () => {
-      const mockNote = { note_code: "abc123", name: "Test" };
-      mockHttp.request.mockResolvedValue({ note: mockNote });
-
-      const result = await client.get("abc123");
-
-      expect(mockHttp.request).toHaveBeenCalledWith("GET", "/notes/abc123");
-      expect(result).toEqual(mockNote);
-    });
-  });
-
-  describe("create", () => {
-    it("should call POST /notes with params and return note", async () => {
-      const mockNote = { note_code: "new123", name: "New Note" };
-      mockHttp.request.mockResolvedValue({ note: mockNote });
-
-      const params = { name: "New Note", scope: "open" as const };
-      const result = await client.create(params);
-
-      expect(mockHttp.request).toHaveBeenCalledWith("POST", "/notes", params);
-      expect(result).toEqual(mockNote);
-    });
-  });
-
-  describe("update", () => {
-    it("should call PATCH /notes/:note_code with params and return note", async () => {
-      const mockNote = { note_code: "abc123", name: "Updated" };
-      mockHttp.request.mockResolvedValue({ note: mockNote });
-
-      const params = { name: "Updated" };
-      const result = await client.update("abc123", params);
-
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "PATCH",
-        "/notes/abc123",
-        params
-      );
-      expect(result).toEqual(mockNote);
-    });
-  });
 });

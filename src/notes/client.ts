@@ -2,14 +2,7 @@
  * Note domain API client
  */
 import { HttpClient } from "../shared/http-client.js";
-import type {
-  CreateNoteParams,
-  ListNotesParams,
-  Note,
-  NoteResponse,
-  NotesResponse,
-  UpdateNoteParams,
-} from "./types.js";
+import type { ListNotesParams, NotesResponse } from "./types.js";
 
 export class NoteClient {
   constructor(private http: HttpClient) {}
@@ -29,32 +22,5 @@ export class NoteClient {
     const path = `/notes${query ? `?${query}` : ""}`;
 
     return this.http.request<NotesResponse>("GET", path);
-  }
-
-  /**
-   * Get note
-   * GET /api/v1/notes/:note_code
-   */
-  async get(noteCode: string): Promise<Note> {
-    const response = await this.http.request<NoteResponse>("GET", `/notes/${noteCode}`);
-    return response.note;
-  }
-
-  /**
-   * Create note
-   * POST /api/v1/notes
-   */
-  async create(params: CreateNoteParams): Promise<Note> {
-    const response = await this.http.request<NoteResponse>("POST", "/notes", params);
-    return response.note;
-  }
-
-  /**
-   * Update note
-   * PATCH /api/v1/notes/:note_code
-   */
-  async update(noteCode: string, params: UpdateNoteParams): Promise<Note> {
-    const response = await this.http.request<NoteResponse>("PATCH", `/notes/${noteCode}`, params);
-    return response.note;
   }
 }
