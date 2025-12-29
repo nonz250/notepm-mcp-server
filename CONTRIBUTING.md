@@ -144,7 +144,7 @@ npm run test:coverage # Run with coverage report
 
 ### Writing Tests
 
-- Place tests in `src/__tests__/`
+- Place tests in each domain's `__tests__/` directory (e.g., `src/pages/__tests__/`)
 - Use descriptive test names
 - Test both success and error cases
 - Mock external API calls
