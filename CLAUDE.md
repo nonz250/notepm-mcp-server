@@ -73,6 +73,10 @@ Domains: `folders/`, `notes/`, `pages/`, `tags/`
 | Tags | `list_tags` | List all tags |
 | Tags | `create_tag` | Create a new tag |
 
+> **Design Philosophy**: This server intentionally limits tools to read operations and page editing. Destructive operations (delete/archive) and note management are left to humans.
+
+For full API reference, see [NotePM API Documentation](https://notepm.jp/docs/api).
+
 ## Key Patterns
 
 ### Type Safety
