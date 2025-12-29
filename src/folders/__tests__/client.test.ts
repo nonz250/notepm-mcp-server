@@ -21,10 +21,7 @@ describe("FolderClient", () => {
 
       await client.list({ note_code: "abc123" });
 
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "GET",
-        "/notes/abc123/folders"
-      );
+      expect(mockHttp.request).toHaveBeenCalledWith("GET", "/notes/abc123/folders");
     });
 
     it("should return folders response", async () => {

@@ -3,10 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import {
-  CreateTagInputSchema,
-  ListTagsInputSchema,
-} from "../schemas.js";
+import { CreateTagInputSchema, ListTagsInputSchema } from "../schemas.js";
 
 describe("ListTagsInputSchema", () => {
   it("should accept empty input with defaults", () => {

@@ -29,10 +29,7 @@ describe("PageClient", () => {
 
       await client.search({ q: "test query" });
 
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "GET",
-        "/pages?q=test+query"
-      );
+      expect(mockHttp.request).toHaveBeenCalledWith("GET", "/pages?q=test+query");
     });
 
     it("should include only_title param", async () => {
@@ -40,10 +37,7 @@ describe("PageClient", () => {
 
       await client.search({ only_title: true });
 
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "GET",
-        "/pages?only_title=1"
-      );
+      expect(mockHttp.request).toHaveBeenCalledWith("GET", "/pages?only_title=1");
     });
 
     it("should include include_archived param", async () => {
@@ -51,10 +45,7 @@ describe("PageClient", () => {
 
       await client.search({ include_archived: true });
 
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "GET",
-        "/pages?include_archived=1"
-      );
+      expect(mockHttp.request).toHaveBeenCalledWith("GET", "/pages?include_archived=1");
     });
 
     it("should include note_code param", async () => {
@@ -62,10 +53,7 @@ describe("PageClient", () => {
 
       await client.search({ note_code: "abc123" });
 
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "GET",
-        "/pages?note_code=abc123"
-      );
+      expect(mockHttp.request).toHaveBeenCalledWith("GET", "/pages?note_code=abc123");
     });
 
     it("should include tag_name param", async () => {
@@ -73,10 +61,7 @@ describe("PageClient", () => {
 
       await client.search({ tag_name: "important" });
 
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "GET",
-        "/pages?tag_name=important"
-      );
+      expect(mockHttp.request).toHaveBeenCalledWith("GET", "/pages?tag_name=important");
     });
 
     it("should include page param", async () => {
@@ -165,11 +150,7 @@ describe("PageClient", () => {
       const params = { title: "Updated" };
       const result = await client.update("abc123", params);
 
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "PATCH",
-        "/pages/abc123",
-        params
-      );
+      expect(mockHttp.request).toHaveBeenCalledWith("PATCH", "/pages/abc123", params);
       expect(result).toEqual(mockPage);
     });
   });

@@ -2,13 +2,7 @@
  * Tag domain API client
  */
 import { HttpClient } from "../shared/http-client.js";
-import type {
-  CreateTagParams,
-  ListTagsParams,
-  Tag,
-  TagResponse,
-  TagsResponse,
-} from "./types.js";
+import type { CreateTagParams, ListTagsParams, Tag, TagResponse, TagsResponse } from "./types.js";
 
 export class TagClient {
   constructor(private http: HttpClient) {}

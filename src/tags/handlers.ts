@@ -5,10 +5,7 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
 import { parseInput, success } from "../shared/result.js";
 import { TagClient } from "./client.js";
-import {
-  CreateTagInputSchema,
-  ListTagsInputSchema,
-} from "./schemas.js";
+import { CreateTagInputSchema, ListTagsInputSchema } from "./schemas.js";
 import type { TagToolName } from "./types.js";
 import { TAG_TOOL_NAMES } from "./types.js";
 

@@ -29,10 +29,7 @@ describe("TagClient", () => {
 
       await client.list({ note_code: "abc123" });
 
-      expect(mockHttp.request).toHaveBeenCalledWith(
-        "GET",
-        "/tags?note_code=abc123"
-      );
+      expect(mockHttp.request).toHaveBeenCalledWith("GET", "/tags?note_code=abc123");
     });
 
     it("should include page param", async () => {
