@@ -5,6 +5,7 @@
  */
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
+import { AttachmentClient, handleAttachmentToolCall, isAttachmentToolName } from "../attachments/index.js";
 import { FolderClient, handleFolderToolCall, isFolderToolName } from "../folders/index.js";
 import { handleNoteToolCall, isNoteToolName, NoteClient } from "../notes/index.js";
 import { handlePageToolCall, isPageToolName, PageClient } from "../pages/index.js";
@@ -12,6 +13,7 @@ import { error, InputError, NotePMAPIError } from "../shared/index.js";
 import { handleTagToolCall, isTagToolName, TagClient } from "../tags/index.js";
 
 interface Clients {
+  attachments: AttachmentClient;
   folders: FolderClient;
   notes: NoteClient;
   pages: PageClient;
@@ -27,6 +29,10 @@ export async function handleToolCall(
   args: unknown
 ): Promise<CallToolResult> {
   try {
+    if (isAttachmentToolName(name)) {
+      return await handleAttachmentToolCall(clients.attachments, name, args);
+    }
+
     if (isFolderToolName(name)) {
       return await handleFolderToolCall(clients.folders, name, args);
     }
