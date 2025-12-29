@@ -150,4 +150,83 @@ describe("HttpClient", () => {
       );
     });
   });
+
+  describe("uploadFile", () => {
+    it("should make POST request with FormData", async () => {
+      const expectedData = { attachment: { file_id: "file123" } };
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(expectedData),
+      });
+
+      const formData = new FormData();
+      formData.append("file", new Blob(["test"]), "test.txt");
+      formData.append("note_code", "note123");
+
+      await client.uploadFile("/attachments", formData);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://test-team.notepm.jp/api/v1/attachments",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer test-token",
+          },
+          body: formData,
+        }
+      );
+    });
+
+    it("should return JSON response", async () => {
+      const expectedData = { attachment: { file_id: "file123", file_name: "test.txt" } };
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(expectedData),
+      });
+
+      const formData = new FormData();
+      const result = await client.uploadFile("/attachments", formData);
+
+      expect(result).toEqual(expectedData);
+    });
+
+    it("should throw NotePMAPIError on error response", async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 400,
+        statusText: "Bad Request",
+        text: () => Promise.resolve('{"messages":["File too large"]}'),
+      });
+
+      const formData = new FormData();
+
+      await expect(client.uploadFile("/attachments", formData)).rejects.toThrow(NotePMAPIError);
+    });
+
+    it("should include error details in NotePMAPIError", async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 413,
+        statusText: "Payload Too Large",
+        text: () => Promise.resolve('{"messages":["File exceeds maximum size"]}'),
+      });
+
+      const formData = new FormData();
+
+      try {
+        await client.uploadFile("/attachments", formData);
+        expect.fail("Should have thrown");
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotePMAPIError);
+        if (error instanceof NotePMAPIError) {
+          expect(error.statusCode).toBe(413);
+          expect(error.statusText).toBe("Payload Too Large");
+          expect(error.message).toContain("413 Payload Too Large");
+          expect(error.message).toContain("File exceeds maximum size");
+        }
+      }
+    });
+  });
 });

@@ -511,6 +511,29 @@ describe("handleToolCall", () => {
       expect(result.isError).toBeUndefined();
       expect(getTextContent(result)).toContain("2.0 MB");
     });
+
+    it("should not show page info when page_code is null", async () => {
+      const uploadResponse = {
+        attachment: createMockAttachment({
+          file_id: "new123",
+          file_name: "document.pdf",
+          file_size: 1024,
+          note_code: "note123",
+          page_code: null,
+        }),
+      };
+      mockAttachmentClient.upload.mockResolvedValue(uploadResponse);
+
+      const result = await handleToolCall(clients, "upload_attachment", {
+        file_name: "document.pdf",
+        file_data: "SGVsbG8gV29ybGQ=",
+        note_code: "note123",
+      });
+
+      expect(result.isError).toBeUndefined();
+      expect(getTextContent(result)).toContain("Note: note123");
+      expect(getTextContent(result)).not.toContain("Page:");
+    });
   });
 
   // ============================================================
