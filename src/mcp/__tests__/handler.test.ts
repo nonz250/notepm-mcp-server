@@ -41,9 +41,6 @@ function getTextContent(result: CallToolResult): string {
 
 const createMockNoteClient = () => ({
   list: vi.fn(),
-  get: vi.fn(),
-  create: vi.fn(),
-  update: vi.fn(),
 });
 
 const createMockPageClient = () => ({
@@ -274,104 +271,6 @@ describe("handleToolCall", () => {
 
       expect(result.isError).toBeUndefined();
       expect(getTextContent(result)).toContain("(No description)");
-    });
-  });
-
-  describe("get_note", () => {
-    it("should format note with all fields", async () => {
-      const note = createMockNote();
-      mockNoteClient.get.mockResolvedValue(note);
-
-      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toContain("## Test Note");
-      expect(getTextContent(result)).toContain("Note code: note123");
-      expect(getTextContent(result)).toContain("Scope: All members");
-      expect(getTextContent(result)).toContain("Archived: No");
-    });
-
-    it("should handle scope as number 0 (open)", async () => {
-      const note = createMockNote({ scope: 0 as unknown as "open" });
-      mockNoteClient.get.mockResolvedValue(note);
-
-      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toContain("Scope: All members");
-    });
-
-    it("should handle private scope", async () => {
-      const note = createMockNote({ scope: "private" });
-      mockNoteClient.get.mockResolvedValue(note);
-
-      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toContain("Scope: Participating members only");
-    });
-
-    it("should handle archived note", async () => {
-      const note = createMockNote({ archived: true });
-      mockNoteClient.get.mockResolvedValue(note);
-
-      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toContain("Archived: Yes");
-    });
-
-    it("should handle note with no description", async () => {
-      const note = createMockNote({ description: "" });
-      mockNoteClient.get.mockResolvedValue(note);
-
-      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toContain("(No description)");
-    });
-
-    it("should handle note with missing dates", async () => {
-      const note = createMockNote({ created_at: undefined, updated_at: undefined });
-      mockNoteClient.get.mockResolvedValue(note);
-
-      const result = await handleToolCall(clients, "get_note", { note_code: "note123" });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toContain("Created at: N/A");
-      expect(getTextContent(result)).toContain("Updated at: N/A");
-    });
-  });
-
-  describe("create_note", () => {
-    it("should return success message with note details", async () => {
-      const note = createMockNote({ note_code: "new123", name: "New Note" });
-      mockNoteClient.create.mockResolvedValue(note);
-
-      const result = await handleToolCall(clients, "create_note", {
-        name: "New Note",
-        scope: "open",
-      });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toContain("Note created.");
-      expect(getTextContent(result)).toContain("## New Note");
-    });
-  });
-
-  describe("update_note", () => {
-    it("should return success message with updated note details", async () => {
-      const note = createMockNote({ note_code: "note123", name: "Updated Note" });
-      mockNoteClient.update.mockResolvedValue(note);
-
-      const result = await handleToolCall(clients, "update_note", {
-        note_code: "note123",
-        name: "Updated Note",
-      });
-
-      expect(result.isError).toBeUndefined();
-      expect(getTextContent(result)).toContain("Note updated.");
-      expect(getTextContent(result)).toContain("## Updated Note");
     });
   });
 

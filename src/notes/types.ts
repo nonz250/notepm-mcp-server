@@ -38,30 +38,9 @@ export interface ListNotesParams {
   per_page?: number;
 }
 
-/** Create note parameters */
-export interface CreateNoteParams {
-  name: string;
-  description?: string;
-  scope: "open" | "private";
-  groups?: string[];
-  users?: string[];
-}
-
-/** Update note parameters */
-export interface UpdateNoteParams {
-  name?: string;
-  description?: string;
-  scope?: "open" | "private";
-  groups?: string[];
-  users?: string[];
-}
-
 /** Tool name constants for notes */
 export const NOTE_TOOL_NAMES = {
   LIST_NOTES: "list_notes",
-  GET_NOTE: "get_note",
-  CREATE_NOTE: "create_note",
-  UPDATE_NOTE: "update_note",
 } as const;
 
 /** Type representing valid note tool names */
