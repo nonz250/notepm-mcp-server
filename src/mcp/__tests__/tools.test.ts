@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { FOLDER_TOOL_NAMES } from "../../folders/types.js";
 import { NOTE_TOOL_NAMES } from "../../notes/types.js";
 import { PAGE_TOOL_NAMES } from "../../pages/types.js";
 import { TAG_TOOL_NAMES } from "../../tags/types.js";
@@ -9,14 +10,17 @@ describe("TOOLS", () => {
   it("should have all expected tools defined", () => {
     const toolNames = TOOLS.map((tool) => tool.name);
 
+    // Folder tools
+    expect(toolNames).toContain(FOLDER_TOOL_NAMES.LIST_FOLDERS);
+
+    // Note tools
+    expect(toolNames).toContain(NOTE_TOOL_NAMES.LIST_NOTES);
+
     // Page tools
     expect(toolNames).toContain(PAGE_TOOL_NAMES.SEARCH_PAGES);
     expect(toolNames).toContain(PAGE_TOOL_NAMES.GET_PAGE);
     expect(toolNames).toContain(PAGE_TOOL_NAMES.CREATE_PAGE);
     expect(toolNames).toContain(PAGE_TOOL_NAMES.UPDATE_PAGE);
-
-    // Note tools
-    expect(toolNames).toContain(NOTE_TOOL_NAMES.LIST_NOTES);
 
     // Tag tools
     expect(toolNames).toContain(TAG_TOOL_NAMES.LIST_TAGS);

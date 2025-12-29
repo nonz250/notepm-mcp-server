@@ -5,12 +5,14 @@
  */
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
+import { FolderClient, handleFolderToolCall, isFolderToolName } from "../folders/index.js";
 import { handleNoteToolCall, isNoteToolName, NoteClient } from "../notes/index.js";
 import { handlePageToolCall, isPageToolName, PageClient } from "../pages/index.js";
 import { error, InputError, NotePMAPIError } from "../shared/index.js";
 import { handleTagToolCall, isTagToolName, TagClient } from "../tags/index.js";
 
 interface Clients {
+  folders: FolderClient;
   notes: NoteClient;
   pages: PageClient;
   tags: TagClient;
@@ -25,6 +27,10 @@ export async function handleToolCall(
   args: unknown
 ): Promise<CallToolResult> {
   try {
+    if (isFolderToolName(name)) {
+      return await handleFolderToolCall(clients.folders, name, args);
+    }
+
     if (isNoteToolName(name)) {
       return await handleNoteToolCall(clients.notes, name, args);
     }

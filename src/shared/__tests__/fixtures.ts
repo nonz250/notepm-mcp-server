@@ -3,6 +3,7 @@
  *
  * Common mock data factories for tests
  */
+import type { Folder, FoldersResponse } from "../../folders/types.js";
 import type { Note, NotesResponse } from "../../notes/types.js";
 import type { Page, PagesResponse } from "../../pages/types.js";
 import type { TagsResponse } from "../../tags/types.js";
@@ -90,4 +91,21 @@ export const createMockTagsResponse = (tags: Tag[], total?: number): TagsRespons
     per_page: 50,
     total: total ?? tags.length,
   },
+});
+
+/**
+ * Create a mock Folder object with optional overrides
+ */
+export const createMockFolder = (overrides: Partial<Folder> = {}): Folder => ({
+  folder_id: 1,
+  name: "Test Folder",
+  parent_folder_id: null,
+  ...overrides,
+});
+
+/**
+ * Create a mock FoldersResponse object
+ */
+export const createMockFoldersResponse = (folders: Folder[]): FoldersResponse => ({
+  folders,
 });
