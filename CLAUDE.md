@@ -31,29 +31,47 @@ npm run format:check        # Check formatting
 ### Entry Point and Server Setup
 - `src/index.ts` - MCP server initialization using `@modelcontextprotocol/sdk`. Uses stdio transport for communication.
 
-### Configuration
-- `src/config.ts` - Loads configuration from environment variables:
+### Shared Layer (`src/shared/`)
+- `config.ts` - Loads configuration from environment variables:
   - `NOTEPM_TEAM_DOMAIN` - Team subdomain (e.g., "demo" → demo.notepm.jp)
   - `NOTEPM_ACCESS_TOKEN` - API access token
+- `http-client.ts` - Base HTTP client for NotePM REST API
+- `errors.ts` - Custom error classes (`NotePMAPIError`, `InputError`)
+- `schema-utils.ts` - Zod to JSON Schema conversion utilities
+- `types.ts` - Shared types (`User`, `Tag`, `PaginationMeta`)
+- `result.ts` - Result builder utilities for MCP responses
 
-### API Client
-- `src/notepm-client.ts` - HTTP client for NotePM REST API (`https://{domain}.notepm.jp/api/v1`). Handles Notes and Pages CRUD operations.
+### MCP Layer (`src/mcp/`)
+- `tools.ts` - Aggregates all domain tools into a single list
+- `handler.ts` - Routes tool calls to appropriate domain handlers
 
-### Tools Layer (`src/tools/`)
-The tools layer follows a clean separation pattern:
-- `constants.ts` - Tool name constants with TypeScript const assertion for type safety
-- `schemas.ts` - Zod schemas for input validation (single source of truth for types)
-- `definitions.ts` - MCP tool definitions with JSON Schema conversion from Zod
-- `handlers.ts` - Tool execution logic with structured error handling
-- `index.ts` - Public API re-exports
+### Domain Modules
+Each domain follows a consistent structure:
+
+```
+src/{domain}/
+├── types.ts     # Domain types and tool name constants
+├── schemas.ts   # Zod input schemas (single source of truth)
+├── client.ts    # HTTP client methods for the domain
+├── handlers.ts  # Tool execution logic
+├── tools.ts     # MCP tool definitions
+└── index.ts     # Public API re-exports
+```
+
+Domains: `folders/`, `notes/`, `pages/`, `tags/`
 
 ### Available MCP Tools
-- `search_pages` - Search pages by keyword, note, or tag
-- `get_page` - Get page details by page code
-- `create_page` - Create a new page
-- `update_page` - Update an existing page
-- `delete_page` - Delete a page
-- `list_notes` - List all notes
+
+| Domain | Tool | Description |
+|--------|------|-------------|
+| Folders | `list_folders` | List folders in a note |
+| Notes | `list_notes` | List all notes |
+| Pages | `search_pages` | Search pages by keyword, note, or tag |
+| Pages | `get_page` | Get page details by page code |
+| Pages | `create_page` | Create a new page |
+| Pages | `update_page` | Update an existing page |
+| Tags | `list_tags` | List all tags |
+| Tags | `create_tag` | Create a new tag |
 
 ## Key Patterns
 
