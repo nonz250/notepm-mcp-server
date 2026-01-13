@@ -93,6 +93,15 @@ Add the following to your Claude Code settings file (`.claude/settings.json` or 
 }
 ```
 
+### Codex CLI
+
+```bash
+codex mcp add notepm \
+  --env NOTEPM_TEAM_DOMAIN=your-team-domain \
+  --env NOTEPM_ACCESS_TOKEN=your-access-token \
+  -- npx -y @nonz250/notepm-mcp-server
+```
+
 ### Using Global Installation
 
 If you installed globally, replace `npx` with the direct command:
@@ -146,6 +155,13 @@ When developing this package, `npx @nonz250/notepm-mcp-server` won't work from w
 
 ```bash
 claude mcp add notepm \
+  --env NOTEPM_TEAM_DOMAIN=your-team-domain \
+  --env NOTEPM_ACCESS_TOKEN=your-access-token \
+  -- npm run start --prefix /path/to/notepm-mcp-server
+```
+
+```bash
+codex mcp add notepm \
   --env NOTEPM_TEAM_DOMAIN=your-team-domain \
   --env NOTEPM_ACCESS_TOKEN=your-access-token \
   -- npm run start --prefix /path/to/notepm-mcp-server
