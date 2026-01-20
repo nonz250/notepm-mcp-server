@@ -85,14 +85,27 @@ export async function handlePageToolCall(
     }
 
     case PAGE_TOOL_NAMES.CREATE_PAGE: {
-      const { note_code, title, body, memo, folder_id, tags } = parseInput(CreatePageInputSchema, args);
+      const { note_code, title, body, memo, folder_id, tags } = parseInput(
+        CreatePageInputSchema,
+        args
+      );
       const page = await client.create({ note_code, title, body, memo, folder_id, tags });
       return success(`Page created.\n\n${formatPage(page)}`);
     }
 
     case PAGE_TOOL_NAMES.UPDATE_PAGE: {
-      const { page_code, note_code, title, body, memo, folder_id, tags } = parseInput(UpdatePageInputSchema, args);
-      const page = await client.update(page_code, { note_code, title, body, memo, folder_id, tags });
+      const { page_code, note_code, title, body, memo, folder_id, tags } = parseInput(
+        UpdatePageInputSchema,
+        args
+      );
+      const page = await client.update(page_code, {
+        note_code,
+        title,
+        body,
+        memo,
+        folder_id,
+        tags,
+      });
       return success(`Page updated.\n\n${formatPage(page)}`);
     }
   }
