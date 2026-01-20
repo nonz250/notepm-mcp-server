@@ -32,14 +32,17 @@ export const CreatePageInputSchema = z.object({
   title: z.string().min(1).max(100).describe("Page title (1-100 characters)"),
   body: z.string().optional().describe("Page body (Markdown format)"),
   memo: z.string().max(255).optional().describe("Memo (max 255 characters)"),
+  folder_id: z.number().optional().describe("Folder ID to create page in (if omitted, created at note root)"),
   tags: z.array(z.string()).optional().describe("Array of tags"),
 });
 
 export const UpdatePageInputSchema = z.object({
   page_code: z.string().min(1).describe("Page code to update"),
+  note_code: z.string().optional().describe("Note code (required when specifying folder_id)"),
   title: z.string().max(100).optional().describe("Page title (max 100 characters)"),
   body: z.string().optional().describe("Page body (Markdown format)"),
   memo: z.string().max(255).optional().describe("Memo (max 255 characters)"),
+  folder_id: z.number().optional().describe("Folder ID to move page to (requires note_code)"),
   tags: z.array(z.string()).optional().describe("Array of tags"),
 });
 

@@ -25,12 +25,14 @@ export const PAGE_TOOLS: Tool[] = [
   },
   {
     name: PAGE_TOOL_NAMES.CREATE_PAGE,
-    description: "Create a new page in NotePM. Note code and title are required.",
+    description:
+      "Create a new page in NotePM. Note code and title are required. Optionally specify folder_id to create the page in a specific folder.",
     inputSchema: toInputSchema(CreatePageInputSchema),
   },
   {
     name: PAGE_TOOL_NAMES.UPDATE_PAGE,
-    description: "Update an existing NotePM page. Page code is required.",
+    description:
+      "Update an existing NotePM page. Page code is required. To move the page to a different folder, specify both folder_id and note_code.",
     inputSchema: toInputSchema(UpdatePageInputSchema),
   },
 ];

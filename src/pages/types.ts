@@ -55,9 +55,11 @@ export interface CreatePageParams {
 
 /** Update page parameters */
 export interface UpdatePageParams {
+  note_code?: string;
   title?: string;
   body?: string;
   memo?: string;
+  folder_id?: number;
   tags?: string[];
 }
 
