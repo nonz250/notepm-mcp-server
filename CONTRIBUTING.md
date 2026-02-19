@@ -6,7 +6,7 @@ Thank you for your interest in contributing to notepm-mcp-server! This document 
 
 ### Prerequisites
 
-- Node.js >= 22
+- Node.js >= 24
 - npm
 
 ### Setup

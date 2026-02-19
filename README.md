@@ -24,7 +24,7 @@ This server enables AI assistants like Claude to search, read, create, and updat
 
 ## Requirements
 
-- Node.js >= 22
+- Node.js >= 24
 
 ## Installation
 
