@@ -52,7 +52,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.0",
     "@trivago/prettier-plugin-sort-imports": "^6.0.0",
-    "@types/node": "^24.0.0",
+    "@types/node": "^25.5.0",
     "@vitest/coverage-v8": "^4.0.16",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
