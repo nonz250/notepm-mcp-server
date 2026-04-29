@@ -88,3 +88,7 @@ For full API reference, see [NotePM API Documentation](https://notepm.jp/docs/ap
 - `NotePMAPIError` for API errors (includes status code)
 - `InputError` for validation errors
 - Both are caught in `handleToolCall` and returned as error results
+
+## Pull Request Conventions
+
+- Write PR titles and descriptions in English. This project is published to npm and targets an international audience, so PR metadata should be readable to non-Japanese contributors.
