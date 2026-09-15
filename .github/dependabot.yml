@@ -6,6 +6,17 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     groups:
+      # @vitest/* packages pin vitest as an exact peer version, so separate PRs
+      # always fail npm ci. Must stay above dev-dependencies because the first
+      # matching group wins.
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
       dev-dependencies:
         dependency-type: "development"
         update-types:
