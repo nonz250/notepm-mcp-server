@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { ATTACHMENT_TOOL_NAMES } from "../../attachments/types.js";
 import { FOLDER_TOOL_NAMES } from "../../folders/types.js";
 import { NOTE_TOOL_NAMES } from "../../notes/types.js";
 import { PAGE_TOOL_NAMES } from "../../pages/types.js";
@@ -9,6 +10,9 @@ import { TOOLS } from "../index.js";
 describe("TOOLS", () => {
   it("should have all expected tools defined", () => {
     const toolNames = TOOLS.map((tool) => tool.name);
+
+    // Attachment tools
+    expect(toolNames).toContain(ATTACHMENT_TOOL_NAMES.SEARCH_ATTACHMENTS);
 
     // Folder tools
     expect(toolNames).toContain(FOLDER_TOOL_NAMES.LIST_FOLDERS);
