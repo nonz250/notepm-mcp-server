@@ -3,6 +3,7 @@
  *
  * Common mock data factories for tests
  */
+import type { Attachment, AttachmentsResponse } from "../../attachments/types.js";
 import type { Folder, FoldersResponse } from "../../folders/types.js";
 import type { Note, NotesResponse } from "../../notes/types.js";
 import type { Page, PagesResponse } from "../../pages/types.js";
@@ -90,6 +91,38 @@ export const createMockTagsResponse = (tags: Tag[], total?: number): TagsRespons
     page: 1,
     per_page: 50,
     total: total ?? tags.length,
+  },
+});
+
+/**
+ * Create a mock Attachment object with optional overrides
+ */
+export const createMockAttachment = (overrides: Partial<Attachment> = {}): Attachment => ({
+  file_id: "file123",
+  file_name: "document.pdf",
+  file_size: 1024000,
+  note_code: "note456",
+  page_code: "page789",
+  comment_number: null,
+  download_url: "https://example.notepm.jp/api/v1/attachments/download/file123",
+  created_at: "2024-01-01T00:00:00Z",
+  ...overrides,
+});
+
+/**
+ * Create a mock AttachmentsResponse object
+ */
+export const createMockAttachmentsResponse = (
+  attachments: Attachment[],
+  total?: number
+): AttachmentsResponse => ({
+  attachments,
+  meta: {
+    previous_page: null,
+    next_page: null,
+    page: 1,
+    per_page: 20,
+    total: total ?? attachments.length,
   },
 });
 
