@@ -16,6 +16,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
+import { AttachmentClient } from "./attachments/index.js";
 import { FolderClient } from "./folders/index.js";
 import { TOOLS, handleToolCall } from "./mcp/index.js";
 import { NoteClient } from "./notes/index.js";
@@ -37,6 +38,7 @@ const packageJson = require("../package.json") as { name: string; version: strin
 const config = loadConfig();
 const httpClient = new HttpClient(config);
 const clients = {
+  attachments: new AttachmentClient(httpClient),
   folders: new FolderClient(httpClient),
   notes: new NoteClient(httpClient),
   pages: new PageClient(httpClient),
