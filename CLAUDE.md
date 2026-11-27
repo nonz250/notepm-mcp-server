@@ -89,6 +89,12 @@ For full API reference, see [NotePM API Documentation](https://notepm.jp/docs/ap
 - `InputError` for validation errors
 - Both are caught in `handleToolCall` and returned as error results
 
+## Versioning and Release
+
+- Bump the version with `npm version`, which updates both `package.json` and `package-lock.json`. The server reports the version to clients at initialization by reading `package.json`, so no source file needs updating.
+- `publish.yml` publishes the head of `main`, so any PR merged after the version bump is published together.
+- Follow the `bump-version` skill from bumping the version to publishing.
+
 ## Pull Request Conventions
 
 - Write PR titles and descriptions in English. This project is published to npm and targets an international audience, so PR metadata should be readable to non-Japanese contributors.
