@@ -49,16 +49,17 @@ npm test
 
 ## 4. 公開する
 
-Publish ワークフローは main の先頭で動く。版上げの PR の後にほかの PR がマージされていると、それも一緒に公開される。動かす前に main の先頭が版上げの PR のマージコミットであることを確かめ、違えばユーザーに伝える。
+Publish ワークフローは main の先頭で動く。版上げの PR の後にほかの PR がマージされていると、それも一緒に公開される。動かす前に、版上げの PR のマージコミットを控え、main の先頭がそのコミットであることを確かめる。違えばユーザーに伝える。
 
 ```bash
 gh pr view <PR 番号> --json mergeCommit -q .mergeCommit.oid
 git -C <repo> ls-remote origin refs/heads/main
 ```
 
-公開する版と main の先頭のコミットをユーザーに見せ、公開してよいか確認を取ってから動かす。
+公開する版と main の先頭のコミットをユーザーに見せ、公開してよいか確認を取る。確認が取れたら、動かす前に今ある最新の run の ID を控えてから動かす。
 
 ```bash
+gh run list --workflow publish.yml --limit 1 --json databaseId -q '.[0].databaseId // 0'
 gh workflow run publish.yml --ref main
 ```
 
@@ -69,14 +70,19 @@ gh workflow run publish.yml --ref main
 - npm に公開する
 - タグ `X.Y.Z` を打ち、`--generate-notes` で GitHub Release を作る
 
-run を探し、`run_in_background` で完了を待つ。動かした直後はまだ run が作られていないことがあり、そのまま一覧の先頭を取ると前の版の run を見てしまう。`headSha` が手順の最初で確かめたマージコミットと一致する run が出てくるまで探し直す。
+動かした直後はまだ run が作られていないことがある。控えた ID より大きい ID の run が出てくるまで探し直す。1 分ほど経っても出てこなければ、ユーザーに伝えて待つ。
 
 ```bash
-gh run list --workflow publish.yml --event workflow_dispatch --json databaseId,headSha,status -q '.[] | select(.headSha == "<マージコミット>")'
-gh run watch <run-id> --exit-status
+gh run list --workflow publish.yml --event workflow_dispatch --limit 5 --json databaseId,headSha,status,url -q '.[] | select(.databaseId > <控えた ID>)'
 ```
 
-`production` 環境は承認が必要なので、checks が通ると run は承認待ちで止まる。run の URL をユーザーに伝え、承認してもらう。承認はユーザーが行い、代わりに承認しない。
+見つけた run の `headSha` が控えたマージコミットと違うときは、確認の後に main へほかの PR がマージされている。npm への公開は承認の後なので、まだ止められる。その run を見張らずにユーザーに伝え、承認を却下するか run を取り消すか判断してもらう。
+
+一致したら、run の URL をユーザーに伝えて承認を頼む。checks が通ると run は `production` 環境の承認待ちで止まる。承認はユーザーが行い、代わりに承認しない。頼んだ後で、`run_in_background` で完了を待つ。
+
+```bash
+gh run watch <run-id> --exit-status
+```
 
 run が進まないときは、その状態をユーザーに伝えて待つ。失敗したら、ログの要点をユーザーに伝える。勝手に再実行しない。npm に公開した後のタグや Release の作成で失敗したときは、同じ版で再実行すると npm の版の重複で落ちるので、ユーザーに伝えて手で直す方針を相談する。
 
@@ -89,10 +95,15 @@ npm view @nonz250/notepm-mcp-server version
 gh release view X.Y.Z --json url,tagName -q '.tagName + " " + .url'
 ```
 
-前の版から破壊的変更があるときは、自動で作られた Release の本文の上に `## Breaking Changes` を足し、該当する PR と利用者が何をすればよいかを書く。
+前の版から破壊的変更があるときは、自動で作られた Release の本文の上に `## Breaking Changes` の節を足す。該当する PR と、利用者が何をすればよいかを書く。本文を一時ディレクトリのファイルに書き出す。
 
 ```bash
-mkdir -p "${CLAUDE_JOB_DIR:-/tmp}/tmp"
-gh release view X.Y.Z --json body -q .body > "${CLAUDE_JOB_DIR:-/tmp}/tmp/release-X.Y.Z.md"
-gh release edit X.Y.Z --notes-file "${CLAUDE_JOB_DIR:-/tmp}/tmp/release-X.Y.Z.md"
+notes_dir="$(mktemp -d)"
+gh release view X.Y.Z --json body -q .body > "$notes_dir/release-X.Y.Z.md"
+```
+
+書き出したファイルの先頭に Edit で `## Breaking Changes` の節を足す。差分をユーザーに見せてから、Release に反映する。
+
+```bash
+gh release edit X.Y.Z --notes-file "$notes_dir/release-X.Y.Z.md"
 ```

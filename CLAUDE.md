@@ -91,7 +91,7 @@ For full API reference, see [NotePM API Documentation](https://notepm.jp/docs/ap
 
 ## Versioning and Release
 
-- The only version is the one in `package.json`. The server reports it to clients at initialization by reading `package.json`, so there is no other place to update.
+- Bump the version with `npm version`, which updates both `package.json` and `package-lock.json`. The server reports the version to clients at initialization by reading `package.json`, so no source file needs updating.
 - Tags and GitHub Releases use the same number without a `v` prefix.
 - Publishing runs `publish.yml` manually against the head of `main`. It publishes to npm, then creates the tag and the Release. Any PR merged after the version bump is published together.
 - Follow the `bump-version` skill from bumping the version to publishing.
